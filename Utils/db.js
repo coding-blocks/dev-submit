@@ -3,10 +3,9 @@
  */
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize("postgres", "postgres", "Cool@man6", {
+const sequelize = new Sequelize("postgres", "postgres", "pass", {
     host: "localhost",
     dialect: 'postgres',
-    port: 5433,
 
     pool: {
         min: 0,
