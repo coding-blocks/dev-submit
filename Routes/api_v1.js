@@ -9,7 +9,7 @@ const Assignments = require('./Assignments');
 const Courses = require('./Courses');
 
 router.use('/students',Students);
-router.use('/assignments',Students);
+router.use('/assignments',Assignments);
 router.use('/courses',Courses);
 
 module.exports = router;
