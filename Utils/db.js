@@ -3,7 +3,7 @@
  */
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize("postgres", "postgres", "pass", {
+const sequelize = new Sequelize("postgres", "postgres", "password", {
     host: "localhost",
     dialect: 'postgres',
 
@@ -90,7 +90,29 @@ function getStudents(done) {
 }
 
 //function to get get students with a particular parameter
+function searchStudent(searchParameter, done) {
+    if (searchParameter.charAt(0) < '0' || searchParameter.charAt(0) > '9') {
+
+        Students.findOne({where: {name: searchParameter}}).then(function (data) {
+            done(data);
+
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+
+    }
+    else {
+        Students.findOne({where: {roll: searchParameter}}).then(function (data) {
+            done(data);
+
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+    }
+}
+
 function searchStudents(searchParameter, done) {
+
     if (searchParameter.charAt(0) < '0' || searchParameter.charAt(0) > '9') {
 
         Students.findAll({where: {name: searchParameter}}).then(function (data) {
@@ -110,6 +132,58 @@ function searchStudents(searchParameter, done) {
         });
     }
 }
+
+//function to edit a student
+function editStudent(searchParamter, name, done) {
+
+        searchStudent(searchParamter , function (data) {
+            data.update({
+                name : name
+            }).then(function () {
+                done();
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        });
+}
+
+//function to delete a student
+function deleteStudent(searchParameter , done){
+    if (searchParameter.charAt(0) < '0' || searchParameter.charAt(0) > '9') {
+       done("Cannot destroy by name..please use roll")
+    }
+    else{
+        Submissions.destroy({
+            where : {
+                studentRoll : searchParameter
+            }
+        }).then(function () {
+
+            StudentCourse.destroy({
+                where : {
+                    studentRoll : searchParameter
+                }
+            }).then(function () {
+
+                Students.destroy({
+                    where : {
+                        roll : searchParameter
+                    }
+                }).then(function () {
+                    done("successfully deleted " + searchParameter);
+                }).catch(function (err) {
+                    if(err) throw err;
+                });
+
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }).catch(function (err) {
+            if(err) throw err;
+        });
+    }
+}
+
 
 //function to add a new assignment
 function addAssignment(name, desc, done) {
@@ -237,21 +311,51 @@ function endCourse(courseID, done) {
 
 //add a submission
 function addSubmission(roll, id, URL, done) {
-    Submissions.create({
-        studentRoll: roll,
-        assignmentId: id,
-        status: false,
-        URL: URL
-    }).then(function () {
-        done();
+    StudentCourse.findAll({
+        where : {
+            studentRoll : roll
+        }
+    }).then(function (data) {
+        console.log(data);
+        if(data.length == 0){
+            done("not a valid submission");
+            return;
+        }
+
+        for(let i = 0;i<data.length;i++){
+            CourseAssignments.findOne({
+                where : {
+                    courseId : data[i].dataValues.courseId,
+                    assignmentId : id
+                }
+            }).then(function (row) {
+                if(!row){
+                    done("Not a valid submission")
+                    return;
+                }
+                Submissions.create({
+                    studentRoll: roll,
+                    assignmentId: id,
+                    status: false,
+                    URL: URL
+                }).then(function () {
+                    done("succesfully submitted");
+                    return;
+                }).catch(function (err) {
+                    if (err) throw err;
+                });
+
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
     }).catch(function (err) {
-        if (err) throw err;
+        if(err) throw err;
     });
 }
 
 //function to accept a submission overloaded for submission id and without it
-function acceptSubmission(id, done, roll, URL) {
-    if (!roll) {
+function acceptSubmissionbyId(id, done) {
         Submissions.findOne({where : {id : id}}).then(function (row) {
             row.update({
                 status : true
@@ -262,15 +366,15 @@ function acceptSubmission(id, done, roll, URL) {
             });
         }).catch(function (err) {
             if(err) throw err;
-        })
+        });
+}
+function acceptSubmissionWithoutId(roll , assnId , URL , done) {
 
-    }
-    else {
         Submissions.findOne(
             {
                 where: {
                     studentRoll: roll,
-                    assignmentId: id,
+                    assignmentId: assnId,
                     URL : URL
                 }
             }).then(function (row) {
@@ -284,8 +388,6 @@ function acceptSubmission(id, done, roll, URL) {
         }).catch(function (err) {
             if(err) throw err;
         });
-    }
-
 
 }
 
@@ -324,6 +426,8 @@ module.exports = {
     addStudent,
     getStudents,
     searchStudents,
+    editStudent,
+    deleteStudent,
     addAssignment,
     getAssignments,
     searchAssignment,
@@ -334,6 +438,7 @@ module.exports = {
     enrollStudentInCourse,
     addAssignmentToCourse,
     endCourse,
-    acceptSubmission
+    acceptSubmissionbyId,
+    acceptSubmissionWithoutId
 }
 
