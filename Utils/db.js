@@ -39,7 +39,6 @@ function searchStudent(id, done) {
     });
 }
 
-//TODO function to search students with a particular parameter
 function searchStudents(searchParameter , searchType ,  done) {
 
     if (searchType == "name") {
@@ -234,9 +233,29 @@ function getCourses(onlyActive, done) {
 }
 
 //function to get a particular course
-function searchCourse(searchParameter, done) {
+function searchCourse(searchParameter, searchType , onlyActive , done) {
+if(onlyActive){
+    if (searchType == "name") {
 
-    if (searchParameter.charAt(0) < '0' || searchParameter.charAt(0) > '9') {
+        models.Courses.findAll({where: {name: searchParameter,isActive : true}}).then(function (data) {
+            done(data);
+
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+
+    }
+    else {
+        models.Courses.findAll({where: {id: searchParameter , isActive : true}}).then(function (data) {
+            done(data);
+
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+    }
+}
+else{
+    if (searchType == "name") {
 
         models.Courses.findAll({where: {name: searchParameter}}).then(function (data) {
             done(data);
@@ -254,7 +273,7 @@ function searchCourse(searchParameter, done) {
             if (err) throw err;
         });
     }
-
+    }
 }
 function endCourse(courseID, done) {
     models.Courses.findOne({
