@@ -321,8 +321,8 @@ function addSubmission(studentId, assnId, URL, done) {
                     assignmentId: assnId,
                     status: false,
                     URL: URL
-                }).then(function () {
-                    done("succesfully submitted");
+                }).then(function (data) {
+                    done(data);
                     return;
                 }).catch(function (err) {
                     if (err) throw err;
@@ -337,18 +337,35 @@ function addSubmission(studentId, assnId, URL, done) {
 }
 
 //function to accept a submission overloaded for submission id and without it
-function acceptSubmissionbyId(id, done) {
-    models.Submissions.findOne({where: {id: id}}).then(function (row) {
-        row.update({
-            status: true
-        }).then(function () {
-            done();
+function acceptSubmissionbyId(id , echo , done) {
+    if(echo){
+        models.Submissions.findOne({where: {id: id}}).then(function (row) {
+            row.update({
+                status: true
+            }).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if (err) throw err;
+            });
         }).catch(function (err) {
             if (err) throw err;
         });
-    }).catch(function (err) {
-        if (err) throw err;
-    });
+    }
+    else{
+        models.Submissions.findOne({where: {id: id}}).then(function (row) {
+            row.update({
+                status: true
+            }).then(function () {
+                done("Success");
+            }).catch(function (err) {
+                if (err) throw err;
+            });
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+    }
+
+
 }
 function acceptSubmissionWithoutId(studentId, assnId, URL, done) {
 
@@ -372,6 +389,113 @@ function acceptSubmissionWithoutId(studentId, assnId, URL, done) {
     });
 
 }
+
+//function to get all submissions
+function getSubmissions(onlyAccepted, done) {
+    if(onlyAccepted){
+        models.Submissions.findAll({where : {status : true}}).then(function (data) {
+            done(data);
+        }).catch(function (err) {
+            if(err) throw err;
+        });
+    }
+    else{
+        models.Submissions.findAll().then(function (data) {
+            done(data);
+        }).catch(function (err) {
+            if(err) throw err;
+        });
+    }
+}
+
+//function to search submissions
+function searchSubmissions(searchParamter, searchType, done , onlyAccepted , helperParameter) {
+    if(onlyAccepted){
+        if(searchType == "id"){
+            models.Submissions.findAll({where : {id : searchParamter,status : true}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+        else if(searchType == "studentAssignment"){
+            models.Submissions.findAll({where : {studentId : searchParamter, assignmentId : helperParameter , status : true}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+        else if(searchType == "student"){
+            models.Submissions.findAll({where : {studentId : searchParamter,status : true}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+        else{
+            models.Submissions.findAll({where : {assignmentId : searchParamter,status : true}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+
+    }
+    else{
+        if(searchType == "id"){
+            models.Submissions.findAll({where : {id : searchParamter}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+        else if(searchType == "studentAssignment"){
+            models.Submissions.findAll({where : {studentId : searchParamter, assignmentId : helperParameter}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+        else if(searchType == "student"){
+            models.Submissions.findAll({where : {studentId : searchParamter}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+        else{
+            models.Submissions.findAll({where : {assignmentId : searchParamter}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+
+    }
+}
+
+//function to search by course
+function searchByCourse(courseId, onlyAccepted, done) {
+    models.CourseAssignments.findAll({where : {courseId : courseId}}).then(function (data) {
+        let arr = [];
+        let i=0;
+        for(i =0;i<data.length;i++){
+            searchSubmissions(data[i].dataValues.assignmentId,"assignment",(rows)=>{
+                for(let j=0;j<rows.length;j++){
+                    arr.push(rows[j].dataValues);
+                }
+                console.log(arr);
+                if(i>=data.length-1) done(arr);
+            },onlyAccepted);
+        }
+        if(data.length == 0){
+            done(arr);
+        }
+    }).catch(function (err) {
+        if(err) throw err;
+    });
+}
+
 
 //function to handle a new enrollment
 function enrollStudentInCourse(id, Course, done) {
@@ -418,9 +542,12 @@ module.exports = {
     getCourses,
     searchCourse,
     addSubmission,
+    searchSubmissions,
+    searchByCourse,
     enrollStudentInCourse,
     addAssignmentToCourse,
     endCourse,
+    getSubmissions,
     acceptSubmissionbyId,
     acceptSubmissionWithoutId
 }

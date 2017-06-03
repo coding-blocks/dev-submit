@@ -9,9 +9,7 @@ const router = express.Router();
 
 router.post('/:id/enroll/:courseId',function (req, res) {
     db.enrollStudentInCourse(req.params.id , req.params.courseId , (data)=>{
-        let arr =[];
-        arr.push(data);
-        res.send(arr);
+        res.send("success");
     });
 });
 
