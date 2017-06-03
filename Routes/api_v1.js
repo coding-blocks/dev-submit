@@ -7,9 +7,11 @@ const router = express.Router();
 const Students = require('./Students');
 const Assignments = require('./Assignments');
 const Courses = require('./Courses');
+const Submissions = require('./Submissions');
 
 router.use('/students',Students);
 router.use('/assignments',Assignments);
 router.use('/courses',Courses);
+router.use('/submissions',Submissions)
 
 module.exports = router;
