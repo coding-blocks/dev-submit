@@ -3,9 +3,10 @@
  */
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize("postgres", "postgres", "password", {
+const sequelize = new Sequelize("postgres", "postgres", "Cool@man6", {
     host: "localhost",
     dialect: 'postgres',
+    port: 5433,
 
     pool: {
         min: 0,
@@ -89,28 +90,18 @@ function getStudents(done) {
     });
 }
 
-//function to get get students with a particular parameter
+//function to get get student with a particular roll
 function searchStudent(searchParameter, done) {
-    if (searchParameter.charAt(0) < '0' || searchParameter.charAt(0) > '9') {
 
-        Students.findOne({where: {name: searchParameter}}).then(function (data) {
-            done(data);
-
-        }).catch(function (err) {
-            if (err) throw err;
-        });
-
-    }
-    else {
         Students.findOne({where: {roll: searchParameter}}).then(function (data) {
             done(data);
 
         }).catch(function (err) {
             if (err) throw err;
         });
-    }
 }
 
+//function to search students with a particular parameter
 function searchStudents(searchParameter, done) {
 
     if (searchParameter.charAt(0) < '0' || searchParameter.charAt(0) > '9') {

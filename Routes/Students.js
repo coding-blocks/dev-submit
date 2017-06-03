@@ -39,14 +39,14 @@ router.get('/:param', function (req, res) {
 
 router.post('/:param',function (req, res) {
     if(req.params.param.charAt(0) < '0' || req.params.param.charAt(0) > '9'){
-        res.send("pleasse use roll to edit student");
+        res.send("please use roll to edit student");
         return;
     }
-
-
-    db.editStudent(req.params.param , req.body.name , () => {
-        res.send("successfully updated")
-    });
+    else {
+        db.editStudent(req.params.param, req.body.name, () => {
+            res.send("successfully updated");
+        });
+    }
 });
 
 
