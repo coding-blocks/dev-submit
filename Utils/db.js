@@ -2,120 +2,48 @@
  * Created by varun on 5/24/17.
  */
 const Sequelize = require('sequelize');
-
-const sequelize = new Sequelize("postgres", "postgres", "password", {
-    host: "localhost",
-    dialect: 'postgres',
-
-    pool: {
-        min: 0,
-        max: 5,
-        idle: 1000
-    },
-});
-
-//Table to store students
-const Students = sequelize.define('student', {
-    name: Sequelize.STRING,
-    roll: {type: Sequelize.BIGINT, unique: true, primaryKey: true},
-});
-
-//table to store assignments
-const Assignments = sequelize.define('assignment', {
-    id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: Sequelize.STRING, unique: true},
-    description: Sequelize.STRING
-});
-
-//table to store courses
-const Courses = sequelize.define('course', {
-    id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: Sequelize.STRING, unique: true},
-    teacher: Sequelize.STRING,
-    startDate: Sequelize.DATE,
-    endDate: Sequelize.DATE,
-    isActive: Sequelize.BOOLEAN
-});
-
-
-//many to many for student to assignment
-const Submissions = sequelize.define('submission', {
-    status: Sequelize.BOOLEAN,
-    URL: Sequelize.STRING
-});
-Submissions.belongsTo(Students);
-Students.hasMany(Submissions);
-Submissions.belongsTo(Assignments);
-Assignments.hasMany(Submissions);
-
-//many to many for course to assignments
-const CourseAssignments = sequelize.define('course_assignment', {});
-CourseAssignments.belongsTo(Courses);
-Courses.hasMany(CourseAssignments);
-CourseAssignments.belongsTo(Assignments);
-Assignments.hasMany(CourseAssignments);
-
-
-//many to many for Students to courses
-const StudentCourse = sequelize.define('student_course', {});
-StudentCourse.belongsTo(Courses);
-Courses.hasMany(StudentCourse);
-StudentCourse.belongsTo(Students);
-Students.hasMany(StudentCourse);
-
-sequelize.sync();
+const models = require('./models');
 
 
 //function to add student
-function addStudent(name, roll, done, Course) {
-    Students.create({
+function addStudent(name, roll , email , done, Course) {
+    models.Students.create({
         roll: roll,
-        name: name
-    }).then(function () {
+        name: name,
+        email : email
+    }).then(function (data) {
         if (Course) enrollStudentInCourse(roll, Course, done);
-        else done();
+        else done(data);
     }).catch(function (err) {
         if (err) throw err;
-    })
+    });
 }
 
 //function to get students list
 function getStudents(done) {
-    Students.findAll().then(function (data) {
-        console.log(data[0].dataValues);
+    models.Students.findAll().then(function (data) {
         done(data);
     }).catch(function (err) {
         if (err) throw err;
     });
 }
 
-//function to get get students with a particular parameter
-function searchStudent(searchParameter, done) {
-    if (searchParameter.charAt(0) < '0' || searchParameter.charAt(0) > '9') {
+//function to get get student with a particular roll
+function searchStudent(id, done) {
 
-        Students.findOne({where: {name: searchParameter}}).then(function (data) {
-            done(data);
+    models.Students.findOne({where: {id: id}}).then(function (data) {
+        done(data);
 
-        }).catch(function (err) {
-            if (err) throw err;
-        });
-
-    }
-    else {
-        Students.findOne({where: {roll: searchParameter}}).then(function (data) {
-            done(data);
-
-        }).catch(function (err) {
-            if (err) throw err;
-        });
-    }
+    }).catch(function (err) {
+        if (err) throw err;
+    });
 }
 
-function searchStudents(searchParameter, done) {
+function searchStudents(searchParameter , searchType ,  done) {
 
-    if (searchParameter.charAt(0) < '0' || searchParameter.charAt(0) > '9') {
+    if (searchType == "name") {
 
-        Students.findAll({where: {name: searchParameter}}).then(function (data) {
+        models.Students.findAll({where: {name: searchParameter}}).then(function (data) {
             done(data);
 
         }).catch(function (err) {
@@ -124,7 +52,7 @@ function searchStudents(searchParameter, done) {
 
     }
     else {
-        Students.findAll({where: {roll: searchParameter}}).then(function (data) {
+        models.Students.findAll({where: {roll: searchParameter}}).then(function (data) {
             done(data);
 
         }).catch(function (err) {
@@ -134,60 +62,96 @@ function searchStudents(searchParameter, done) {
 }
 
 //function to edit a student
-function editStudent(searchParamter, name, done) {
-
-        searchStudent(searchParamter , function (data) {
-            data.update({
-                name : name
-            }).then(function () {
-                done();
-            }).catch(function (err) {
-                if(err) throw err;
-            });
+function editStudent(id, name, done ,emailId , echo) {
+if(emailId){
+    searchStudent(id, function (data) {
+        data.update({
+            name: name,
+            email : emailId
+        }).then(function (data) {
+            if(echo){
+                done(data);
+            }
+            else{
+                done("Success");
+            }
+        }).catch(function (err) {
+            if (err) throw err;
         });
+    });
+}
+else{
+    searchStudent(id, function (data) {
+        data.update({
+            name: name
+        }).then(function (data) {
+            if(echo){
+                done(data);
+            }
+            else{
+                done("Success");
+            }
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+    });
+}
 }
 
 //function to delete a student
-function deleteStudent(searchParameter , done){
-    if (searchParameter.charAt(0) < '0' || searchParameter.charAt(0) > '9') {
-       done("Cannot destroy by name..please use roll")
-    }
-    else{
-        Submissions.destroy({
-            where : {
-                studentRoll : searchParameter
+function deleteStudent(studentId, echo ,  done) {
+        models.Submissions.destroy({
+            where: {
+                studentId: studentId
             }
         }).then(function () {
 
-            StudentCourse.destroy({
-                where : {
-                    studentRoll : searchParameter
+            models.StudentCourse.destroy({
+                where: {
+                    studentId: studentId
                 }
             }).then(function () {
+                if(echo){
+                    models.Students.findOne({where : {id : studentId}}).then(function (responseData) {
 
-                Students.destroy({
-                    where : {
-                        roll : searchParameter
-                    }
-                }).then(function () {
-                    done("successfully deleted " + searchParameter);
-                }).catch(function (err) {
-                    if(err) throw err;
-                });
+                        models.Students.destroy({
+                            where: {
+                                id: studentId
+                            }
+                        }).then(function () {
+                            done(responseData);
+                        }).catch(function (err) {
+                            if (err) throw err;
+                        });
+                    }).catch(function (err) {
+                        if(err) throw  err;
+                    })
 
+                }
+                else{
+                    models.Students.destroy({
+                        where: {
+                            id: studentId
+                        }
+                    }).then(function () {
+                        done("done.!");
+                    }).catch(function (err) {
+                        if (err) throw err;
+                    });
+                }
             }).catch(function (err) {
-                if(err) throw err;
+                if (err) throw err;
             });
         }).catch(function (err) {
-            if(err) throw err;
+            if (err) throw err;
         });
-    }
+
 }
 
 
 //function to add a new assignment
 function addAssignment(name, desc, done) {
-    Assignments.create({
+    models.Assignments.create({
         name: name,
         desc: desc
     }).then(function () {
@@ -200,7 +164,7 @@ function addAssignment(name, desc, done) {
 //function to get all assignments
 function getAssignments() {
 
-    Assignments.findAll().then(function (data) {
+    models.Assignments.findAll().then(function (data) {
         done(data);
     }).then(function (err) {
         if (err) throw err;
@@ -212,7 +176,7 @@ function getAssignments() {
 function searchAssignment(searchParameter, done) {
     if (searchParameter.charAt(0) < '0' || searchParameter.charAt(0) > '9') {
 
-        Assignments.findAll({where: {name: searchParameter}}).then(function (data) {
+        models.Assignments.findAll({where: {name: searchParameter}}).then(function (data) {
             done(data);
 
         }).catch(function (err) {
@@ -221,7 +185,7 @@ function searchAssignment(searchParameter, done) {
 
     }
     else {
-        Assignments.findAll({where: {id: searchParameter}}).then(function (data) {
+        models.Assignments.findAll({where: {id: searchParameter}}).then(function (data) {
             done(data);
 
         }).catch(function (err) {
@@ -233,7 +197,7 @@ function searchAssignment(searchParameter, done) {
 
 //function to add course
 function addCourse(name, teacher, startDate, endDate, done) {
-    Courses.create({
+    models.Courses.create({
         name: name,
         teacher: teacher,
         startDate: startDate,
@@ -251,7 +215,7 @@ function addCourse(name, teacher, startDate, endDate, done) {
 function getCourses(onlyActive, done) {
     if (onlyActive) {
 
-        Courses.findAll({where: {isActive: true}}).then(function (data) {
+        models.Courses.findAll({where: {isActive: true}}).then(function (data) {
             done(data);
         }).then(function (err) {
             if (err) throw err;
@@ -259,7 +223,7 @@ function getCourses(onlyActive, done) {
     }
     else {
 
-        Courses.findAll().then(function (data) {
+        models.Courses.findAll().then(function (data) {
             done(data);
         }).then(function (err) {
             if (err) throw err;
@@ -269,11 +233,11 @@ function getCourses(onlyActive, done) {
 }
 
 //function to get a particular course
-function searchCourse(searchParameter, done) {
+function searchCourse(searchParameter, searchType , onlyActive , done) {
+if(onlyActive){
+    if (searchType == "name") {
 
-    if (searchParameter.charAt(0) < '0' || searchParameter.charAt(0) > '9') {
-
-        Courses.findAll({where: {name: searchParameter}}).then(function (data) {
+        models.Courses.findAll({where: {name: searchParameter,isActive : true}}).then(function (data) {
             done(data);
 
         }).catch(function (err) {
@@ -282,17 +246,37 @@ function searchCourse(searchParameter, done) {
 
     }
     else {
-        Courses.findAll({where: {id: searchParameter}}).then(function (data) {
+        models.Courses.findAll({where: {id: searchParameter , isActive : true}}).then(function (data) {
             done(data);
 
         }).catch(function (err) {
             if (err) throw err;
         });
     }
+}
+else{
+    if (searchType == "name") {
 
+        models.Courses.findAll({where: {name: searchParameter}}).then(function (data) {
+            done(data);
+
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+
+    }
+    else {
+        models.Courses.findAll({where: {id: searchParameter}}).then(function (data) {
+            done(data);
+
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+    }
+    }
 }
 function endCourse(courseID, done) {
-    Courses.findOne({
+    models.Courses.findOne({
         where: {
             id: courseID
         }
@@ -310,92 +294,214 @@ function endCourse(courseID, done) {
 }
 
 //add a submission
-function addSubmission(roll, id, URL, done) {
-    StudentCourse.findAll({
-        where : {
-            studentRoll : roll
+function addSubmission(studentId, assnId, URL, done) {
+    models.StudentCourse.findAll({
+        where: {
+            studentId: studentId
         }
     }).then(function (data) {
-        console.log(data);
-        if(data.length == 0){
+        if (data.length == 0) {
             done("not a valid submission");
             return;
         }
 
-        for(let i = 0;i<data.length;i++){
-            CourseAssignments.findOne({
-                where : {
-                    courseId : data[i].dataValues.courseId,
-                    assignmentId : id
+        for (let i = 0; i < data.length; i++) {
+            models.CourseAssignments.findOne({
+                where: {
+                    courseId: data[i].dataValues.courseId,
+                    assignmentId: assnId
                 }
             }).then(function (row) {
-                if(!row){
+                if (!row) {
                     done("Not a valid submission")
                     return;
                 }
-                Submissions.create({
-                    studentRoll: roll,
-                    assignmentId: id,
+                models.Submissions.create({
+                    studentId: studentId,
+                    assignmentId: assnId,
                     status: false,
                     URL: URL
-                }).then(function () {
-                    done("succesfully submitted");
+                }).then(function (data) {
+                    done(data);
                     return;
                 }).catch(function (err) {
                     if (err) throw err;
                 });
+            }).catch(function (err) {
+                if (err) throw err;
+            });
+        }
+    }).catch(function (err) {
+        if (err) throw err;
+    });
+}
 
+//function to accept a submission overloaded for submission id and without it
+function acceptSubmissionbyId(id , echo , done) {
+    if(echo){
+        models.Submissions.findOne({where: {id: id}}).then(function (row) {
+            row.update({
+                status: true
+            }).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if (err) throw err;
+            });
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+    }
+    else{
+        models.Submissions.findOne({where: {id: id}}).then(function (row) {
+            row.update({
+                status: true
+            }).then(function () {
+                done("Success");
+            }).catch(function (err) {
+                if (err) throw err;
+            });
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+    }
+
+
+}
+function acceptSubmissionWithoutId(studentId, assnId, URL, done) {
+
+    models.Submissions.findOne(
+        {
+            where: {
+                studentId: studentId,
+                assignmentId: assnId,
+                URL: URL
+            }
+        }).then(function (row) {
+        row.update({
+            status: true
+        }).then(function () {
+            done();
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+    }).catch(function (err) {
+        if (err) throw err;
+    });
+
+}
+
+//function to get all submissions
+function getSubmissions(onlyAccepted, done) {
+    if(onlyAccepted){
+        models.Submissions.findAll({where : {status : true}}).then(function (data) {
+            done(data);
+        }).catch(function (err) {
+            if(err) throw err;
+        });
+    }
+    else{
+        models.Submissions.findAll().then(function (data) {
+            done(data);
+        }).catch(function (err) {
+            if(err) throw err;
+        });
+    }
+}
+
+//function to search submissions
+function searchSubmissions(searchParamter, searchType, done , onlyAccepted , helperParameter) {
+    if(onlyAccepted){
+        if(searchType == "id"){
+            models.Submissions.findAll({where : {id : searchParamter,status : true}}).then(function (data) {
+                done(data);
             }).catch(function (err) {
                 if(err) throw err;
             });
+        }
+        else if(searchType == "studentAssignment"){
+            models.Submissions.findAll({where : {studentId : searchParamter, assignmentId : helperParameter , status : true}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+        else if(searchType == "student"){
+            models.Submissions.findAll({where : {studentId : searchParamter,status : true}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+        else{
+            models.Submissions.findAll({where : {assignmentId : searchParamter,status : true}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+
+    }
+    else{
+        if(searchType == "id"){
+            models.Submissions.findAll({where : {id : searchParamter}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+        else if(searchType == "studentAssignment"){
+            models.Submissions.findAll({where : {studentId : searchParamter, assignmentId : helperParameter}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+        else if(searchType == "student"){
+            models.Submissions.findAll({where : {studentId : searchParamter}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+        else{
+            models.Submissions.findAll({where : {assignmentId : searchParamter}}).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if(err) throw err;
+            });
+        }
+
+    }
+}
+
+//function to search by course
+function searchByCourse(courseId, onlyAccepted, done) {
+    models.CourseAssignments.findAll({where : {courseId : courseId}}).then(function (data) {
+        let arr = [];
+        let i=0;
+        for(i =0;i<data.length;i++){
+            searchSubmissions(data[i].dataValues.assignmentId,"assignment",(rows)=>{
+                for(let j=0;j<rows.length;j++){
+                    arr.push(rows[j].dataValues);
+                }
+                console.log(arr);
+                if(i>=data.length-1) done(arr);
+            },onlyAccepted);
+        }
+        if(data.length == 0){
+            done(arr);
         }
     }).catch(function (err) {
         if(err) throw err;
     });
 }
 
-//function to accept a submission overloaded for submission id and without it
-function acceptSubmissionbyId(id, done) {
-        Submissions.findOne({where : {id : id}}).then(function (row) {
-            row.update({
-                status : true
-            }).then(function () {
-                done();
-            }).catch(function (err) {
-                if(err) throw err;
-            });
-        }).catch(function (err) {
-            if(err) throw err;
-        });
-}
-function acceptSubmissionWithoutId(roll , assnId , URL , done) {
-
-        Submissions.findOne(
-            {
-                where: {
-                    studentRoll: roll,
-                    assignmentId: assnId,
-                    URL : URL
-                }
-            }).then(function (row) {
-            row.update({
-                status: true
-            }).then(function () {
-                done();
-            }).catch(function (err) {
-                if(err) throw err;
-            });
-        }).catch(function (err) {
-            if(err) throw err;
-        });
-
-}
 
 //function to handle a new enrollment
-function enrollStudentInCourse(roll, Course, done) {
+function enrollStudentInCourse(id, Course, done) {
 
-    StudentCourse.create({
-        studentRoll: roll,
+    models.StudentCourse.create({
+        studentId: id,
         courseId: Course
 
     }).then(function () {
@@ -408,15 +514,15 @@ function enrollStudentInCourse(roll, Course, done) {
 }
 
 //function to add an assignment to a course
-function addAssignmentToCourse(assnID , courseID , done) {
+function addAssignmentToCourse(assnID, courseID, done) {
 
-    CourseAssignments.create({
-        courseId : courseID,
-        assignmentId : assnID,
+    models.CourseAssignments.create({
+        courseId: courseID,
+        assignmentId: assnID,
     }).then(function () {
         done();
     }).catch(function (err) {
-        if(err) throw err;
+        if (err) throw err;
     });
 
 }
@@ -425,6 +531,7 @@ function addAssignmentToCourse(assnID , courseID , done) {
 module.exports = {
     addStudent,
     getStudents,
+    searchStudent,
     searchStudents,
     editStudent,
     deleteStudent,
@@ -435,9 +542,12 @@ module.exports = {
     getCourses,
     searchCourse,
     addSubmission,
+    searchSubmissions,
+    searchByCourse,
     enrollStudentInCourse,
     addAssignmentToCourse,
     endCourse,
+    getSubmissions,
     acceptSubmissionbyId,
     acceptSubmissionWithoutId
 }

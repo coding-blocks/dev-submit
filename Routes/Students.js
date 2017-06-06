@@ -7,51 +7,37 @@ const db = require('../Utils/db');
 const router = express.Router();
 
 
-
-//TODO accept assignment path
-
-router.post('/:param/submitAssignment',function (req, res) {
-    db.addSubmission(req.params.param , req.query.assnId , req.body.url,function (data) {
-        res.send(data);
+router.post('/:id/enroll/:courseId',function (req, res) {
+    db.enrollStudentInCourse(req.params.id , req.params.courseId , (data)=>{
+        res.send("success");
     });
 });
 
 router.post('/new', function (req, res) {
-        db.addStudent(req.body.name, req.body.roll, () => {
-            res.send("Student " + req.body.name + " successfully added");
+        db.addStudent(req.body.name, req.body.roll , req.body.email , (data) => {
+            let arr = [];
+            arr.push(data.dataValues);
+            res.send(arr);
         });
 });
 
-
-router.post('/new/:courseId', function (req, res) {
-        db.addStudent(req.body.name, req.body.roll, () => {
-            res.send("Student " + req.body.name + " successfully added");
-        }, req.params.courseId);
-});
-
-
-
-router.get('/:param', function (req, res) {
-    db.searchStudents(req.params.param, (data) => {
-        res.send(JSON.stringify(data));
+router.get('/:id', function (req, res) {
+    db.searchStudent(req.params.id, (data) => {
+        let arr = [];
+        arr.push(data);
+        res.send(arr);
     });
 });
 
-router.post('/:param',function (req, res) {
-    if(req.params.param.charAt(0) < '0' || req.params.param.charAt(0) > '9'){
-        res.send("pleasse use roll to edit student");
-        return;
-    }
-
-
-    db.editStudent(req.params.param , req.body.name , () => {
-        res.send("successfully updated")
-    });
+router.put('/:id',function (req, res) {
+        db.editStudent(req.params.id, req.body.name, (data) => {
+            res.send(data);
+        } , req.body.email , req.query.echo);
 });
 
 
-router.delete('/:param',function (req, res) {
-    db.deleteStudent(req.params.param , (data) =>{
+router.delete('/:id',function (req, res) {
+    db.deleteStudent(req.params.id , req.query.echo ,  (data) =>{
         res.send(data);
     });
 });
@@ -60,10 +46,32 @@ router.delete('/:param',function (req, res) {
 
 
 router.get('/', function (req, res) {
-    db.getStudents((data) => {
-        res.send(JSON.stringify(data));
-    });
-    // db.acceptSubmissionWithoutId(3131,1,"https://facebook.com",()=>{res.send("success")});
+
+    let roll = req.query.roll;
+    let name = req.query.name;
+    let type = "all";
+
+    if(roll){
+        type = "roll";
+    }
+    else if(name){
+        type = "name";
+    }
+
+    if(type == "all")
+        db.getStudents((data) => {
+            res.send(data);
+        });
+    else if(type == "roll"){
+        db.searchStudents(roll , type , (data)=>{
+            res.send(data);
+        });
+    }
+    else{
+        db.searchStudents(name , type , (data)=>{
+            res.send(data);
+        });
+    }
 });
 
 
@@ -76,4 +84,54 @@ module.exports = router;
 
 // db.enrollStudentInCourse(4153 , 1 , ()=>{res.send("success")});
 
-// db.endCourse(1,()=>{res.send("success")});
+// db.endCourse(1,()=>{res.
+//
+// send("success")});
+
+
+
+//done
+//integer autoincrement id
+//roll to string
+//post -> put for update
+//for new send the new object without echo
+//remove / enroll while creating the new object
+// Students.hasMany(Submissions, {
+// onDelete: 'cascade', hooks: true
+// });
+//echo true to  send updated object to be sent
+// /?name=Varun&roll=
+
+
+/*
+/students
+    /:id
+    /new
+    /?name=Varun&roll=
+    /:id/enroll/:courseId
+
+
+
+//TODO abhishek this is your stuff
+/courses
+    /:id
+    /new
+    /:id/enroll [POST] - body - Array<id> or Array<roll> or Array<email>
+            {
+                datatype: 'email'
+                data: [
+                        'asdsd@asd.com'
+                        'asdasa@asdas.com'
+                      ]
+            }
+
+
+
+
+//TODO I am making this
+/submissions
+    /?course=Pandora - [GET]  Array<submissions>
+    /new [POST] studentId, courseId, link
+    /:id [PUT] for changing status from submitted to accepted
+
+ */
