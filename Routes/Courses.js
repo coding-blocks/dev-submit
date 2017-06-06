@@ -48,7 +48,7 @@ router.get('/:courseId', function (req, res) {
         res.send(data);
     })
 })
-router.put("/:courseId", function (req, res) {
+router.put('/:courseId', function (req, res) {
     //TODO-add function in db.js
 
 })
@@ -56,6 +56,20 @@ router.post('/new', function (req, res) {
     db.addCourse(req.query.name, req.query.teacher, req.query.startdate, req.query.enddate, function (data) {
         res.send(data);
     });
+})
+
+router.post('/:courseId/enroll', function (req, res) {
+    let dataType = req.body.datatype;
+
+    let studentArray = req.body.data;
+    let courseId = req.params.courseId;
+
+    studentArray.forEach(function (studentParam) {
+        db.enrollStudentInCourse(dataType, studentParam, courseId, function () {
+            res.send(success);
+        })
+    })
+
 })
 
 
