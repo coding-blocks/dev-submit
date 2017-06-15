@@ -150,49 +150,129 @@ function deleteStudent(studentId, echo, done) {
 
 
 //function to add a new assignment
-function addAssignment(name, desc, done) {
+function addAssignment(name, desc, courseId, done) {
     models.Assignments.create({
         name: name,
         desc: desc
-    }).then(function () {
-        done();
+    }).then(function (data) {
+        if(courseId){
+            addAssignmentToCourse(data.id,courseId,done)
+        }
+        else{
+            done(data);
+        }
     }).catch(function (err) {
         if (err) throw err;
     });
 }
 
 //function to get all assignments
-function getAssignments() {
-
+function getAssignments(done) {
+    
     models.Assignments.findAll().then(function (data) {
         done(data);
     }).then(function (err) {
         if (err) throw err;
     });
-
+    
 }
 
 //function to get particular assignment
 function searchAssignment(searchParameter, done) {
     if (searchParameter.charAt(0) < '0' || searchParameter.charAt(0) > '9') {
-
-        models.Assignments.findAll({where: {name: searchParameter}}).then(function (data) {
+        models.Assignments.findAll({
+            where: {
+                name: searchParameter
+            }
+        }).then(function (data) {
             done(data);
-
         }).catch(function (err) {
             if (err) throw err;
         });
-
+        
     }
     else {
-        models.Assignments.findAll({where: {id: searchParameter}}).then(function (data) {
+        models.Assignments.findAll({
+            where: {
+                id: searchParameter
+            }
+        }).then(function (data) {
             done(data);
-
         }).catch(function (err) {
             if (err) throw err;
         });
     }
+    
+}
 
+//function to get all assignments in a course
+function findAssignmentsInCourse(courseId, done){
+    models.CourseAssignments.findAll({
+        where: {
+            courseId: courseId
+        }
+    }).then(function (data) {
+        done(data);
+    }).catch(function (err) {
+        if (err) throw err;
+    });
+    
+}
+
+//function to edit an assignment
+function editAssignment(id, name, desc, done) {
+    if(desc){
+        searchAssignment(id, function (data) {
+            data.update({
+                name: name,
+                description: desc
+            }).then(function (data) {
+                done("Assignment edited");
+            }).catch(function (err) {
+                if (err) throw err;
+            });
+        });
+    } else {
+        searchAssignment(id, function (data) {
+            data.update({
+                name: name
+            }).then(function (data) {
+                done("Assignment edited");
+            }).catch(function (err) {
+                if (err) throw err;
+            });
+        });
+    }
+}
+
+//function to delete an assignment
+function deleteAssignment(assignmentId, done) {
+    models.Submissions.destroy({
+        where: {
+            assignmentId: assignmentId
+        }
+    }).then(function () {
+        models.CourseAssignments.destroy({
+            where: {
+                assignmentId: assignmentId
+            }
+        }).then(function () {
+            models.Assignments.destroy({
+                where: {
+                    id: assignmentId
+                }
+            }).then(function () {
+                done("Assignment deleted");
+            }).catch(function (err) {
+                if (err) throw err;
+            });
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+    }).catch(function (err) {
+        if (err) throw err;
+    });
+    
 }
 
 //function to add course
@@ -555,7 +635,6 @@ function enrollStudentInCourseHelper(studentId, courseId, done) {
 
 //function to add an assignment to a course
 function addAssignmentToCourse(assnID, courseID, done) {
-
     models.CourseAssignments.create({
         courseId: courseID,
         assignmentId: assnID,
@@ -564,7 +643,7 @@ function addAssignmentToCourse(assnID, courseID, done) {
     }).catch(function (err) {
         if (err) throw err;
     });
-
+    
 }
 
 
@@ -578,6 +657,9 @@ module.exports = {
     addAssignment,
     getAssignments,
     searchAssignment,
+    findAssignmentsInCourse,
+    editAssignment,
+    deleteAssignment,
     addCourse,
     getCourses,
     searchCourse,
