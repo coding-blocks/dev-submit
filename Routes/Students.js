@@ -8,8 +8,14 @@ const router = express.Router();
 
 
 router.post('/:id/enroll/:courseId',function (req, res) {
-    db.enrollStudentInCourse(req.params.id , req.params.courseId , (data)=>{
-        res.send("success");
+    let echo = req.query.echo;
+    db.enrollStudentInCourse("id",req.params.id , req.params.courseId , (data)=>{
+        if(echo){
+            res.send(data);
+        }
+        else{
+            res.send("success");
+        }
     });
 });
 
