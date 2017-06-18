@@ -9,53 +9,69 @@ const router = express.Router();
 
 //TODO add echo support
 
-router.get('/', function (req, res) {
 
-    let isActive = false;
+router.get('/', (req, res) => {
+    let onlyActive = JSON.parse(req.query.active);
+    let name = req.query.name;
+    let teacher = req.query.teacher;
     let searchType = "all";
-    let searchParam;
 
-    if (req.query.active) {
-        isActive = true;
-    }
-
-    if (req.query.name) {
+    if (name) {
         searchType = "name";
-        searchParam = req.query.name;
-        db.searchCourse(searchParam, searchType, isActive, function (data) {
-            res.send(data);
-        })
     }
-    //TODO check if ID is in "query"?
+    else if (teacher) {
+        searchType = teacher;
+    }
 
+    if (searchType == "all") {
+        db.getCourses(onlyActive, (data) => {
+            res.send(data);
+        });
+    }
+    else if (searchType == "name") {
+        db.searchCourses(name, "name", onlyActive, (data) => {
+            res.send(data);
+        });
+    }
     else {
-        db.getCourses(isActive, function (data) {
+        db.searchCourses(teacher, "teacher", onlyActive, (data) => {
             res.send(data);
         });
     }
 });
 
+
 router.get('/:courseId', function (req, res) {
     let searchType = "byCourseId";
-    let isActive = false;
-    db.searchCourses(req.params.courseId, searchType, isActive, function (data) {
+    db.searchCourse(req.params.courseId, function (data) {
+        res.send(data);
+    });
+});
+router.get('/:courseId/students', (req, res) => {
+    db.getAllStudentsInCourse(req.params.courseId, (data) => {
+        console.log("done");
         res.send(data);
     });
 });
 
 router.put('/:courseId', function (req, res) {
-    db.editCourse(req.params.courseId,req.body.name,req.body.teacher,req.body.endDate,(data)=>{
+    db.editCourse(req.params.courseId, req.body.name, req.body.teacher, req.body.endDate, (data) => {
         res.send(data);
     });
+});
 
+router.put('/:courseId/end',(req,res) => {
+   db.endCourse(req.params.courseId , (data) => {
+       res.send(data);
+   });
 });
 
 //TODO cascade delete not working
-router.delete('/:courseId',(req,res) => {
-   db.deleteCourse(req.params.courseId , (data) =>{
-       if(req.query.echo) res.send(data);
-       else res.send("success");
-   });
+router.delete('/:courseId', (req, res) => {
+    db.deleteCourse(req.params.courseId, (data) => {
+        if (req.query.echo) res.send(data);
+        else res.send("success");
+    });
 });
 
 router.post('/new', function (req, res) {
@@ -71,10 +87,10 @@ router.post('/:courseId/enroll', function (req, res) {
     let courseId = req.params.courseId;
     let retval = [];
 
-    for(var i=0;i<studentArray.length;i++){
+    for (var i = 0; i < studentArray.length; i++) {
         db.enrollStudentInCourse(dataType, studentArray[i], courseId, function (data) {
             retval.push(data);
-            if(retval.length == studentArray.length)
+            if (retval.length == studentArray.length)
                 res.send(retval);
         });
     }

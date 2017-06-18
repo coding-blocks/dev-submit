@@ -373,7 +373,7 @@ function searchCourses(searchParameter, searchType, onlyActive, done) {
 
         }
         else {
-            models.Courses.findAll({where: {id: searchParameter, isActive: true}}).then(function (data) {
+            models.Courses.findAll({where: {teacher: searchParameter, isActive: true}}).then(function (data) {
                 done(data);
 
             }).catch(function (err) {
@@ -393,7 +393,7 @@ function searchCourses(searchParameter, searchType, onlyActive, done) {
 
         }
         else {
-            models.Courses.findAll({where: {id: searchParameter}}).then(function (data) {
+            models.Courses.findAll({where: {teacher: searchParameter}}).then(function (data) {
                 done(data);
 
             }).catch(function (err) {
@@ -410,8 +410,8 @@ function endCourse(courseID, done) {
     }).then(function (row) {
         row.update({
             isActive: false
-        }).then(function () {
-            if (done) done();
+        }).then(function (data) {
+            if(done) done(data);
         }).catch(function (err) {
             if (err) throw err;
         });
@@ -419,6 +419,31 @@ function endCourse(courseID, done) {
         if (err) throw err;
     })
 }
+//function to get all students of course
+function getAllStudentsInCourse(courseId, done) {
+    models.StudentCourse.findAll({
+        where : {
+            courseId : courseId
+        }
+    }).then(function (data) {
+        var arr = [];
+        if(data.length == 0){
+            return done(arr);
+        }
+
+        for(let i =0;i<data.length;i++){
+            searchStudent(data[i].dataValues.studentId , (studentData) =>{
+                arr.push(studentData);
+                if(arr.length == data.length) done(arr);
+            });
+        }
+
+    }).catch(function (err) {
+        if(err) throw err;
+    });
+}
+
+
 
 //add a submission
 function addSubmission(studentId, assnId, URL, done) {
@@ -777,6 +802,7 @@ function editCourse(id, name, teacher, endDate, done) {
 }
 
 //function to delete course
+//TODO cascade delete not working
 function deleteCourse(id, done) {
     models.Courses.destroy({
         where : {
@@ -837,6 +863,7 @@ module.exports = {
     deleteAssignment,
     addCourse,
     getCourses,
+    searchCourse,
     searchCourses,
     deleteCourse,
     addSubmission,
@@ -847,6 +874,7 @@ module.exports = {
     endCourse,
     getSubmissions,
     acceptSubmissionbyId,
-    acceptSubmissionWithoutId
+    acceptSubmissionWithoutId,
+    getAllStudentsInCourse
 }
 
