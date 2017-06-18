@@ -11,7 +11,8 @@ const router = express.Router();
 
 
 router.get('/', (req, res) => {
-    let onlyActive = JSON.parse(req.query.active);
+    let onlyActive = req.query.active;
+    if(onlyActive) onlyActive = JSON.parse(onlyActive);
     let name = req.query.name;
     let teacher = req.query.teacher;
     let searchType = "all";
@@ -47,6 +48,8 @@ router.get('/:courseId', function (req, res) {
         res.send(data);
     });
 });
+
+
 router.get('/:courseId/students', (req, res) => {
     db.getAllStudentsInCourse(req.params.courseId, (data) => {
         console.log("done");
@@ -54,17 +57,20 @@ router.get('/:courseId/students', (req, res) => {
     });
 });
 
+
 router.put('/:courseId', function (req, res) {
     db.editCourse(req.params.courseId, req.body.name, req.body.teacher, req.body.endDate, (data) => {
         res.send(data);
     });
 });
 
+
 router.put('/:courseId/end',(req,res) => {
    db.endCourse(req.params.courseId , (data) => {
        res.send(data);
    });
 });
+
 
 //TODO cascade delete not working
 router.delete('/:courseId', (req, res) => {
@@ -74,11 +80,13 @@ router.delete('/:courseId', (req, res) => {
     });
 });
 
+
 router.post('/new', function (req, res) {
     db.addCourse(req.body.name, req.body.teacher, req.body.startdate, req.body.enddate, function (data) {
         res.send(data);
     });
 });
+
 
 router.post('/:courseId/enroll', function (req, res) {
     let dataType = req.body.studentAttribute;

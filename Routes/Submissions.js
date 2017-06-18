@@ -19,6 +19,7 @@ router.get('/:param', function (req, res) {
         res.send(data);
     });
 });
+
 router.put('/:param', function (req, res) {
     db.acceptSubmissionbyId(req.params.param, req.query.echo, (data) => {
         res.send(data);

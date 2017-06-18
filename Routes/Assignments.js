@@ -4,21 +4,41 @@
 
 const express = require('express');
 const db = require('../Utils/db');
-
 const router = express.Router();
+
+//TODO add echo support
 
 router.post('/:id/addToCourse/:courseId',function (req, res) {
     db.addAssignmentToCourse(req.params.id , req.params.courseId , (data)=>{
-        res.send("Assignment added");
+        res.send(data);
     });
 });
 
 router.post('/new', function (req, res) {
+    console.log(req.body.desc)
     db.addAssignment(req.body.name, req.body.desc, req.body.courseId, (data) => {
         let arr = [];
         arr.push(data.dataValues);
         res.send(arr);
     });
+});
+
+router.get('/:id', function (req, res) {
+    let arr = [];
+    db.searchAssignment(req.params.id, (data) => {
+        arr.push(data);
+        res.send(arr);
+    });
+});
+
+router.put('/:id',function (req, res) {
+    console.log(req.body);
+    db.editAssignment(req.params.id, req.body.name, req.body.desc,
+        (data) => {
+        let arr = []
+            arr.push(data);
+            res.send(arr);
+        });
 });
 
 router.delete('/:id',function (req, res) {
@@ -27,47 +47,33 @@ router.delete('/:id',function (req, res) {
     });
 });
 
-router.put('/:id',function (req, res) {
-    db.editAssignment(req.params.id, req.body.name, req.body.desc,
-        (data) => {
-            res.send(data);
-        });
-});
-
-router.get('/:id', function (req, res) {
-    db.searchAssignment(req.params.id, (data) => {
-        res.send(arr);
-    });
-});
-
 router.get('/', function (req, res) {
-    
+
     let type = "all";
-    
     let name = req.query.name;
     let courseId = req.query.courseId;
-    
+
     if(name){
         type = "name";
     }
     else if(courseId){
         type = "courseId";
     }
-    
+
     if(type == "all")
         db.getAssignments((data) => {
             res.send(data);
         });
     else if(type == "name"){
-        db.searchAssignment( name, (data)=>{
+        db.searchAssignments("name", name, (data)=>{
             res.send(data);
         });
     }
     else{
-        db.findAssignmentsInCourse( courseId, (data)=>{
+        db.findAssignmentsInCourse(courseId, (data)=>{
             res.send(data);
         });
     }
 });
 
-module.exports = express.Router();
+module.exports = router;
