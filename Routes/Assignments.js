@@ -8,12 +8,14 @@ const router = express.Router();
 
 //TODO add echo support
 
+//5
 router.post('/:id/addToCourse/:courseId',function (req, res) {
     db.addAssignmentToCourse(req.params.id , req.params.courseId , (data)=>{
         res.send(data);
     });
 });
 
+//0
 router.post('/new', function (req, res) {
     console.log(req.body.desc)
     db.addAssignment(req.body.name, req.body.desc, req.body.courseId, (data) => {
@@ -23,6 +25,7 @@ router.post('/new', function (req, res) {
     });
 });
 
+//2
 router.get('/:id', function (req, res) {
     let arr = [];
     db.searchAssignment(req.params.id, (data) => {
@@ -31,6 +34,7 @@ router.get('/:id', function (req, res) {
     });
 });
 
+//3
 router.put('/:id',function (req, res) {
     console.log(req.body);
     db.editAssignment(req.params.id, req.body.name, req.body.desc,
@@ -41,12 +45,14 @@ router.put('/:id',function (req, res) {
         });
 });
 
+//4
 router.delete('/:id',function (req, res) {
     db.deleteAssignment(req.params.id, (data) =>{
         res.send(data);
     });
 });
 
+//1
 router.get('/', function (req, res) {
 
     let type = "all";
