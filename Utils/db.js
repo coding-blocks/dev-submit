@@ -483,9 +483,10 @@ function addSubmission(studentId, assnId, URL, done) {
         }
     }).then(function (data) {
         if (data.length == 0) {
-            done("not a valid submission");
-            return;
+            return done("not a valid submission");
         }
+
+        let flag = false;
 
         for (let i = 0; i < data.length; i++) {
             models.CourseAssignments.findOne({
@@ -494,24 +495,33 @@ function addSubmission(studentId, assnId, URL, done) {
                     assignmentId: assnId
                 }
             }).then(function (row) {
-                if (!row) {
-                    done("Not a valid submission")
-                    return;
+                if (row) {
+                    flag = true;
+                    models.Submissions.create({
+                        studentId: studentId,
+                        assignmentId: assnId,
+                        status: false,
+                        URL: URL
+                    }).then(function (data) {
+                        let arr = [];
+                        arr.push(data);
+                        done(arr);
+                    }).catch(function (err) {
+                        if (err) throw err;
+                    });
                 }
-                models.Submissions.create({
-                    studentId: studentId,
-                    assignmentId: assnId,
-                    status: false,
-                    URL: URL
-                }).then(function (data) {
-                    done(data);
-                    return;
-                }).catch(function (err) {
-                    if (err) throw err;
-                });
+                else{
+                    if(i == data.length - 1){
+                        done("Not a valid submission");
+                    }
+                }
+
             }).catch(function (err) {
                 if (err) throw err;
             });
+
+            if(flag) break;
+
         }
     }).catch(function (err) {
         if (err) throw err;
@@ -670,16 +680,17 @@ function searchSubmissions(searchParamter, searchType, done, onlyAccepted, helpe
 }
 
 //function to search submissions by course
+//TODO done being called more than once
 function searchByCourse(courseId, onlyAccepted, done) {
     models.CourseAssignments.findAll({where: {courseId: courseId}}).then(function (data) {
         let arr = [];
         let i = 0;
+        let flag = false;
         for (i = 0; i < data.length; i++) {
             searchSubmissions(data[i].dataValues.assignmentId, "assignment", (rows) => {
                 for (let j = 0; j < rows.length; j++) {
                     arr.push(rows[j].dataValues);
                 }
-                console.log(arr);
                 if (i >= data.length - 1) done(arr);
             }, onlyAccepted);
         }

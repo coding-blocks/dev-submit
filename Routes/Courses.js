@@ -58,6 +58,7 @@ router.get('/:courseId/students', (req, res) => {
 });
 
 
+
 router.put('/:courseId', function (req, res) {
     db.editCourse(req.params.courseId, req.body.name, req.body.teacher, req.body.endDate, (data) => {
         res.send(data);
@@ -90,8 +91,8 @@ router.post('/new', function (req, res) {
 
 router.post('/:courseId/enroll', function (req, res) {
     let dataType = req.body.studentAttribute;
-    let studentArray = JSON.parse(req.body.students);
-    console.log(studentArray[0]);
+    let studentArray = req.body.students;
+    if(studentArray) studentArray = JSON.parse(studentArray);
     let courseId = req.params.courseId;
     let retval = [];
 
