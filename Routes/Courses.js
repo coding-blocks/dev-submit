@@ -12,33 +12,23 @@ const router = express.Router();
 
 router.get('/', (req, res) => {
     let onlyActive = req.query.active;
-    if(onlyActive) onlyActive = JSON.parse(onlyActive);
+    var options = {};
+    if (onlyActive) options.isActive = JSON.parse(onlyActive);
     let name = req.query.name;
     let teacher = req.query.teacher;
-    let searchType = "all";
+
 
     if (name) {
-        searchType = "name";
+        options.name = name;
     }
     else if (teacher) {
-        searchType = teacher;
+        options.teacher = teacher
     }
 
-    if (searchType == "all") {
-        db.getCourses(onlyActive, (data) => {
-            res.send(data);
-        });
-    }
-    else if (searchType == "name") {
-        db.searchCourses(name, "name", onlyActive, (data) => {
-            res.send(data);
-        });
-    }
-    else {
-        db.searchCourses(teacher, "teacher", onlyActive, (data) => {
-            res.send(data);
-        });
-    }
+    db.getCourses(options, (data) => {
+        res.send(data);
+    });
+
 });
 
 
@@ -58,18 +48,18 @@ router.get('/:courseId/students', (req, res) => {
 });
 
 
-
 router.put('/:courseId', function (req, res) {
+
     db.editCourse(req.params.courseId, req.body.name, req.body.teacher, req.body.endDate, (data) => {
         res.send(data);
     });
 });
 
 
-router.put('/:courseId/end',(req,res) => {
-   db.endCourse(req.params.courseId , (data) => {
-       res.send(data);
-   });
+router.put('/:courseId/end', (req, res) => {
+    db.endCourse(req.params.courseId, (data) => {
+        res.send(data);
+    });
 });
 
 
@@ -92,7 +82,7 @@ router.post('/new', function (req, res) {
 router.post('/:courseId/enroll', function (req, res) {
     let dataType = req.body.studentAttribute;
     let studentArray = req.body.students;
-    if(studentArray) studentArray = JSON.parse(studentArray);
+    if (studentArray) studentArray = JSON.parse(studentArray);
     let courseId = req.params.courseId;
     let retval = [];
 
