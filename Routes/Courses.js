@@ -9,13 +9,16 @@ const router = express.Router();
 
 //TODO add echo support
 
-
+//tested
 router.post('/new', function (req, res) {
     db.addCourse(req.body.name, req.body.teacher, req.body.startdate, req.body.enddate, function (data) {
         res.send(data);
     });
 });
 
+
+
+//tested
 router.get('/', (req, res) => {
     let onlyActive = req.query.active;
     var options = {};
@@ -38,12 +41,16 @@ router.get('/', (req, res) => {
 });
 
 
+//tested
 router.get('/:courseId', function (req, res) {
-    let searchType = "byCourseId";
-    db.searchCourse(req.params.courseId, function (data) {
+    let options = {};
+    options.id = req.params.courseId;
+    db.getCourses(options, function (data) {
         res.send(data);
     });
 });
+
+
 
 router.get('/:courseId/students', (req, res) => {
     db.getAllStudentsInCourse(req.params.courseId, (data) => {

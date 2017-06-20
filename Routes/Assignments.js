@@ -9,7 +9,6 @@ const router = express.Router();
 //TODO add echo support
 
 
-
 //0
 router.post('/new', function (req, res) {
     console.log(req.body.desc)
@@ -35,7 +34,7 @@ router.get('/', function (req, res) {
     else if (courseId) {
         options.id = id;
     }
-    db.searchAssignments(options, (data)=> {
+    db.getAssignments(options, (data)=> {
         res.send(data);
     });
 
