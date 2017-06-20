@@ -12,10 +12,9 @@ const router = express.Router();
 //tested
 router.post('/new', function (req, res) {
     db.addCourse(req.body.name, req.body.teacher, req.body.startdate, req.body.enddate, function (data) {
-        res.send(data);
+        res.send(data)
     });
 });
-
 
 
 //tested

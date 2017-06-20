@@ -51,9 +51,7 @@ router.get('/', function (req, res) {
 //tested
 router.get('/:id', function (req, res) {
     db.searchStudent(req.params.id, (data) => {
-        let arr = [];
-        arr.push(data);
-        res.send(arr);
+        res.send(data);
     });
 });
 
