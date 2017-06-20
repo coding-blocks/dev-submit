@@ -53,17 +53,12 @@ router.get('/:courseId/students', (req, res) => {
 });
 
 
-
-
 router.put('/:courseId', function (req, res) {
 
     db.editCourse(req.params.courseId, req.body.name, req.body.teacher, req.body.endDate, (data) => {
         res.send(data);
     });
 });
-
-
-
 
 
 router.put('/:courseId/end', (req, res) => {
@@ -80,8 +75,6 @@ router.delete('/:courseId', (req, res) => {
         else res.send("success");
     });
 });
-
-
 
 
 router.post('/:courseId/enroll', function (req, res) {
