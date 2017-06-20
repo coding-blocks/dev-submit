@@ -4,7 +4,7 @@
 
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize("cb", "root", "Cool@man6", {
+const sequelize = new Sequelize("devsubmitdatabase", "root", "MyNewPass", {
     host: "localhost",
     dialect: 'mysql',
 
@@ -13,6 +13,7 @@ const sequelize = new Sequelize("cb", "root", "Cool@man6", {
         max: 5,
         idle: 1000
     },
+
 });
 
 //Table to store students
