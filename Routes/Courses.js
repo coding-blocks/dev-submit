@@ -10,6 +10,12 @@ const router = express.Router();
 //TODO add echo support
 
 
+router.post('/new', function (req, res) {
+    db.addCourse(req.body.name, req.body.teacher, req.body.startdate, req.body.enddate, function (data) {
+        res.send(data);
+    });
+});
+
 router.get('/', (req, res) => {
     let onlyActive = req.query.active;
     var options = {};
@@ -39,7 +45,6 @@ router.get('/:courseId', function (req, res) {
     });
 });
 
-
 router.get('/:courseId/students', (req, res) => {
     db.getAllStudentsInCourse(req.params.courseId, (data) => {
         console.log("done");
@@ -48,12 +53,17 @@ router.get('/:courseId/students', (req, res) => {
 });
 
 
+
+
 router.put('/:courseId', function (req, res) {
 
     db.editCourse(req.params.courseId, req.body.name, req.body.teacher, req.body.endDate, (data) => {
         res.send(data);
     });
 });
+
+
+
 
 
 router.put('/:courseId/end', (req, res) => {
@@ -72,11 +82,6 @@ router.delete('/:courseId', (req, res) => {
 });
 
 
-router.post('/new', function (req, res) {
-    db.addCourse(req.body.name, req.body.teacher, req.body.startdate, req.body.enddate, function (data) {
-        res.send(data);
-    });
-});
 
 
 router.post('/:courseId/enroll', function (req, res) {

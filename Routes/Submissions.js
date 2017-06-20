@@ -15,7 +15,9 @@ router.post('/new', function (req, res) {
 });
 
 router.get('/:param', function (req, res) {
-    db.searchSubmissions(req.params.param, "id", (data) => {
+    var options = {};
+    options.id = id;
+    db.searchSubmissions(options, (data) => {
         res.send(data);
     });
 });
