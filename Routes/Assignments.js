@@ -8,12 +8,7 @@ const router = express.Router();
 
 //TODO add echo support
 
-//5
-router.post('/:id/addToCourse/:courseId', function (req, res) {
-    db.addAssignmentToCourse(req.params.id, req.params.courseId, (data)=> {
-        res.send(data);
-    });
-});
+
 
 //0
 router.post('/new', function (req, res) {
@@ -23,6 +18,28 @@ router.post('/new', function (req, res) {
         arr.push(data.dataValues);
         res.send(arr);
     });
+});
+
+//1
+router.get('/', function (req, res) {
+
+    var options = {};
+
+    let type = "all";
+    let name = req.query.name;
+    let courseId = req.query.courseId;
+
+    if (name) {
+        options.name = name;
+    }
+    else if (courseId) {
+        options.id = id;
+    }
+    db.searchAssignments(options, (data)=> {
+        res.send(data);
+    });
+
+
 });
 
 //2
@@ -52,26 +69,12 @@ router.delete('/:id', function (req, res) {
     });
 });
 
-//1
-router.get('/', function (req, res) {
-
-    var options = {};
-
-    let type = "all";
-    let name = req.query.name;
-    let courseId = req.query.courseId;
-
-    if (name) {
-        options.name = name;
-    }
-    else if (courseId) {
-        options.id = id;
-    }
-    db.searchAssignments(options, (data)=> {
+//5
+router.post('/:id/addToCourse/:courseId', function (req, res) {
+    db.addAssignmentToCourse(req.params.id, req.params.courseId, (data)=> {
         res.send(data);
     });
-
-
 });
+
 
 module.exports = router;
