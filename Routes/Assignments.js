@@ -9,7 +9,7 @@ const router = express.Router();
 //TODO add echo support
 
 
-//0
+//tested
 router.post('/new', function (req, res) {
     console.log(req.body.desc)
     db.addAssignment(req.body.name, req.body.desc, req.body.courseId, (data) => {
@@ -19,7 +19,7 @@ router.post('/new', function (req, res) {
     });
 });
 
-//1
+//tested
 router.get('/', function (req, res) {
 
     var options = {};
@@ -41,12 +41,11 @@ router.get('/', function (req, res) {
 
 });
 
-//2
+//tested
 router.get('/:id', function (req, res) {
-    let arr = [];
+
     db.searchAssignment(req.params.id, (data) => {
-        arr.push(data);
-        res.send(arr);
+        res.send(data);
     });
 });
 
