@@ -171,9 +171,9 @@ function addAssignment(name, desc, courseId, done) {
         name: name,
         description: desc
     }).then(function (data) {
-        if (courseId){
+        if (courseId) {
             done(data);
-            addAssignmentToCourse(data.id, courseId, ()=>{
+            addAssignmentToCourse(data.id, courseId, ()=> {
             });
         }
         else done(data);
@@ -194,36 +194,30 @@ function getAssignments(done) {
 }
 
 //function to get particular assignment
-function searchAssignments(searchType,searchParameter, done) {
-    if (searchType == "name") {
-        models.Assignments.findAll({
-            where: {
-                name: searchParameter
-            }
-        }).then(function (data) {
-            done(data);
-        }).catch(function (err) {
-            if (err) throw err;
-        });
+function searchAssignments(options, done) {
 
-    }
-    else {
-        //Add any other search type here if required
-    }
+    models.Assignments.findAll({
+        where: options
+    }).then(function (data) {
+        done(data);
+    }).catch(function (err) {
+        if (err) throw err;
+    });
+
 
 }
 
 //function to search assignments based on a parameter
-function searchAssignment(id,done){
+function searchAssignment(id, done) {
 
     models.Assignments.findOne({
-        where : {
-            id : id
+        where: {
+            id: id
         }
     }).then(function (data) {
         done(data);
     }).catch(function (err) {
-        if(err) throw err;
+        if (err) throw err;
     });
 
 }
@@ -236,17 +230,17 @@ function findAssignmentsInCourse(courseId, done) {
         }
     }).then(function (data) {
         let arr = [];
-        if(data.length == 0) return done(arr);
-        for(let i=0;i<data.length;i++){
+        if (data.length == 0) return done(arr);
+        for (let i = 0; i < data.length; i++) {
             models.Assignments.findOne({
-                where : {
-                    id : data[i].dataValues.assignmentId
+                where: {
+                    id: data[i].dataValues.assignmentId
                 }
             }).then(function (assnData) {
-               arr.push(assnData);
-               if(arr.length == data.length) done(arr);
+                arr.push(assnData);
+                if (arr.length == data.length) done(arr);
             }).catch(function (err) {
-                if(err) throw err;
+                if (err) throw err;
             });
         }
     }).catch(function (err) {
@@ -294,8 +288,8 @@ function deleteAssignment(assignmentId, done) {
             }
         }).then(function () {
             models.Assignments.findOne({
-                where : {
-                 id : assignmentId
+                where: {
+                    id: assignmentId
                 }
             }).then(function (resData) {
                 models.Assignments.destroy({
@@ -309,7 +303,7 @@ function deleteAssignment(assignmentId, done) {
                 });
 
             }).catch(function (err) {
-                if(err) throw err;
+                if (err) throw err;
             });
         }).catch(function (err) {
             if (err) throw err;
@@ -353,23 +347,29 @@ function addCourse(name, teacher, startDate, endDate, done) {
 }
 
 //function to get all courses (overloaded for both active and passive)
-function getCourses(onlyActive, done) {
-    if (onlyActive) {
+function getCourses(options, done) {
 
-        models.Courses.findAll({where: {isActive: true}}).then(function (data) {
-            done(data);
-        }).then(function (err) {
-            if (err) throw err;
-        });
-    }
-    else {
-
-        models.Courses.findAll().then(function (data) {
-            done(data);
-        }).then(function (err) {
-            if (err) throw err;
-        });
-    }
+    models.Courses.findAll({where: options}).then(function (data) {
+        done(data);
+    }).then(function (err) {
+        if (err) throw err;
+    });
+    // if (onlyActive) {
+    //
+    //     models.Courses.findAll({where: {isActive: true}}).then(function (data) {
+    //         done(data);
+    //     }).then(function (err) {
+    //         if (err) throw err;
+    //     });
+    // }
+    // else {
+    //
+    //     models.Courses.findAll().then(function (data) {
+    //         done(data);
+    //     }).then(function (err) {
+    //         if (err) throw err;
+    //     });
+    // }
 
 }
 
@@ -442,7 +442,7 @@ function endCourse(courseID, done) {
         row.update({
             isActive: false
         }).then(function (data) {
-            if(done) done(data);
+            if (done) done(data);
         }).catch(function (err) {
             if (err) throw err;
         });
@@ -454,24 +454,24 @@ function endCourse(courseID, done) {
 //function to get all students of course
 function getAllStudentsInCourse(courseId, done) {
     models.StudentCourse.findAll({
-        where : {
-            courseId : courseId
+        where: {
+            courseId: courseId
         }
     }).then(function (data) {
         var arr = [];
-        if(data.length == 0){
+        if (data.length == 0) {
             return done(arr);
         }
 
-        for(let i =0;i<data.length;i++){
-            searchStudent(data[i].dataValues.studentId , (studentData) =>{
+        for (let i = 0; i < data.length; i++) {
+            searchStudent(data[i].dataValues.studentId, (studentData) => {
                 arr.push(studentData);
-                if(arr.length == data.length) done(arr);
+                if (arr.length == data.length) done(arr);
             });
         }
 
     }).catch(function (err) {
-        if(err) throw err;
+        if (err) throw err;
     });
 }
 
@@ -510,8 +510,8 @@ function addSubmission(studentId, assnId, URL, done) {
                         if (err) throw err;
                     });
                 }
-                else{
-                    if(i == data.length - 1){
+                else {
+                    if (i == data.length - 1) {
                         done("Not a valid submission");
                     }
                 }
@@ -520,7 +520,7 @@ function addSubmission(studentId, assnId, URL, done) {
                 if (err) throw err;
             });
 
-            if(flag) break;
+            if (flag) break;
 
         }
     }).catch(function (err) {
@@ -603,80 +603,14 @@ function getSubmissions(onlyAccepted, done) {
 }
 
 //function to search submissions
-function searchSubmissions(searchParamter, searchType, done, onlyAccepted, helperParameter) {
-    if (onlyAccepted) {
-        if (searchType == "id") {
-            models.Submissions.findAll({where: {id: searchParamter, status: true}}).then(function (data) {
-                done(data);
-            }).catch(function (err) {
-                if (err) throw err;
-            });
-        }
-        else if (searchType == "studentAssignment") {
-            models.Submissions.findAll({
-                where: {
-                    studentId: searchParamter,
-                    assignmentId: helperParameter,
-                    status: true
-                }
-            }).then(function (data) {
-                done(data);
-            }).catch(function (err) {
-                if (err) throw err;
-            });
-        }
-        else if (searchType == "student") {
-            models.Submissions.findAll({where: {studentId: searchParamter, status: true}}).then(function (data) {
-                done(data);
-            }).catch(function (err) {
-                if (err) throw err;
-            });
-        }
-        else {
-            models.Submissions.findAll({where: {assignmentId: searchParamter, status: true}}).then(function (data) {
-                done(data);
-            }).catch(function (err) {
-                if (err) throw err;
-            });
-        }
+function searchSubmissions(options, done) {
 
-    }
-    else {
-        if (searchType == "id") {
-            models.Submissions.findAll({where: {id: searchParamter}}).then(function (data) {
-                done(data);
-            }).catch(function (err) {
-                if (err) throw err;
-            });
-        }
-        else if (searchType == "studentAssignment") {
-            models.Submissions.findAll({
-                where: {
-                    studentId: searchParamter,
-                    assignmentId: helperParameter
-                }
-            }).then(function (data) {
-                done(data);
-            }).catch(function (err) {
-                if (err) throw err;
-            });
-        }
-        else if (searchType == "student") {
-            models.Submissions.findAll({where: {studentId: searchParamter}}).then(function (data) {
-                done(data);
-            }).catch(function (err) {
-                if (err) throw err;
-            });
-        }
-        else {
-            models.Submissions.findAll({where: {assignmentId: searchParamter}}).then(function (data) {
-                done(data);
-            }).catch(function (err) {
-                if (err) throw err;
-            });
-        }
+    models.Submissions.findAll({where: options}).then(function (data) {
+        done(data);
+    }).catch(function (err) {
+        if (err) throw err;
+    });
 
-    }
 }
 
 //function to search submissions by course
@@ -850,13 +784,13 @@ function editCourse(id, name, teacher, endDate, done) {
 //TODO cascade delete not working
 function deleteCourse(id, done) {
     models.Courses.destroy({
-        where : {
-            id : id
+        where: {
+            id: id
         }
     }).then((data) => {
         done(data);
     }).catch(() => {
-        if(err) throw err;
+        if (err) throw err;
     });
 }
 
