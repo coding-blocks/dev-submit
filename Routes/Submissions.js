@@ -14,20 +14,6 @@ router.post('/new', function (req, res) {
     });
 });
 
-router.get('/:param', function (req, res) {
-    var options = {};
-    options.id = id;
-    db.searchSubmissions(options, (data) => {
-        res.send(data);
-    });
-});
-
-router.put('/:param', function (req, res) {
-    db.acceptSubmissionbyId(req.params.param, req.query.echo, (data) => {
-        res.send(data);
-    });
-});
-
 router.get('/', function (req, res) {
 
     var options = {};
@@ -60,5 +46,20 @@ router.get('/', function (req, res) {
 
 
 });
+
+router.get('/:param', function (req, res) {
+    var options = {};
+    options.id = id;
+    db.searchSubmissions(options, (data) => {
+        res.send(data);
+    });
+});
+
+router.put('/:param', function (req, res) {
+    db.acceptSubmissionbyId(req.params.param, req.query.echo, (data) => {
+        res.send(data);
+    });
+});
+
 
 module.exports = router;
