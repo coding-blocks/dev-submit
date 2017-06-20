@@ -51,7 +51,7 @@ router.get('/:courseId', function (req, res) {
 });
 
 
-
+//tested
 router.get('/:courseId/students', (req, res) => {
     db.getAllStudentsInCourse(req.params.courseId, (data) => {
         console.log("done");
@@ -59,7 +59,7 @@ router.get('/:courseId/students', (req, res) => {
     });
 });
 
-
+//tested
 router.put('/:courseId', function (req, res) {
 
     db.editCourse(req.params.courseId, req.body.name, req.body.teacher, req.body.endDate, (data) => {
@@ -67,7 +67,7 @@ router.put('/:courseId', function (req, res) {
     });
 });
 
-
+//tested
 router.put('/:courseId/end', (req, res) => {
     db.endCourse(req.params.courseId, (data) => {
         res.send(data);
@@ -84,10 +84,11 @@ router.delete('/:courseId', (req, res) => {
 });
 
 
+// TODO Error check
 router.post('/:courseId/enroll', function (req, res) {
     let dataType = req.body.studentAttribute;
     let studentArray = req.body.students;
-    if (studentArray) studentArray = JSON.parse(studentArray);
+    // if (studentArray) studentArray = JSON.parse(studentArray);
     let courseId = req.params.courseId;
     let retval = [];
 

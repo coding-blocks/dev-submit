@@ -7,7 +7,7 @@ const db = require('../Utils/db');
 const router = express.Router();
 
 
-
+//tested
 router.post('/new', function (req, res) {
     db.addStudent(req.body.name, req.body.roll , req.body.email , (data) => {
         let arr = [];
@@ -16,7 +16,7 @@ router.post('/new', function (req, res) {
     });
 });
 
-
+//tested
 router.get('/', function (req, res) {
 
     let roll = req.query.roll;
@@ -48,7 +48,7 @@ router.get('/', function (req, res) {
 
 
 
-
+//tested
 router.get('/:id', function (req, res) {
     db.searchStudent(req.params.id, (data) => {
         let arr = [];
@@ -57,6 +57,9 @@ router.get('/:id', function (req, res) {
     });
 });
 
+
+
+//tested
 router.put('/:id',function (req, res) {
     db.editStudent(req.params.id, req.body.name, (data) => {
         res.send(data);
@@ -64,7 +67,7 @@ router.put('/:id',function (req, res) {
 });
 
 
-
+//tested
 router.delete('/:id',function (req, res) {
     db.deleteStudent(req.params.id , req.query.echo ,  (data) =>{
         res.send(data);
@@ -72,7 +75,7 @@ router.delete('/:id',function (req, res) {
 });
 
 
-
+//tested
 router.post('/:id/enroll/:courseId',function (req, res) {
     let echo = req.query.echo;
     db.enrollStudentInCourse("id",req.params.id , req.params.courseId , (data)=>{
