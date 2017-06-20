@@ -14,8 +14,44 @@ router.post('/new', function (req, res) {
     });
 });
 
+router.get('/', function (req, res) {
+
+    var options = {};
+    if (req.query.course) {
+        db.searchByCourse(req.query.course, req.query.onlyAccepted, (data) => {
+            res.send(data);
+        });
+    }
+    else {
+        let accepted = req.query.onlyAccepted;
+
+        if (accepted) options.status = JSON.parse(accepted);
+
+        if (req.query.student && req.query.assignment) {
+            options.studentId = req.query.student;
+            options.assignmentId = req.query.assignment;
+        }
+        else if (req.query.student) {
+
+            options.studentId = req.query.student;
+        }
+        else if (req.query.assignment) {
+            options.assignmentId = req.query.assignment;
+        }
+
+        db.searchSubmissions(options, (data)=> {
+            res.send(data);
+        })
+    }
+
+
+});
+
+//tested
 router.get('/:param', function (req, res) {
-    db.searchSubmissions(req.params.param, "id", (data) => {
+    var options = {};
+    options.id = req.params.param;
+    db.searchSubmissions(options, (data) => {
         res.send(data);
     });
 });
@@ -26,43 +62,5 @@ router.put('/:param', function (req, res) {
     });
 });
 
-router.get('/', function (req, res) {
-    if (req.query.course) {
-        db.searchByCourse(req.query.course, req.query.onlyAccepted, (data) => {
-            res.send(data);
-        });
-    }
-    else {
-        let type = "all";
-        let searchParamter = req.params.param;
-        let helperParameter;
-        if (req.query.student && req.query.assignment) {
-            type = "studentAssignment";
-            searchParamter = req.query.student;
-            helperParameter = req.query.assignment;
-        }
-        else if (req.query.student) {
-            type = "student";
-            searchParamter = req.query.student;
-        }
-        else if (req.query.assignment) {
-            type = "assignment";
-            searchParamter = req.query.assignment;
-        }
-
-        if (type == "all") {
-            db.getSubmissions(req.query.onlyAccepted, (data) => {
-                res.send(data);
-            });
-        }
-        else {
-            db.searchSubmissions(searchParamter, type, (data) => {
-                res.send(data);
-            }, req.query.onlyAccepted, helperParameter);
-        }
-    }
-
-
-});
 
 module.exports = router;

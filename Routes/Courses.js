@@ -9,47 +9,48 @@ const router = express.Router();
 
 //TODO add echo support
 
-
-router.get('/', (req, res) => {
-    let onlyActive = req.query.active;
-    if(onlyActive) onlyActive = JSON.parse(onlyActive);
-    let name = req.query.name;
-    let teacher = req.query.teacher;
-    let searchType = "all";
-
-    if (name) {
-        searchType = "name";
-    }
-    else if (teacher) {
-        searchType = teacher;
-    }
-
-    if (searchType == "all") {
-        db.getCourses(onlyActive, (data) => {
-            res.send(data);
-        });
-    }
-    else if (searchType == "name") {
-        db.searchCourses(name, "name", onlyActive, (data) => {
-            res.send(data);
-        });
-    }
-    else {
-        db.searchCourses(teacher, "teacher", onlyActive, (data) => {
-            res.send(data);
-        });
-    }
+//tested
+router.post('/new', function (req, res) {
+    db.addCourse(req.body.name, req.body.teacher, req.body.startdate, req.body.enddate, function (data) {
+        res.send(data)
+    });
 });
 
 
+//tested
+router.get('/', (req, res) => {
+    let onlyActive = req.query.active;
+    var options = {};
+    if (onlyActive) options.isActive = JSON.parse(onlyActive);
+    let name = req.query.name;
+    let teacher = req.query.teacher;
+
+
+    if (name) {
+        options.name = name;
+    }
+    else if (teacher) {
+        options.teacher = teacher
+    }
+
+    db.getCourses(options, (data) => {
+        res.send(data);
+    });
+
+});
+
+
+//tested
 router.get('/:courseId', function (req, res) {
-    let searchType = "byCourseId";
-    db.searchCourse(req.params.courseId, function (data) {
+    let options = {};
+    options.id = req.params.courseId;
+    db.getCourses(options, function (data) {
         res.send(data);
     });
 });
 
 
+//tested
 router.get('/:courseId/students', (req, res) => {
     db.getAllStudentsInCourse(req.params.courseId, (data) => {
         console.log("done");
@@ -57,19 +58,19 @@ router.get('/:courseId/students', (req, res) => {
     });
 });
 
-
-
+//tested
 router.put('/:courseId', function (req, res) {
+
     db.editCourse(req.params.courseId, req.body.name, req.body.teacher, req.body.endDate, (data) => {
         res.send(data);
     });
 });
 
-
-router.put('/:courseId/end',(req,res) => {
-   db.endCourse(req.params.courseId , (data) => {
-       res.send(data);
-   });
+//tested
+router.put('/:courseId/end', (req, res) => {
+    db.endCourse(req.params.courseId, (data) => {
+        res.send(data);
+    });
 });
 
 
@@ -82,17 +83,11 @@ router.delete('/:courseId', (req, res) => {
 });
 
 
-router.post('/new', function (req, res) {
-    db.addCourse(req.body.name, req.body.teacher, req.body.startdate, req.body.enddate, function (data) {
-        res.send(data);
-    });
-});
-
-
+// TODO Error check
 router.post('/:courseId/enroll', function (req, res) {
     let dataType = req.body.studentAttribute;
     let studentArray = req.body.students;
-    if(studentArray) studentArray = JSON.parse(studentArray);
+    // if (studentArray) studentArray = JSON.parse(studentArray);
     let courseId = req.params.courseId;
     let retval = [];
 
