@@ -49,25 +49,23 @@ router.get('/:id', function (req, res) {
     });
 });
 
-//3
+//tested
 router.put('/:id', function (req, res) {
     console.log(req.body);
     db.editAssignment(req.params.id, req.body.name, req.body.desc,
         (data) => {
-            let arr = []
-            arr.push(data);
-            res.send(arr);
+            res.send(data);
         });
 });
 
-//4
+//tested
 router.delete('/:id', function (req, res) {
     db.deleteAssignment(req.params.id, (data) => {
         res.send(data);
     });
 });
 
-//5
+//tested
 router.post('/:id/addToCourse/:courseId', function (req, res) {
     db.addAssignmentToCourse(req.params.id, req.params.courseId, (data)=> {
         res.send(data);

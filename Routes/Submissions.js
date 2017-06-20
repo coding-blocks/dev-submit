@@ -47,9 +47,10 @@ router.get('/', function (req, res) {
 
 });
 
+//tested
 router.get('/:param', function (req, res) {
     var options = {};
-    options.id = id;
+    options.id = req.params.param;
     db.searchSubmissions(options, (data) => {
         res.send(data);
     });
