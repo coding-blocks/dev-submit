@@ -448,6 +448,10 @@ function getAllStudentsInCourse(courseId, done) {
     });
 }
 
+
+
+//TODO  Error: Can't set headers after they are sent.
+
 //add a submission
 function addSubmission(studentId, assnId, URL, done) {
     models.StudentCourse.findAll({
@@ -485,7 +489,7 @@ function addSubmission(studentId, assnId, URL, done) {
                 }
                 else {
                     if (i == data.length - 1) {
-                        done("Not a valid submission");
+                        return done("Not a valid submission");
                     }
                 }
 
