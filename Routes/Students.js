@@ -7,48 +7,14 @@ const db = require('../Utils/db');
 const router = express.Router();
 
 
-router.post('/:id/enroll/:courseId',function (req, res) {
-    let echo = req.query.echo;
-    db.enrollStudentInCourse("id",req.params.id , req.params.courseId , (data)=>{
-        if(echo){
-            res.send(data);
-        }
-        else{
-            res.send("success");
-        }
-    });
-});
 
 router.post('/new', function (req, res) {
-        db.addStudent(req.body.name, req.body.roll , req.body.email , (data) => {
-            let arr = [];
-            arr.push(data.dataValues);
-            res.send(arr);
-        });
-});
-
-router.get('/:id', function (req, res) {
-    db.searchStudent(req.params.id, (data) => {
+    db.addStudent(req.body.name, req.body.roll , req.body.email , (data) => {
         let arr = [];
-        arr.push(data);
+        arr.push(data.dataValues);
         res.send(arr);
     });
 });
-
-router.put('/:id',function (req, res) {
-        db.editStudent(req.params.id, req.body.name, (data) => {
-            res.send(data);
-        } , req.body.email , req.query.echo);
-});
-
-
-router.delete('/:id',function (req, res) {
-    db.deleteStudent(req.params.id , req.query.echo ,  (data) =>{
-        res.send(data);
-    });
-});
-
-
 
 
 router.get('/', function (req, res) {
@@ -79,6 +45,50 @@ router.get('/', function (req, res) {
         });
     }
 });
+
+
+
+
+router.get('/:id', function (req, res) {
+    db.searchStudent(req.params.id, (data) => {
+        let arr = [];
+        arr.push(data);
+        res.send(arr);
+    });
+});
+
+router.put('/:id',function (req, res) {
+    db.editStudent(req.params.id, req.body.name, (data) => {
+        res.send(data);
+    } , req.body.email , req.query.echo);
+});
+
+
+
+router.delete('/:id',function (req, res) {
+    db.deleteStudent(req.params.id , req.query.echo ,  (data) =>{
+        res.send(data);
+    });
+});
+
+
+
+router.post('/:id/enroll/:courseId',function (req, res) {
+    let echo = req.query.echo;
+    db.enrollStudentInCourse("id",req.params.id , req.params.courseId , (data)=>{
+        if(echo){
+            res.send(data);
+        }
+        else{
+            res.send("success");
+        }
+    });
+});
+
+
+
+
+
 
 
 module.exports = router;

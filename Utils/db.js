@@ -183,18 +183,7 @@ function addAssignment(name, desc, courseId, done) {
 }
 
 //function to get all assignments
-function getAssignments(done) {
-
-    models.Assignments.findAll().then(function (data) {
-        done(data);
-    }).then(function (err) {
-        if (err) throw err;
-    });
-
-}
-
-//function to get particular assignment
-function searchAssignments(options, done) {
+function getAssignments(options, done) {
 
     models.Assignments.findAll({
         where: options
@@ -203,9 +192,8 @@ function searchAssignments(options, done) {
     }).catch(function (err) {
         if (err) throw err;
     });
-
-
 }
+
 
 //function to search assignments based on a parameter
 function searchAssignment(id, done) {
@@ -354,22 +342,7 @@ function getCourses(options, done) {
     }).then(function (err) {
         if (err) throw err;
     });
-    // if (onlyActive) {
-    //
-    //     models.Courses.findAll({where: {isActive: true}}).then(function (data) {
-    //         done(data);
-    //     }).then(function (err) {
-    //         if (err) throw err;
-    //     });
-    // }
-    // else {
-    //
-    //     models.Courses.findAll().then(function (data) {
-    //         done(data);
-    //     }).then(function (err) {
-    //         if (err) throw err;
-    //     });
-    // }
+
 
 }
 
@@ -621,7 +594,9 @@ function searchByCourse(courseId, onlyAccepted, done) {
         let i = 0;
         let flag = false;
         for (i = 0; i < data.length; i++) {
-            searchSubmissions(data[i].dataValues.assignmentId, "assignment", (rows) => {
+            let options = {};
+            options.assignmentId = data[i].dataValues.assignmentId;
+            searchSubmissions(options, (rows) => {
                 for (let j = 0; j < rows.length; j++) {
                     arr.push(rows[j].dataValues);
                 }
@@ -836,7 +811,6 @@ module.exports = {
     addAssignment,
     getAssignments,
     searchAssignment,
-    searchAssignments,
     findAssignmentsInCourse,
     editAssignment,
     deleteAssignment,
