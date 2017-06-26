@@ -15,6 +15,7 @@ const sequelize = new Sequelize("tech4GT", "postgres", "", {
         idle: 1000
     },
 
+
 });
 
 //Table to store students
