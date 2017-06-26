@@ -8,6 +8,7 @@ const cp = require('cookie-parser')
 const path = require('path');
 const passport = require('passport')
 const validator = require('express-validator')
+const fileupload = require('express-fileupload');
 
 
 const app = express();
@@ -16,6 +17,7 @@ const app = express();
 app.use(bp.json());
 app.use(bp.urlencoded({extended : true}));
 app.use(cp());
+app.use(fileupload());
 
 
 app.engine('hbs', exphbs.express4({
