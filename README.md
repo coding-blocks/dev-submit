@@ -22,6 +22,7 @@ express.js and postgres based stack
 
 * **Arnav Gupta** - *Initial work* - [championswimmer](https://github.com/championswimmer)
 * **Abhishek Yadav** - *Initial work* - [abhishek1208](https://github.com/abhishek1208)
+* **Aditi** - *Initial work* - [tld3112](https://github.com/tld3112)
 * **Varun Gupta** - *Initial work* - [tech4GT](https://github.com/tech4gt)
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
