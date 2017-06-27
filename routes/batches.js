@@ -2,7 +2,7 @@
  * Created by varun on 5/24/17.
  */
 const express = require('express');
-const db = require('./db');
+const db = require('../utils/db');
 
 const router = express.Router();
 
@@ -11,7 +11,7 @@ const router = express.Router();
 
 //tested
 router.post('/new', function (req, res) {
-    db.addBatch(req.body.name, req.body.teacher, req.body.startdate, req.body.enddate, function (data) {
+    db.addBatch(req.body.name, req.body.teacherId, req.body.startdate, req.body.enddate, function (data) {
         res.send(data)
     });
 });

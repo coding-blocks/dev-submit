@@ -4,9 +4,9 @@
 
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize("devsubmitdatabase", "root", "MyNewPass", {
+const sequelize = new Sequelize("tech4GT", "postgres", "", {
     host: "localhost",
-    dialect: 'mysql',
+    dialect: 'postgres',
 
     pool: {
         min: 0,
@@ -44,11 +44,13 @@ const Assignments = sequelize.define('assignment', {
 const Batches = sequelize.define('batch', {
     id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
     name: {type: Sequelize.STRING, unique: true},
-    teacher: Sequelize.STRING,
     startDate: Sequelize.DATE,
     endDate: Sequelize.DATE,
     isActive: Sequelize.BOOLEAN
 });
+Batches.belongsTo(Teachers);
+Teachers.hasMany(Batches);
+
 
 
 //many to many for student to assignment
@@ -92,24 +94,30 @@ Students.hasMany(StudentBatch, {
 //Table to store password and username
 const UserLocal = sequelize.define('userlocal', {
     id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+    username: {type: Sequelize.STRING, unique: true},
     password: Sequelize.STRING,
 });
 
-const User = sequelize.define('user', {
+const Users = sequelize.define('user', {
     id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true}
 });
 
 
-// //one to one for students and userlocal
-// UserLocal.belongsTo(Students);
-// Students.hasOne(UserLocal);
-//
-//
-// //one to one for teachers and userlocal
-// UserLocal.belongsTo(Teachers);
-// Teachers.hasOne(UserLocal);
+//one to one for students and userlocal
+Students.belongsTo(Users);
+Users.hasOne(Students);
+
+
+//one to one for teachers and userlocal
+Teachers.belongsTo(Users);
+Users.hasOne(Teachers);
+
+//one to one for userlocal and user
+UserLocal.belongsTo(Users);
+Users.hasOne(UserLocal);
+
 
 sequelize.sync();
 
 
-module.exports = {Students, Batches, Assignments, Submissions, BatchAssignments, StudentBatch, UserLocal, Teachers};
+module.exports = {Students, Batches, Assignments, Submissions, BatchAssignments, StudentBatch, UserLocal, Teachers,Users};

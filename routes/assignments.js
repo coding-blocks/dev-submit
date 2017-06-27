@@ -3,7 +3,7 @@
  */
 
 const express = require('express');
-const db = require('./db');
+const db = require('../utils/db');
 const router = express.Router();
 
 //TODO add echo support
@@ -11,7 +11,6 @@ const router = express.Router();
 
 //tested
 router.post('/new', function (req, res) {
-    console.log(req.body.desc)
     db.addAssignment(req.body.name, req.body.desc, req.body.batchId, (data) => {
         let arr = [];
         arr.push(data.dataValues);
