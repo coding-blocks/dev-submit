@@ -2,7 +2,7 @@
  * Created by varun on 5/24/17.
  */
 const express = require('express');
-const db = require('../Utils/db');
+const db = require('./db');
 
 const router = express.Router();
 
@@ -11,7 +11,7 @@ const router = express.Router();
 
 //tested
 router.post('/new', function (req, res) {
-    db.addCourse(req.body.name, req.body.teacher, req.body.startdate, req.body.enddate, function (data) {
+    db.addBatch(req.body.name, req.body.teacher, req.body.startdate, req.body.enddate, function (data) {
         res.send(data)
     });
 });
@@ -33,7 +33,7 @@ router.get('/', (req, res) => {
         options.teacher = teacher
     }
 
-    db.getCourses(options, (data) => {
+    db.getBatches(options, (data) => {
         res.send(data);
     });
 
@@ -41,42 +41,42 @@ router.get('/', (req, res) => {
 
 
 //tested
-router.get('/:courseId', function (req, res) {
+router.get('/:batchId', function (req, res) {
     let options = {};
-    options.id = req.params.courseId;
-    db.getCourses(options, function (data) {
+    options.id = req.params.batchId;
+    db.getBatches(options, function (data) {
         res.send(data);
     });
 });
 
 
 //tested
-router.get('/:courseId/students', (req, res) => {
-    db.getAllStudentsInCourse(req.params.courseId, (data) => {
+router.get('/:batchId/students', (req, res) => {
+    db.getAllStudentsInBatch(req.params.batchId, (data) => {
         console.log("done");
         res.send(data);
     });
 });
 
 //tested
-router.put('/:courseId', function (req, res) {
+router.put('/:batchId', function (req, res) {
 
-    db.editCourse(req.params.courseId, req.body.name, req.body.teacher, req.body.endDate, (data) => {
+    db.editBatch(req.params.batchId, req.body.name, req.body.teacher, req.body.endDate, (data) => {
         res.send(data);
     });
 });
 
 //tested
-router.put('/:courseId/end', (req, res) => {
-    db.endCourse(req.params.courseId, (data) => {
+router.put('/:batchId/end', (req, res) => {
+    db.endBatch(req.params.batchId, (data) => {
         res.send(data);
     });
 });
 
 
 //TODO cascade delete not working
-router.delete('/:courseId', (req, res) => {
-    db.deleteCourse(req.params.courseId, (data) => {
+router.delete('/:batchId', (req, res) => {
+    db.deleteBatch(req.params.batchId, (data) => {
         if (req.query.echo) res.send(data);
         else res.send("success");
     });
@@ -84,15 +84,15 @@ router.delete('/:courseId', (req, res) => {
 
 
 // TODO Error check
-router.post('/:courseId/enroll', function (req, res) {
+router.post('/:batchId/enroll', function (req, res) {
     let dataType = req.body.studentAttribute;
     let studentArray = req.body.students;
     // if (studentArray) studentArray = JSON.parse(studentArray);
-    let courseId = req.params.courseId;
+    let batchId = req.params.batchId;
     let retval = [];
 
     for (var i = 0; i < studentArray.length; i++) {
-        db.enrollStudentInCourse(dataType, studentArray[i], courseId, function (data) {
+        db.enrollStudentInBatch(dataType, studentArray[i], batchId, function (data) {
             retval.push(data);
             if (retval.length == studentArray.length)
                 res.send(retval);
