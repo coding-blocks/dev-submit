@@ -7,6 +7,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const models = require('../utils/models');
 const db = require('../utils/db');
 var http = require('http');
+var randtoken = require('rand-token');
 
 
 var options = {
@@ -60,9 +61,24 @@ passport.use('oauth-cb', new OAuth2Strategy({
         callbackURL: 'http://localhost:4000/users/login/cb/callback'
     },
     function (accessToken, refreshToken, profile, done) {
+        models.AuthToken.findOrCreate(
+            {
+                where: {
+                    accesstoken: accessToken
+                },
+                defaults:{
+                    accesstoken:accessToken,
+                    clientoken: randtoken.generate(16),
+                    user:{}
+                },
+                include:[models.Users]
+            }
+        ).then(function (user) {
+            done(null,user);
+        }).catch(function (err) {
+            done(null,false);
+        })
 
-
-        done(null);
     }
 ));
 
