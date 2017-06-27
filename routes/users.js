@@ -73,6 +73,18 @@ router.post('/register', (req, res) => {
 router.get('/login', function (req, res) {
     res.render('login');
 });
+
+//route for redirecting user to Provider's site
+router.get('/login/cb', passport.authenticate('oauth-cb'));
+
+
+//route for callback and retrieving token
+router.get('/login/cb/callback',
+    passport.authenticate('oauth-cb', {
+        successRedirect: '/',
+        failureRedirect: '/api/v1/batches'
+    }));
+
 router.post('/login', passport.authenticate('local', {
     successRedirect: '/',
     failureRedirect: '/users/login',
