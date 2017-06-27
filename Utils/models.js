@@ -4,15 +4,17 @@
 
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize("devsubmitdatabase", "root", "MyNewPass", {
+const sequelize = new Sequelize("tech4GT", "postgres", "", {
     host: "localhost",
-    dialect: 'mysql',
+    dialect: 'postgres',
+    port: 5432,
 
     pool: {
         min: 0,
         max: 5,
         idle: 1000
     },
+
 
 });
 
@@ -79,7 +81,29 @@ Students.hasMany(StudentCourse,{
     onDelete: 'cascade', hooks: true
 });
 
+var User = sequelize.define('user',{
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    username: {
+        type: Sequelize.STRING,
+        unique: true
+    },
+    password: {
+        type: Sequelize.STRING
+    },
+    email: {
+        type: Sequelize.STRING,
+    },
+    name: {
+        type: Sequelize.STRING
+    }
+
+});
+
 sequelize.sync();
 
 
-module.exports = {Students, Courses, Assignments, Submissions, CourseAssignments, StudentCourse};
+module.exports = {Students, Courses, Assignments, Submissions, CourseAssignments, StudentCourse,User};

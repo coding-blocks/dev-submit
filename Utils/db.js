@@ -1,8 +1,8 @@
 /**
  * Created by varun on 5/24/17.
  */
-const Sequelize = require('sequelize');
 const models = require('./models');
+const bcrypt = require('bcrypt');
 
 
 //function to add student
@@ -832,6 +832,34 @@ module.exports = {
     getSubmissions,
     acceptSubmissionbyId,
     acceptSubmissionWithoutId,
-    getAllStudentsInCourse
+    getAllStudentsInCourse,
+    createUser: function (newUser, done) {
+        bcrypt.hash(newUser.password, 10, function (err, hash) {
+            newUser.password = hash;
+            models.User.create(newUser).then(function (data) {
+                done(data);
+            }).catch(function (err) {
+                if (err) throw err;
+            });
+        });
+    },
+    validatePassword: function (user, password, PassportDone, done) {
+        bcrypt.compare(password, user.password, function (err, isMatch) {
+            if (err) throw err;
+            done(user, isMatch, PassportDone);
+        });
+
+    },
+    findUserById : function (id,done) {
+        models.User.findOne({
+            where : {
+                id : id
+            }
+        }).then(function (data) {
+            done(null,data.dataValues);
+        }).catch(function (err) {
+            if(err) throw err;
+        });
+    }
 }
 
