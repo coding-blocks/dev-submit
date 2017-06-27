@@ -1,0 +1,55 @@
+<h2 class="page-header">Account Registration</h2>
+{{#if errors}}
+    {{# each errors}}
+        <div class="alert alert-danger">{{msg}}</div>
+    {{/each}}
+
+
+{{/if}}
+
+<form method="post" action="/users/register">
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" class="form-control" placeholder="Name" name="Name">
+    </div>
+
+    <div class="form-group">
+        <label>Username</label>
+        <input type="text" class="form-control" placeholder="Username" name="Username">
+    </div>
+
+    <div class="form-group">
+        <label>Email</label>
+        <input type="email" class="form-control" placeholder="someone@example.com" name="Email">
+    </div>
+
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" placeholder="Password" name="Password">
+    </div>
+
+    <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" class="form-control" placeholder="Confirm Password" name="Password2">
+    </div>
+    <fieldset class="form-group">
+        <legend>Sign Up as </legend>
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="radio" class="form-check-input" name="Role" id="RoleStudent" value="Student" checked>
+                I am a Student
+            </label>
+        </div>
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="radio" class="form-check-input" name="Role" id="RoleTeacher" value="Teacher">
+                I am a Teacher
+            </label>
+        </div>
+    </fieldset>
+    <div class="form-group">
+        <label>Roll Number</label>
+        <input type="text" class="form-control" placeholder="Leave Blank if teacher" name="Roll">
+    </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>

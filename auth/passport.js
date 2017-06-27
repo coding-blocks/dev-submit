@@ -3,41 +3,62 @@
  */
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const models = require('./models');
+const models = require('../utils/models');
+const db = require('../utils/db');
+
+passport.use(new LocalStrategy(
+    function (username,password,done) {
+        models.UserLocal.findOne({
+            where: {
+                username: username
+            },
+            include : [{
+                model: models.Users,
+                include : [{
+                    model: models.Students
+                },
+                    {
+                      model: models.Teachers
+                    }]
+            }]
+        }).then(function (data) {
+            if(!data){
+                return done(null,false,{message: "Incorrect Username"});
+            }
+            else{
+                console.log("hi")
+                db.validateLocalPassword(data.dataValues,password,done,function (user,isValid,callback) {
+                    if(isValid){
+                        callback(null,user);
+                    }
+                    else{
+                        callback(null,false,{message: 'Invalid Password'});
+                    }
+                });
+            }
+        }).catch(function (err) {
+            if(err) return done(err);
+        });
+    }));
 
 passport.serializeUser(function (user, done) {
-    done(null, user.email);
+    let isStudent = !!user.user.dataValues.student;
+    done(null, {
+        id: user.userId,
+        isStudent: isStudent
+    });
 });
 
-passport.deserializeUser(function (email, done) {
-    models.User.findOne({
+passport.deserializeUser(function (obj, done) {
+    let table = obj.isStudent?models.Students:models.Teachers;
+    table.findOne({
         where: {
-            email: email
+            userId: obj.id
         }
     }).then((user) => {
         done(null, user);
-    })
+    });
 });
 
 
-passport.use(new LocalStrategy(function (username, password, cb) {
-    models.UserLocal.findOne({
-        where: {
-            username: username
-        },
-        include: [models.User]
-    }).then((userlocal) => {
-        if (!userlocal) {
-            return cb(null, false, {message: 'Wrong Username'})
-        }
-
-        if (userlocal.password == password) {
-            return cb(null, userlocal.user)
-        } else {
-            return cb(null, false, {message: 'Wrong Password'})
-        }
-
-    }).catch((err) => {
-        return cb(err, false);
-    })
-}));
+module.exports = passport;
