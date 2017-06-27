@@ -4,15 +4,32 @@
 const Sequelize = require('sequelize');
 const models = require('./models');
 
+//function
 
+
+//function to add a teacher
+
+function addTeacher(teacher, done) {
+
+    models.Teachers.create({
+        name: teacher.name,
+        email: teacher.email
+    }).then(function (data) {
+        done(data);
+    }).catch(function (err) {
+        if (err) throw err;
+    })
+
+
+}
 //function to add student
-function addStudent(name, roll, email, done, Course) {
+function addStudent(name, roll, email, done, Batch) {
     models.Students.create({
         roll: roll,
         name: name,
         email: email
     }).then(function (data) {
-        if (Course) enrollStudentInCourse(roll, Course, done);
+        if (Batch) enrollStudentInBatch(roll, Batch, done);
         else done(data);
     }).catch(function (err) {
         if (err) throw err;
@@ -123,7 +140,7 @@ function deleteStudent(studentId, echo, done) {
         }
     }).then(function () {
 
-        models.StudentCourse.destroy({
+        models.StudentBatch.destroy({
             where: {
                 studentId: studentId
             }
@@ -166,14 +183,14 @@ function deleteStudent(studentId, echo, done) {
 }
 
 //function to add a new assignment
-function addAssignment(name, desc, courseId, done) {
+function addAssignment(name, desc, batchId, done) {
     models.Assignments.create({
         name: name,
         description: desc
     }).then(function (data) {
-        if (courseId) {
+        if (batchId) {
             done(data);
-            addAssignmentToCourse(data.id, courseId, ()=> {
+            addAssignmentToBatch(data.id, batchId, ()=> {
             });
         }
         else done(data);
@@ -210,11 +227,11 @@ function searchAssignment(id, done) {
 
 }
 
-//function to get all assignments in a course
-function findAssignmentsInCourse(courseId, done) {
-    models.CourseAssignments.findAll({
+//function to get all assignments in a batch
+function findAssignmentsInBatch(batchId, done) {
+    models.BatchAssignments.findAll({
         where: {
-            courseId: courseId
+            batchId: batchId
         }
     }).then(function (data) {
         let arr = [];
@@ -270,7 +287,7 @@ function deleteAssignment(assignmentId, done) {
             assignmentId: assignmentId
         }
     }).then(function () {
-        models.CourseAssignments.destroy({
+        models.BatchAssignments.destroy({
             where: {
                 assignmentId: assignmentId
             }
@@ -302,11 +319,11 @@ function deleteAssignment(assignmentId, done) {
 
 }
 
-//function to add course
-function addCourse(name, teacher, startDate, endDate, done) {
+//function to add batch
+function addBatch(name, teacher, startDate, endDate, done) {
 
     if (!endDate) {
-        models.Courses.create({
+        models.Batches.create({
             name: name,
             teacher: teacher,
             startDate: new Date(),
@@ -319,7 +336,7 @@ function addCourse(name, teacher, startDate, endDate, done) {
         });
     }
     else {
-        models.Courses.create({
+        models.Batches.create({
             name: name,
             teacher: teacher,
             startDate: startDate,
@@ -334,10 +351,10 @@ function addCourse(name, teacher, startDate, endDate, done) {
 
 }
 
-//function to get all courses (overloaded for both active and passive)
-function getCourses(options, done) {
+//function to get all batches (overloaded for both active and passive)
+function getBatches(options, done) {
 
-    models.Courses.findAll({where: options}).then(function (data) {
+    models.Batches.findAll({where: options}).then(function (data) {
         done(data);
     }).then(function (err) {
         if (err) throw err;
@@ -346,10 +363,10 @@ function getCourses(options, done) {
 
 }
 
-//function to get a particular course
-function searchCourse(id, done) {
+//function to get a particular batch
+function searchBatch(id, done) {
 
-    models.Courses.findOne({
+    models.Batches.findOne({
         where: {
             id: id
         }
@@ -361,12 +378,12 @@ function searchCourse(id, done) {
 
 }
 
-//function to get courses
-function searchCourses(searchParameter, searchType, onlyActive, done) {
+//function to get batches
+function searchBatches(searchParameter, searchType, onlyActive, done) {
     if (onlyActive) {
         if (searchType == "name") {
 
-            models.Courses.findAll({where: {name: searchParameter, isActive: true}}).then(function (data) {
+            models.Batches.findAll({where: {name: searchParameter, isActive: true}}).then(function (data) {
                 done(data);
 
             }).catch(function (err) {
@@ -375,7 +392,7 @@ function searchCourses(searchParameter, searchType, onlyActive, done) {
 
         }
         else {
-            models.Courses.findAll({where: {teacher: searchParameter, isActive: true}}).then(function (data) {
+            models.Batches.findAll({where: {teacher: searchParameter, isActive: true}}).then(function (data) {
                 done(data);
 
             }).catch(function (err) {
@@ -386,7 +403,7 @@ function searchCourses(searchParameter, searchType, onlyActive, done) {
     else {
         if (searchType == "name") {
 
-            models.Courses.findAll({where: {name: searchParameter}}).then(function (data) {
+            models.Batches.findAll({where: {name: searchParameter}}).then(function (data) {
                 done(data);
 
             }).catch(function (err) {
@@ -395,7 +412,7 @@ function searchCourses(searchParameter, searchType, onlyActive, done) {
 
         }
         else {
-            models.Courses.findAll({where: {teacher: searchParameter}}).then(function (data) {
+            models.Batches.findAll({where: {teacher: searchParameter}}).then(function (data) {
                 done(data);
 
             }).catch(function (err) {
@@ -405,11 +422,11 @@ function searchCourses(searchParameter, searchType, onlyActive, done) {
     }
 }
 
-//function to end an active course
-function endCourse(courseID, done) {
-    models.Courses.findOne({
+//function to end an active batch
+function endBatch(batchID, done) {
+    models.Batches.findOne({
         where: {
-            id: courseID
+            id: batchID
         }
     }).then(function (row) {
         row.update({
@@ -424,11 +441,11 @@ function endCourse(courseID, done) {
     })
 }
 
-//function to get all students of course
-function getAllStudentsInCourse(courseId, done) {
-    models.StudentCourse.findAll({
+//function to get all students of batch
+function getAllStudentsInBatch(batchId, done) {
+    models.StudentBatch.findAll({
         where: {
-            courseId: courseId
+            batchId: batchId
         }
     }).then(function (data) {
         var arr = [];
@@ -449,12 +466,11 @@ function getAllStudentsInCourse(courseId, done) {
 }
 
 
-
 //TODO  Error: Can't set headers after they are sent.
 
 //add a submission
 function addSubmission(studentId, assnId, URL, done) {
-    models.StudentCourse.findAll({
+    models.StudentBatch.findAll({
         where: {
             studentId: studentId
         }
@@ -466,9 +482,9 @@ function addSubmission(studentId, assnId, URL, done) {
         let flag = false;
 
         for (let i = 0; i < data.length; i++) {
-            models.CourseAssignments.findOne({
+            models.BatchAssignments.findOne({
                 where: {
-                    courseId: data[i].dataValues.courseId,
+                    batchId: data[i].dataValues.batchId,
                     assignmentId: assnId
                 }
             }).then(function (row) {
@@ -590,10 +606,10 @@ function searchSubmissions(options, done) {
 
 }
 
-//function to search submissions by course
+//function to search submissions by batch
 //TODO done being called more than once
-function searchByCourse(courseId, onlyAccepted, done) {
-    models.CourseAssignments.findAll({where: {courseId: courseId}}).then(function (data) {
+function searchByBatch(batchId, onlyAccepted, done) {
+    models.BatchAssignments.findAll({where: {batchId: batchId}}).then(function (data) {
         let arr = [];
         let i = 0;
         let flag = false;
@@ -652,13 +668,13 @@ function editStudent(id, name, done, emailId, echo) {
     }
 }
 
-//function to edit a course
-function editCourse(id, name, teacher, endDate, done) {
+//function to edit a batch
+function editBatch(id, name, teacher, endDate, done) {
 
     if (name) {
         if (teacher) {
             if (endDate) {
-                searchCourse(id, function (data) {
+                searchBatch(id, function (data) {
                     data.update({
                         name: name,
                         teacher: teacher,
@@ -671,7 +687,7 @@ function editCourse(id, name, teacher, endDate, done) {
                 });
             }
             else {
-                searchCourse(id, function (data) {
+                searchBatch(id, function (data) {
                     data.update({
                         name: name,
                         teacher: teacher
@@ -686,7 +702,7 @@ function editCourse(id, name, teacher, endDate, done) {
         }
         else {
             if (endDate) {
-                searchCourse(id, function (data) {
+                searchBatch(id, function (data) {
                     data.update({
                         name: name,
                         endDate: endDate
@@ -698,7 +714,7 @@ function editCourse(id, name, teacher, endDate, done) {
                 });
             }
             else {
-                searchCourse(id, function (data) {
+                searchBatch(id, function (data) {
                     console.log(data);
                     data.update({
                         name: name
@@ -716,7 +732,7 @@ function editCourse(id, name, teacher, endDate, done) {
     else {
         if (teacher) {
             if (endDate) {
-                searchCourse(id, function (data) {
+                searchBatch(id, function (data) {
                     data.update({
                         teacher: teacher,
                         endDate: endDate
@@ -728,7 +744,7 @@ function editCourse(id, name, teacher, endDate, done) {
                 });
             }
             else {
-                searchCourse(id, function (data) {
+                searchBatch(id, function (data) {
                     data.update({
                         teacher: teacher
                     }).then(function (data) {
@@ -742,7 +758,7 @@ function editCourse(id, name, teacher, endDate, done) {
         }
         else {
             if (endDate) {
-                searchCourse(id, function (data) {
+                searchBatch(id, function (data) {
                     data.update({
                         endDate: endDate
                     }).then(function (data) {
@@ -759,10 +775,10 @@ function editCourse(id, name, teacher, endDate, done) {
     }
 }
 
-//function to delete course
+//function to delete batch
 //TODO cascade delete not working
-function deleteCourse(id, done) {
-    models.Courses.destroy({
+function deleteBatch(id, done) {
+    models.Batches.destroy({
         where: {
             id: id
         }
@@ -774,12 +790,12 @@ function deleteCourse(id, done) {
 }
 
 //function to handle a new enrollment
-function enrollStudentInCourse(studentParamType, studentParam, CourseId, done) {
+function enrollStudentInBatch(studentParamType, studentParam, BatchId, done) {
 
     searchStudents(studentParam, studentParamType, (data) => {
-        models.StudentCourse.create({
+        models.StudentBatch.create({
             studentId: data[0].dataValues.id,
-            courseId: CourseId
+            batchId: BatchId
 
         }).then(function (data) {
             done(data);
@@ -790,10 +806,10 @@ function enrollStudentInCourse(studentParamType, studentParam, CourseId, done) {
 
 }
 
-//function to add an assignment to a course
-function addAssignmentToCourse(assnID, courseID, done) {
-    models.CourseAssignments.create({
-        courseId: courseID,
+//function to add an assignment to a batch
+function addAssignmentToBatch(assnID, batchID, done) {
+    models.BatchAssignments.create({
+        batchId: batchID,
         assignmentId: assnID,
     }).then(function (data) {
         done(data);
@@ -810,28 +826,29 @@ module.exports = {
     searchStudent,
     searchStudents,
     editStudent,
-    editCourse,
+    editBatch,
     deleteStudent,
     addAssignment,
     getAssignments,
     searchAssignment,
-    findAssignmentsInCourse,
+    findAssignmentsInBatch,
     editAssignment,
     deleteAssignment,
-    addCourse,
-    getCourses,
-    searchCourse,
-    searchCourses,
-    deleteCourse,
+    addBatch,
+    getBatches,
+    searchBatch,
+    searchBatches,
+    deleteBatch,
     addSubmission,
     searchSubmissions,
-    searchByCourse,
-    enrollStudentInCourse,
-    addAssignmentToCourse,
-    endCourse,
+    searchByBatch,
+    enrollStudentInBatch,
+    addAssignmentToBatch,
+    endBatch,
     getSubmissions,
     acceptSubmissionbyId,
     acceptSubmissionWithoutId,
-    getAllStudentsInCourse
+    getAllStudentsInBatch,
+    addTeacher
 }
 
