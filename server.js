@@ -1,6 +1,6 @@
 const express = require('express')
 const bp = require('body-parser')
-const api_v1 = require('./Routes/api_v1')
+const api_v1 = require('./routes/api_v1')
 const validator = require('express-validator');
 
 

@@ -2,7 +2,7 @@
  * Created by varun on 5/24/17.
  */
 const express = require('express');
-const db = require('../Utils/db');
+const db = require('./db');
 
 const router = express.Router();
 

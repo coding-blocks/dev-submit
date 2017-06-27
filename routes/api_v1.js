@@ -4,10 +4,10 @@
 const express = require('express');
 const router = express.Router();
 
-const Students = require('./Students');
-const Assignments = require('./Assignments');
-const Batches = require('./Batches');
-const Submissions = require('./Submissions');
+const Students = require('./students');
+const Assignments = require('./assignments');
+const Batches = require('./batches');
+const Submissions = require('./submissions');
 const Signup=require('./signup');
 
 router.use('/students',Students);
