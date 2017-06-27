@@ -36,6 +36,7 @@
     "path": "^0.12.7",
     "pg": "^6.4.0",
     "postgresql": "0.0.1",
+    "rand-token": "^0.3.0",
     "randomstring": "^1.1.5",
     "sequelize": "^3.30.4"
   }
