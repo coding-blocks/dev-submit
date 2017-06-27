@@ -4,9 +4,8 @@
 
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize("tech4GT", "postgres", "", {
-    host: "localhost",
-    dialect: 'postgres',
+const sequelize = new Sequelize("devsubmitdatabase","root", "MyNewPass",  {
+    dialect: 'mysql',
 
     pool: {
         min: 0,
@@ -52,9 +51,9 @@ Batches.belongsTo(Teachers);
 Teachers.hasMany(Batches);
 
 
-
 //many to many for student to assignment
 const Submissions = sequelize.define('submission', {
+    id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
     status: Sequelize.BOOLEAN,
     URL: Sequelize.STRING
 });
@@ -103,12 +102,25 @@ const Users = sequelize.define('user', {
 });
 
 
-//one to one for students and userlocal
+//table to store access tokens
+const AuthToken=sequelize.define('authtoken',{
+    id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+    accesstoken:{type: Sequelize.STRING, unique: true},
+    clientoken:{type: Sequelize.STRING, unique: true}
+
+});
+
+//one to one for authtoken and Users
+AuthToken.belongsTo(Users);
+Users.hasOne(AuthToken);
+
+
+//one to one for students and users
 Students.belongsTo(Users);
 Users.hasOne(Students);
 
 
-//one to one for teachers and userlocal
+//one to one for teachers and users
 Teachers.belongsTo(Users);
 Users.hasOne(Teachers);
 
@@ -120,4 +132,15 @@ Users.hasOne(UserLocal);
 sequelize.sync();
 
 
-module.exports = {Students, Batches, Assignments, Submissions, BatchAssignments, StudentBatch, UserLocal, Teachers,Users};
+module.exports = {
+    Students,
+    Batches,
+    Assignments,
+    Submissions,
+    BatchAssignments,
+    StudentBatch,
+    UserLocal,
+    Teachers,
+    Users,
+    AuthToken
+};
