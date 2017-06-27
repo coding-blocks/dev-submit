@@ -8,12 +8,12 @@ const Students = require('./students');
 const Assignments = require('./assignments');
 const Batches = require('./batches');
 const Submissions = require('./submissions');
-const Signup=require('./signup');
+const Teachers = require('./teachers')
 
 router.use('/students',Students);
 router.use('/assignments',Assignments);
 router.use('/batches',Batches);
 router.use('/submissions',Submissions)
-router.use('/signup',Signup)
+router.use('/teachers',Teachers)
 
 module.exports = router;

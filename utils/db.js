@@ -1,39 +1,46 @@
 /**
  * Created by varun on 5/24/17.
  */
-const Sequelize = require('sequelize');
 const models = require('./models');
-
-//function
-
+const bcrypt = require('bcrypt');
 
 //function to add a teacher
-
-function addTeacher(teacher, done) {
+function addTeacher(name,email,userId, done) {
 
     models.Teachers.create({
-        name: teacher.name,
-        email: teacher.email
+        name: name,
+        email: email,
+        userId: userId
     }).then(function (data) {
         done(data);
     }).catch(function (err) {
         if (err) throw err;
-    })
-
-
+    });
 }
+
 //function to add student
-function addStudent(name, roll, email, done, Batch) {
+function addStudent(name, roll, email,UserID, done, Batch) {
     models.Students.create({
         roll: roll,
         name: name,
-        email: email
+        email: email,
+        userId: UserID
     }).then(function (data) {
         if (Batch) enrollStudentInBatch(roll, Batch, done);
         else done(data);
     }).catch(function (err) {
         if (err) throw err;
     });
+}
+
+//function to get teachers list
+function getTeachers(done) {
+    models.Teachers.findAll().then(function (data) {
+        done(data);
+    }).catch(function (err) {
+        if (err) throw err;
+    });
+
 }
 
 //function to get students list
@@ -45,7 +52,18 @@ function getStudents(done) {
     });
 }
 
-//function to get get student with a particular roll
+//function to get teacher with a particular email
+function searchTeacher(id,done) {
+    models.Teachers.findOne({where: {id: id}}).then(function (data) {
+        done(data);
+    }).catch(function (err) {
+        if (err) throw err;
+    });
+
+
+}
+
+//function to get student with a particular roll
 function searchStudent(id, done) {
 
     models.Students.findOne({where: {id: id}}).then(function (data) {
@@ -54,6 +72,28 @@ function searchStudent(id, done) {
     }).catch(function (err) {
         if (err) throw err;
     });
+}
+
+//function to search multiple students for a query
+function searchTeachers(searchParameter,searchType,done) {
+    if (searchType == "name") {
+
+        models.Teachers.findAll({where: {name: searchParameter}}).then(function (data) {
+            done(data);
+
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+
+    }
+    else {
+        models.Teachers.findAll({where: {email: searchParameter}}).then(function (data) {
+            done(data);
+
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+    }
 }
 
 //function to search multiple students for a query
@@ -95,6 +135,43 @@ function searchStudents(searchParameter, searchType, done) {
     }
 }
 
+//function to edit a Teacher
+function editTeacher(id,name,done,emailId,echo) {
+    if (emailId) {
+        searchTeacher(id, function (data) {
+            data.update({
+                name: name,
+                email: emailId
+            }).then(function (data) {
+                if (echo) {
+                    done(data);
+                }
+                else {
+                    done("Success");
+                }
+            }).catch(function (err) {
+                if (err) throw err;
+            });
+        });
+    }
+    else {
+        searchTeacher(id, function (data) {
+            data.update({
+                name: name
+            }).then(function (data) {
+                if (echo) {
+                    done(data);
+                }
+                else {
+                    done("Success");
+                }
+            }).catch(function (err) {
+                if (err) throw err;
+            });
+        });
+    }
+}
+
 //function to edit a student
 function editStudent(id, name, done, emailId, echo) {
     if (emailId) {
@@ -130,6 +207,29 @@ function editStudent(id, name, done, emailId, echo) {
             });
         });
     }
+}
+
+//TODO add hook to destroy teacher batches if required
+//function to delete a teacher
+function deleteTeacher(teacherId,echo,done) {
+    models.Teachers.findOne({
+        where : {
+            id : teacherId
+        }
+    }).then(function (resData) {
+        models.Teachers.destroy({
+            where : {
+                id: teacherId
+            }
+        }).then(function (data) {
+            if(echo) done(resData)
+            else done({"success" : true});
+        })   .catch(function (err) {
+            if(err) throw err;
+        })
+    }).catch(function (err) {
+        if(err) throw err;
+    });
 }
 
 //function to delete a student
@@ -210,7 +310,6 @@ function getAssignments(options, done) {
         if (err) throw err;
     });
 }
-
 
 //function to search assignments based on a parameter
 function searchAssignment(id, done) {
@@ -320,12 +419,12 @@ function deleteAssignment(assignmentId, done) {
 }
 
 //function to add batch
-function addBatch(name, teacher, startDate, endDate, done) {
+function addBatch(name, teacherId, startDate, endDate, done) {
 
     if (!endDate) {
         models.Batches.create({
             name: name,
-            teacher: teacher,
+            teacherId: teacherId,
             startDate: new Date(),
             endDate: new Date().setMonth(new Date().getMonth() + 3),
             isActive: true
@@ -631,43 +730,6 @@ function searchByBatch(batchId, onlyAccepted, done) {
     });
 }
 
-//function to edit the details of a student
-function editStudent(id, name, done, emailId, echo) {
-    if (emailId) {
-        searchStudent(id, function (data) {
-            data.update({
-                name: name,
-                email: emailId
-            }).then(function (data) {
-                if (echo) {
-                    done(data);
-                }
-                else {
-                    done("Success");
-                }
-            }).catch(function (err) {
-                if (err) throw err;
-            });
-        });
-    }
-    else {
-        searchStudent(id, function (data) {
-            data.update({
-                name: name
-            }).then(function (data) {
-                if (echo) {
-                    done(data);
-                }
-                else {
-                    done("Success");
-                }
-            }).catch(function (err) {
-                if (err) throw err;
-            });
-        });
-    }
-}
-
 //function to edit a batch
 function editBatch(id, name, teacher, endDate, done) {
 
@@ -819,15 +881,52 @@ function addAssignmentToBatch(assnID, batchID, done) {
 
 }
 
+//function to add user
+function addUser(done) {
+    models.Users.create({}).then(function (data) {
+        console.log(data);
+        done(data);
+    }).catch(function (err) {
+        if(err) throw err;
+    });
+}
+
+function addLocalUser(username,password,uid, done) {
+    bcrypt.hash(password, 10, function (err, hash) {
+        password = hash;
+        models.UserLocal.create({
+            username: username,
+            password: password,
+            userId: uid
+        }).then(function (data) {
+            done(data);
+        }).catch(function (err) {
+            if (err) throw err;
+        });
+    });
+}
+function validateLocalPassword(user, password, PassportDone, done) {
+    bcrypt.compare(password, user.password, function (err, isMatch) {
+        if (err) throw err;
+        done(user, isMatch, PassportDone);
+    });
+
+}
 
 module.exports = {
     addStudent,
+    addTeacher,
     getStudents,
+    getTeachers,
     searchStudent,
+    searchTeacher,
     searchStudents,
+    searchTeachers,
     editStudent,
-    editBatch,
+    editTeacher,
     deleteStudent,
+    deleteTeacher,
+    editBatch,
     addAssignment,
     getAssignments,
     searchAssignment,
@@ -849,6 +948,9 @@ module.exports = {
     acceptSubmissionbyId,
     acceptSubmissionWithoutId,
     getAllStudentsInBatch,
-    addTeacher
+    addTeacher,
+    addUser,
+    addLocalUser,
+    validateLocalPassword
 }
 
