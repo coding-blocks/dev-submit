@@ -3,15 +3,51 @@
  */
 
 const express = require('express');
-const db = require('./db');
+const bitballoon = require('bitballoon')
+const randomstring = require('randomstring')
+const db = require('../utils/db');
+const config = require('../utils/config')
 
 const router = express.Router();
+const client = bitballoon.createClient({
+    client_id: config.BB_client_id,
+    client_secret: config.BB_client_secret,
+    access_token: config.BB_token
+});
+
+client.authorizeFromCredentials(function (err, access_token) {
+    if (err) return console.log(err);
+});
 
 
 router.post('/new', function (req, res) {
-    db.addSubmission(req.body.studentId, req.body.assignmentId, req.body.URL, (data) => {
-        res.send(data);
+    if(req.body.URL){
+        db.addSubmission(req.body.studentId, req.body.assignmentId, req.body.URL, (data) => {
+            res.send(data);
     });
+    }
+    else {
+        client.createSite({}, function (err, site) {
+            let id = site.id;
+            let randString = randomstring.generate();
+            req.files.zip.mv('files/' + randString + '.zip', function (err) {
+            if (err) return res.status(500).send(err);
+                client.site(id, function (err, site) {
+                if (err) return console.log("Error finding site %o", err);
+                    site.createDeploy({zip: 'files/' + randString + '.zip'}, function (err, deploy) {
+                    if (err) return console.log("Error updating site %o", err);
+                        deploy.waitForReady(function (err, deploy) {
+                        if (err) return console.log("Error updating site %o", err);
+                            console.log("Site deployed");
+                            db.addSubmission(req.body.studentId, req.body.assignmentId, site.url, (data) => {
+                                res.send(data);
+                        });
+                    });
+                });
+            });
+        });
+    });
+}
 });
 
 router.get('/', function (req, res) {

@@ -1,0 +1,17 @@
+<h2 class="page-header">Dashboard</h2>
+<p>Welcome to your dashboard
+{{#if user.roll}}
+     Student
+{{else}}
+     Teacher
+{{/if}}
+</p>
+        <div class="bg-info">
+            Name : {{{user.name}}}
+            <br>
+            Email : {{{user.email}}}
+    {{#if user.roll}}
+        <br>
+        Roll Number : {{{user.roll}}}
+    {{/if}}
+        </div>

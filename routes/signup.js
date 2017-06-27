@@ -3,9 +3,9 @@
  */
 const route = require('express').Router();
 const passport = require('../auth/passport');
-const db = require('./db');
-const models = require('./models');
-const config = require('./config');
+const db = require('../utils/db');
+const models = require('../utils/models');
+const config = require('../utils/config');
 
 route.get('/', (req, res) => {
     res.render("signup-options", {});
