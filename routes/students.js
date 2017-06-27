@@ -2,7 +2,7 @@
  * Created by varun on 5/24/17.
  */
 const express = require('express');
-const db = require('../Utils/db');
+const db = require('./db');
 
 const router = express.Router();
 
@@ -74,9 +74,9 @@ router.delete('/:id',function (req, res) {
 
 
 //tested
-router.post('/:id/enroll/:courseId',function (req, res) {
+router.post('/:id/enroll/:batchId',function (req, res) {
     let echo = req.query.echo;
-    db.enrollStudentInCourse("id",req.params.id , req.params.courseId , (data)=>{
+    db.enrollStudentInBatch("id",req.params.id , req.params.batchId , (data)=>{
         if(echo){
             res.send(data);
         }
@@ -95,13 +95,13 @@ router.post('/:id/enroll/:courseId',function (req, res) {
 module.exports = router;
 
 
-// db.addCourse("Elixir" , "Arnav Gupta" , new Date() , new Date() , () => {
-//     res.send("Course Added Successfully");
+// db.addBatch("Elixir" , "Arnav Gupta" , new Date() , new Date() , () => {
+//     res.send("Batch Added Successfully");
 // })
 
-// db.enrollStudentInCourse(4153 , 1 , ()=>{res.send("success")});
+// db.enrollStudentInBatch(4153 , 1 , ()=>{res.send("success")});
 
-// db.endCourse(1,()=>{res.
+// db.endBatch(1,()=>{res.
 //
 // send("success")});
 
@@ -125,12 +125,12 @@ module.exports = router;
     /:id
     /new
     /?name=Varun&roll=
-    /:id/enroll/:courseId
+    /:id/enroll/:batchId
 
 
 
 //TODO abhishek this is your stuff
-/courses
+/batches
     /:id
     /new
     /:id/enroll [POST] - body - Array<id> or Array<roll> or Array<email>
@@ -147,8 +147,8 @@ module.exports = router;
 
 //TODO I am making this
 /submissions
-    /?course=Pandora - [GET]  Array<submissions>
-    /new [POST] studentId, courseId, link
+    /?batch=Pandora - [GET]  Array<submissions>
+    /new [POST] studentId, batchId, link
     /:id [PUT] for changing status from submitted to accepted
 
  */
