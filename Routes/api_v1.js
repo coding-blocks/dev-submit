@@ -6,12 +6,14 @@ const router = express.Router();
 
 const Students = require('./Students');
 const Assignments = require('./Assignments');
-const Courses = require('./Courses');
+const Batches = require('./Batches');
 const Submissions = require('./Submissions');
+const Signup=require('./signup');
 
 router.use('/students',Students);
 router.use('/assignments',Assignments);
-router.use('/courses',Courses);
+router.use('/batches',Batches);
 router.use('/submissions',Submissions)
+router.use('/signup',Signup)
 
 module.exports = router;

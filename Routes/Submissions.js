@@ -17,8 +17,8 @@ router.post('/new', function (req, res) {
 router.get('/', function (req, res) {
 
     var options = {};
-    if (req.query.course) {
-        db.searchByCourse(req.query.course, req.query.onlyAccepted, (data) => {
+    if (req.query.batch) {
+        db.searchByBatch(req.query.batch, req.query.onlyAccepted, (data) => {
             res.send(data);
         });
     }

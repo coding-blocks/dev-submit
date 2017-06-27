@@ -12,7 +12,7 @@ const router = express.Router();
 //tested
 router.post('/new', function (req, res) {
     console.log(req.body.desc)
-    db.addAssignment(req.body.name, req.body.desc, req.body.courseId, (data) => {
+    db.addAssignment(req.body.name, req.body.desc, req.body.batchId, (data) => {
         let arr = [];
         arr.push(data.dataValues);
         res.send(arr);
@@ -26,12 +26,12 @@ router.get('/', function (req, res) {
 
     let type = "all";
     let name = req.query.name;
-    let courseId = req.query.courseId;
+    let batchId = req.query.batchId;
 
     if (name) {
         options.name = name;
     }
-    else if (courseId) {
+    else if (batchId) {
         options.id = id;
     }
     db.getAssignments(options, (data)=> {
@@ -66,8 +66,8 @@ router.delete('/:id', function (req, res) {
 });
 
 //tested
-router.post('/:id/addToCourse/:courseId', function (req, res) {
-    db.addAssignmentToCourse(req.params.id, req.params.courseId, (data)=> {
+router.post('/:id/addToBatch/:batchId', function (req, res) {
+    db.addAssignmentToBatch(req.params.id, req.params.batchId, (data)=> {
         res.send(data);
     });
 });
