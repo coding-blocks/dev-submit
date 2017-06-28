@@ -5,7 +5,7 @@
 const express = require('express');
 const bitballoon = require('bitballoon');
 const randomstring = require('randomstring');
-const db = require('../utils/db');
+const db = require('../utils/actions');
 const config = require('../utils/config');
 
 const router = express.Router();

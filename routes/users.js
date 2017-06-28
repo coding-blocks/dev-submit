@@ -3,7 +3,7 @@
  */
 const express = require('express');
 const passport = require('../auth/passport');
-const db = require('../utils/db');
+const db = require('../utils/actions');
 
 const router = express.Router();
 

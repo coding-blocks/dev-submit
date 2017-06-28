@@ -3,7 +3,7 @@
  */
 var passport = require('passport');
 const models = require('../utils/models');
-const db = require('../utils/db');
+const db = require('../utils/actions');
 const randtoken = require('rand-token');
 
 

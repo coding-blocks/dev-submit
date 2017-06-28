@@ -3,7 +3,7 @@
  */
 const OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
 const models = require('../../utils/models');
-const db = require('../../utils/db');
+const db = require('../../utils/actions');
 const axios = require('axios');
 const secrets = require('./../../secrets.json');
 

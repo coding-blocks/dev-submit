@@ -3,8 +3,7 @@
  */
 const LocalStrategy = require('passport-local').Strategy;
 const models = require('../../utils/models');
-const db = require('../../utils/db');
-
+const db = require('../../utils/actions');
 
 
 module.exports = new LocalStrategy(
