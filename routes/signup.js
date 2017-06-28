@@ -3,8 +3,8 @@
  */
 const route = require('express').Router();
 const passport = require('../auth/passport');
-const db = require('../utils/db');
-const models = require('../utils/models');
+const db = require('../db/actions');
+const models = require('../db/models');
 const config = require('../utils/config');
 
 route.get('/', (req, res) => {

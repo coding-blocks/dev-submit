@@ -4,8 +4,8 @@
 var passport = require('passport')
     , OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
 const LocalStrategy = require('passport-local').Strategy;
-const models = require('../utils/models');
-const db = require('../utils/db');
+const models = require('../db/models');
+const db = require('../db');
 var http = require('http');
 var randtoken = require('rand-token');
 const axios = require('axios')
@@ -38,7 +38,7 @@ passport.use(new LocalStrategy(
             }
             else {
                 console.log("hi")
-                db.validateLocalPassword(data.dataValues, password, done, function (user, isValid, callback) {
+                db.actions.validatePassword.validateLocalPassword(data.dataValues, password, done, function (user, isValid, callback) {
                     if (isValid) {
                         callback(null, user);
                     }
