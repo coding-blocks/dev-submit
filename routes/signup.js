@@ -3,7 +3,7 @@
  */
 const route = require('express').Router();
 const passport = require('../auth/passport');
-const db = require('../utils/db');
+const db = require('../utils/actions');
 const models = require('../utils/models');
 const config = require('../utils/config');
 

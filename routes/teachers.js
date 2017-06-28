@@ -2,7 +2,7 @@
  * Created by tech4GT on 6/27/17.
  */
 const express = require('express');
-const db = require('../utils/db');
+const db = require('../utils/actions');
 
 const router = express.Router();
 
