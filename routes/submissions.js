@@ -64,7 +64,7 @@ router.post('/new', function(req, res) {
 router.get('/', function(req, res) {
   var options = {};
   if (req.query.batch) {
-    db.actions.batches.searchByBatch(req.query.batch, req.query.onlyAccepted, data => {
+    db.actions.submissions.searchByBatch(req.query.batch, req.query.onlyAccepted, data => {
       res.send(data);
     });
   } else {
@@ -97,7 +97,7 @@ router.get('/:param', function(req, res) {
 });
 
 router.put('/:param', function(req, res) {
-  db.actions.submissions.acceptSubmissionbyId(req.params.param, req.query.echo, data => {
+  db.actions.submissionsacceptSubmissionbyId(req.params.param, req.query.echo, data => {
     res.send(data);
   });
 });

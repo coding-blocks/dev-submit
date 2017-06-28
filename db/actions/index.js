@@ -10,11 +10,11 @@ const users = require('./users');
 const validatePassword = require('./validatepassword');
 
 module.exports = {
+    users,
+    validatePassword,
     teachers,
+    submissions,
+    students,
     batches,
     assignments,
-    students,
-    submissions,
-    users,
-    validatePassword
 }

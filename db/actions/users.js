@@ -1,13 +1,13 @@
 /**
  * Created by abhishekyadav on 28/06/17.
  */
-const db = require('../../db');
+const models = require('../models');
 const bcrypt = require('bcrypt');
 
 
 //function to add user
 function addUser(done) {
-    db.models.Users
+    models.Users
         .create({})
         .then(function(data) {
             console.log(data);
@@ -21,7 +21,7 @@ function addUser(done) {
 function addLocalUser(username, password, uid, done) {
     bcrypt.hash(password, 10, function(err, hash) {
         password = hash;
-        db.models.UserLocal
+        models.UserLocal
             .create({
                 username: username,
                 password: password,

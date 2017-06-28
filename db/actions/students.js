@@ -1,14 +1,14 @@
 /**
  * Created by abhishekyadav on 28/06/17.
  */
-const db = require('../../db');
+const models = require('../models');
 const bcrypt = require('bcrypt');
 
 
 
 //function to add student
 function addStudent(name, roll, email, UserID, done, Batch) {
-    db.models.Students
+    models.Students
         .create({
             roll: roll,
             name: name,
@@ -16,7 +16,7 @@ function addStudent(name, roll, email, UserID, done, Batch) {
             userId: UserID
         })
         .then(function (data) {
-            if (Batch) db.actions.batches.enrollStudentInBatch(roll, Batch, done);
+            if (Batch) enrollStudentInBatch(roll, Batch, done);
             else done(data);
         })
         .catch(function (err) {
@@ -27,7 +27,7 @@ function addStudent(name, roll, email, UserID, done, Batch) {
 
 //function to get students list
 function getStudents(done) {
-    db.models.Students
+    models.Students
         .findAll()
         .then(function (data) {
             done(data);
@@ -40,7 +40,7 @@ function getStudents(done) {
 
 //function to get student with a particular roll
 function searchStudent(id, done) {
-    db.models.Students
+    models.Students
         .findOne({where: {id: id}})
         .then(function (data) {
             done(data);
@@ -54,7 +54,7 @@ function searchStudent(id, done) {
 //function to search multiple students for a query
 function searchStudents(searchParameter, searchType, done) {
     if (searchType == 'name') {
-        db.models.Students
+        models.Students
             .findAll({where: {name: searchParameter}})
             .then(function (data) {
                 done(data);
@@ -63,7 +63,7 @@ function searchStudents(searchParameter, searchType, done) {
                 if (err) throw err;
             });
     } else if (searchType == 'id') {
-        db.models.Students
+        models.Students
             .findAll({where: {id: searchParameter}})
             .then(function (data) {
                 done(data);
@@ -72,7 +72,7 @@ function searchStudents(searchParameter, searchType, done) {
                 if (err) throw err;
             });
     } else if (searchType == 'roll') {
-        db.models.Students
+        models.Students
             .findAll({where: {roll: searchParameter}})
             .then(function (data) {
                 done(data);
@@ -81,7 +81,7 @@ function searchStudents(searchParameter, searchType, done) {
                 if (err) throw err;
             });
     } else {
-        db.models.Students
+        models.Students
             .findAll({where: {email: searchParameter}})
             .then(function (data) {
                 done(data);
@@ -96,7 +96,7 @@ function searchStudents(searchParameter, searchType, done) {
 //function to edit a student
 function editStudent(id, name, done, emailId, echo) {
     if (emailId) {
-        db.actions.students.searchStudent(id, function (data) {
+       searchStudent(id, function (data) {
             data
                 .update({
                     name: name,
@@ -114,7 +114,7 @@ function editStudent(id, name, done, emailId, echo) {
                 });
         });
     } else {
-        db.actions.students.searchStudent(id, function (data) {
+        searchStudent(id, function (data) {
             data
                 .update({
                     name: name
@@ -136,14 +136,14 @@ function editStudent(id, name, done, emailId, echo) {
 
 //function to delete a student
 function deleteStudent(studentId, echo, done) {
-    db.models.Submissions
+    models.Submissions
         .destroy({
             where: {
                 studentId: studentId
             }
         })
         .then(function () {
-            db.models.StudentBatch
+            models.StudentBatch
                 .destroy({
                     where: {
                         studentId: studentId
@@ -151,10 +151,10 @@ function deleteStudent(studentId, echo, done) {
                 })
                 .then(function () {
                     if (echo) {
-                        db.models.Students
+                        models.Students
                             .findOne({where: {id: studentId}})
                             .then(function (responseData) {
-                                db.models.Students
+                                models.Students
                                     .destroy({
                                         where: {
                                             id: studentId
@@ -171,7 +171,7 @@ function deleteStudent(studentId, echo, done) {
                                 if (err) throw err;
                             });
                     } else {
-                        db.models.Students
+                        models.Students
                             .destroy({
                                 where: {
                                     id: studentId
@@ -193,6 +193,49 @@ function deleteStudent(studentId, echo, done) {
             if (err) throw err;
         });
 }
+//function to handle a new enrollment
+function enrollStudentInBatch(studentParamType, studentParam, BatchId, done) {
+    searchStudents(studentParam, studentParamType, data => {
+        db.models.StudentBatch
+            .create({
+                studentId: data[0].dataValues.id,
+                batchId: BatchId
+            })
+            .then(function (data) {
+                done(data);
+            })
+            .catch(function (err) {
+                if (err) throw err;
+            });
+    });
+}
+
+
+//function to get all students of batch
+function getAllStudentsInBatch(batchId, done) {
+    db.models.StudentBatch
+        .findAll({
+            where: {
+                batchId: batchId
+            }
+        })
+        .then(function (data) {
+            var arr = [];
+            if (data.length == 0) {
+                return done(arr);
+            }
+
+            for (let i = 0; i < data.length; i++) {
+                searchStudent(data[i].dataValues.studentId, studentData => {
+                    arr.push(studentData);
+                    if (arr.length == data.length) done(arr);
+                });
+            }
+        })
+        .catch(function (err) {
+            if (err) throw err;
+        });
+}
 
 module.exports = {
     addStudent,
@@ -200,5 +243,7 @@ module.exports = {
     searchStudents,
     searchStudent,
     editStudent,
-    deleteStudent
+    deleteStudent,
+    enrollStudentInBatch,
+    getAllStudentsInBatch
 }

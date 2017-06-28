@@ -3,6 +3,7 @@
  */
 
 const db = require('../../db');
+const models=require('../models');
 
 
 //function to add batch
@@ -43,7 +44,7 @@ function addBatch(name, teacherId, startDate, endDate, done) {
 //function to get all batches (overloaded for both active and passive)
 function getBatches(options, done) {
     console.log(db);
-    db.models.Batches
+    models.Batches
         .findAll({where: options})
         .then(function (data) {
             done(data);
@@ -272,22 +273,7 @@ function deleteBatch(id, done) {
         });
 }
 
-//function to handle a new enrollment
-function enrollStudentInBatch(studentParamType, studentParam, BatchId, done) {
-    db.actions.students.searchStudents(studentParam, studentParamType, data => {
-        db.models.StudentBatch
-            .create({
-                studentId: data[0].dataValues.id,
-                batchId: BatchId
-            })
-            .then(function (data) {
-                done(data);
-            })
-            .catch(function (err) {
-                if (err) throw err;
-            });
-    });
-}
+
 
 //function to add an assignment to a batch
 function addAssignmentToBatch(assnID, batchID, done) {
@@ -304,35 +290,10 @@ function addAssignmentToBatch(assnID, batchID, done) {
         });
 }
 
-//function to get all students of batch
-function getAllStudentsInBatch(batchId, done) {
-    db.models.StudentBatch
-        .findAll({
-            where: {
-                batchId: batchId
-            }
-        })
-        .then(function (data) {
-            var arr = [];
-            if (data.length == 0) {
-                return done(arr);
-            }
 
-            for (let i = 0; i < data.length; i++) {
-                db.actions.students.searchStudent(data[i].dataValues.studentId, studentData => {
-                    arr.push(studentData);
-                    if (arr.length == data.length) done(arr);
-                });
-            }
-        })
-        .catch(function (err) {
-            if (err) throw err;
-        });
-}
 
 
 module.exports = {
-    getAllStudentsInBatch,
     addBatch,
     getBatches,
     searchBatches,
@@ -341,6 +302,6 @@ module.exports = {
     editBatch,
     deleteBatch,
     addAssignmentToBatch,
-    enrollStudentInBatch,
+
 
 }

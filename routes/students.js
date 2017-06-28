@@ -9,7 +9,7 @@ const router = express.Router();
 //done
 router.post('/new', function(req, res) {
   db.actions.users.addUser(data => {
-    db.addStudent(
+    db.models.addStudent(
       req.body.name,
       req.body.roll,
       req.body.email,
@@ -78,7 +78,7 @@ router.delete('/:id', function(req, res) {
 //done
 router.post('/:id/enroll/:batchId', function(req, res) {
   let echo = req.query.echo;
-  db.actions.batches.enrollStudentInBatch('id', req.params.id, req.params.batchId, data => {
+  db.actions.students.enrollStudentInBatch('id', req.params.id, req.params.batchId, data => {
     if (echo) {
       res.send(data);
     } else {
