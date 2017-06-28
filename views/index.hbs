@@ -7,11 +7,23 @@
 {{/if}}
 </p>
         <div class="bg-info">
-            Name : {{{user.name}}}
+            <span><b>Name : {{{user.name}}}</span>
             <br>
-            Email : {{{user.email}}}
+            <span>Email : {{{user.email}}}</span>
     {{#if user.roll}}
         <br>
-        Roll Number : {{{user.roll}}}
+        <span>Roll Number : {{{user.roll}}}</span>
     {{/if}}
         </div>
+<br>
+<br>
+</b>
+{{#if user.val}}
+    <form method="post" action="/users/signup">
+        <div class="form-group">
+            <label style="color: lightcoral">You have not yet entered your role**</label>
+            <input type="text" class="form-control alert-danger" placeholder="Role" name="role">
+        </div>
+        <button type="submit" class = "btn btn-success">Complete registeration</button>
+    </form>
+{{/if}}
