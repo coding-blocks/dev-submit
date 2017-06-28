@@ -4,8 +4,8 @@
 
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize("devsubmitdatabase","root", "MyNewPass",  {
-    dialect: 'mysql',
+const sequelize = new Sequelize("tech4GT","postgres", "",  {
+    dialect: 'postgres',
 
     pool: {
         min: 0,
@@ -129,7 +129,7 @@ UserLocal.belongsTo(Users);
 Users.hasOne(UserLocal);
 
 
-sequelize.sync();
+sequelize.sync({force : true});
 
 
 module.exports = {
