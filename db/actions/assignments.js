@@ -2,12 +2,12 @@
  * Created by abhishekyadav on 28/06/17.
  */
 
-const models = require('./models');
+const db = require('../../db');
 
 
 //function to add a new assignment
 function addAssignment(name, desc, batchId, done) {
-    models.Assignments
+    db.models.Assignments
         .create({
             name: name,
             description: desc
@@ -15,7 +15,7 @@ function addAssignment(name, desc, batchId, done) {
         .then(function (data) {
             if (batchId) {
                 done(data);
-                addAssignmentToBatch(data.id, batchId, () => {
+                db.actions.batches.addAssignmentToBatch(data.id, batchId, () => {
                 });
             } else done(data);
         })
@@ -26,7 +26,7 @@ function addAssignment(name, desc, batchId, done) {
 
 //function to get all assignments
 function getAssignments(options, done) {
-    models.Assignments
+    db.models.Assignments
         .findAll({
             where: options
         })
@@ -40,7 +40,7 @@ function getAssignments(options, done) {
 
 //function to search assignments based on a parameter
 function searchAssignment(id, done) {
-    models.Assignments
+    db.models.Assignments
         .findOne({
             where: {
                 id: id
@@ -56,7 +56,7 @@ function searchAssignment(id, done) {
 
 //function to get all assignments in a batch
 function findAssignmentsInBatch(batchId, done) {
-    models.BatchAssignments
+    db.models.BatchAssignments
         .findAll({
             where: {
                 batchId: batchId
@@ -66,7 +66,7 @@ function findAssignmentsInBatch(batchId, done) {
             let arr = [];
             if (data.length == 0) return done(arr);
             for (let i = 0; i < data.length; i++) {
-                models.Assignments
+                db.models.Assignments
                     .findOne({
                         where: {
                             id: data[i].dataValues.assignmentId
@@ -103,7 +103,7 @@ function editAssignment(id, name, desc, done) {
                 });
         });
     } else {
-        searchAssignment(id, function (data) {
+       searchAssignment(id, function (data) {
             data
                 .update({
                     name: name
@@ -120,28 +120,28 @@ function editAssignment(id, name, desc, done) {
 
 //function to delete an assignment
 function deleteAssignment(assignmentId, done) {
-    models.Submissions
+    db.models.Submissions
         .destroy({
             where: {
                 assignmentId: assignmentId
             }
         })
         .then(function () {
-            models.BatchAssignments
+            db.models.BatchAssignments
                 .destroy({
                     where: {
                         assignmentId: assignmentId
                     }
                 })
                 .then(function () {
-                    models.Assignments
+                    db.models.Assignments
                         .findOne({
                             where: {
                                 id: assignmentId
                             }
                         })
                         .then(function (resData) {
-                            models.Assignments
+                            db.models.Assignments
                                 .destroy({
                                     where: {
                                         id: assignmentId
@@ -170,8 +170,8 @@ function deleteAssignment(assignmentId, done) {
 module.exports = {
     addAssignment,
     getAssignments,
-    getAssignment,
     findAssignmentsInBatch,
     editAssignment,
-    deleteAssignment
+    deleteAssignment,
+    searchAssignment
 }

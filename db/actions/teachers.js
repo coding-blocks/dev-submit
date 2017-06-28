@@ -2,12 +2,13 @@
  * Created by abhishekyadav on 28/06/17.
  */
 
-const models = require('../models');
+const db = require('../../db');
 const bcrypt = require('bcrypt');
+
 
 //function to add a teacher
 function addTeacher(name, email, userId, done) {
-    models.Teachers
+    db.models.Teachers
         .create({
             name: name,
             email: email,
@@ -24,7 +25,7 @@ function addTeacher(name, email, userId, done) {
 
 //function to get teachers list
 function getTeachers(done) {
-    models.Teachers
+    db.models.Teachers
         .findAll()
         .then(function (data) {
             done(data);
@@ -37,7 +38,7 @@ function getTeachers(done) {
 
 //function to get teacher with a particular email
 function searchTeacher(id, done) {
-    models.Teachers
+    db.models.Teachers
         .findOne({where: {id: id}})
         .then(function (data) {
             done(data);
@@ -51,7 +52,7 @@ function searchTeacher(id, done) {
 //function to search multiple students for a query
 function searchTeachers(searchParameter, searchType, done) {
     if (searchType == 'name') {
-        models.Teachers
+        db.models.Teachers
             .findAll({where: {name: searchParameter}})
             .then(function (data) {
                 done(data);
@@ -60,7 +61,7 @@ function searchTeachers(searchParameter, searchType, done) {
                 if (err) throw err;
             });
     } else {
-        models.Teachers
+        db.models.Teachers
             .findAll({where: {email: searchParameter}})
             .then(function (data) {
                 done(data);
@@ -72,10 +73,10 @@ function searchTeachers(searchParameter, searchType, done) {
 }
 
 
-//function to edit a Teacher
+//function to edit a Teachear
 function editTeacher(id, name, done, emailId, echo) {
     if (emailId) {
-        searchTeacher(id, function (data) {
+        db.actions.teachers.searchTeacher(id, function (data) {
             data
                 .update({
                     name: name,
@@ -93,7 +94,7 @@ function editTeacher(id, name, done, emailId, echo) {
                 });
         });
     } else {
-        searchTeacher(id, function (data) {
+        db.actions.teachers.searchTeacher(id, function (data) {
             data
                 .update({
                     name: name
@@ -116,14 +117,14 @@ function editTeacher(id, name, done, emailId, echo) {
 //TODO add hook to destroy teacher batches if required
 //function to delete a teacher
 function deleteTeacher(teacherId, echo, done) {
-    models.Teachers
+    db.models.Teachers
         .findOne({
             where: {
                 id: teacherId
             }
         })
         .then(function (resData) {
-            models.Teachers
+            db.models.Teachers
                 .destroy({
                     where: {
                         id: teacherId

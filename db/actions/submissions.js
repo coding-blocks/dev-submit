@@ -3,14 +3,15 @@
  */
 
 
-const models = require('./models');
+const db = require('../../db');
+
 
 
 //TODO  Error: Can't set headers after they are sent.
 
 //add a submission
 function addSubmission(studentId, assnId, URL, done) {
-    models.StudentBatch
+    db.models.StudentBatch
         .findAll({
             where: {
                 studentId: studentId
@@ -24,7 +25,7 @@ function addSubmission(studentId, assnId, URL, done) {
             let flag = false;
 
             for (let i = 0; i < data.length; i++) {
-                models.BatchAssignments
+                db.models.BatchAssignments
                     .findOne({
                         where: {
                             batchId: data[i].dataValues.batchId,
@@ -34,7 +35,7 @@ function addSubmission(studentId, assnId, URL, done) {
                     .then(function (row) {
                         if (row) {
                             flag = true;
-                            models.Submissions
+                            db.models.Submissions
                                 .create({
                                     studentId: studentId,
                                     assignmentId: assnId,
@@ -70,7 +71,7 @@ function addSubmission(studentId, assnId, URL, done) {
 //function to accept a submission with submission id
 function acceptSubmissionbyId(id, echo, done) {
     if (echo) {
-        models.Submissions
+        db.models.Submissions
             .findOne({where: {id: id}})
             .then(function (row) {
                 row
@@ -88,7 +89,7 @@ function acceptSubmissionbyId(id, echo, done) {
                 if (err) throw err;
             });
     } else {
-        models.Submissions
+        db.models.Submissions
             .findOne({where: {id: id}})
             .then(function (row) {
                 row
@@ -110,7 +111,7 @@ function acceptSubmissionbyId(id, echo, done) {
 
 //function to accept a submission without submission id
 function acceptSubmissionWithoutId(studentId, assnId, URL, done) {
-    models.Submissions
+    db.models.Submissions
         .findOne({
             where: {
                 studentId: studentId,
@@ -138,7 +139,7 @@ function acceptSubmissionWithoutId(studentId, assnId, URL, done) {
 //function to get all submissions
 function getSubmissions(onlyAccepted, done) {
     if (onlyAccepted) {
-        models.Submissions
+        db.models.Submissions
             .findAll({where: {status: true}})
             .then(function (data) {
                 done(data);
@@ -147,7 +148,7 @@ function getSubmissions(onlyAccepted, done) {
                 if (err) throw err;
             });
     } else {
-        models.Submissions
+        db.models.Submissions
             .findAll()
             .then(function (data) {
                 done(data);
@@ -160,7 +161,7 @@ function getSubmissions(onlyAccepted, done) {
 
 //function to search submissions
 function searchSubmissions(options, done) {
-    models.Submissions
+    db.models.Submissions
         .findAll({where: options})
         .then(function (data) {
             done(data);
@@ -173,7 +174,7 @@ function searchSubmissions(options, done) {
 //function to search submissions by batch
 //TODO done being called more than once
 function searchByBatch(batchId, onlyAccepted, done) {
-    models.BatchAssignments
+    db.models.BatchAssignments
         .findAll({where: {batchId: batchId}})
         .then(function (data) {
             let arr = [];
@@ -182,7 +183,7 @@ function searchByBatch(batchId, onlyAccepted, done) {
             for (i = 0; i < data.length; i++) {
                 let options = {};
                 options.assignmentId = data[i].dataValues.assignmentId;
-                searchSubmissions(
+                db.actions.submissions.searchSubmissions(
                     options,
                     rows => {
                         for (let j = 0; j < rows.length; j++) {
