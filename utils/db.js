@@ -668,15 +668,17 @@ function addSubmission(studentId, assnId, URL, done) {
             if (row) {
               flag = true;
               models.Submissions
-                .create({
+                .upsert({
                   studentId: studentId,
                   assignmentId: assnId,
                   status: false,
                   URL: URL
+                },{
+                returning: true
                 })
                 .then(function(data) {
                   let arr = [];
-                  arr.push(data);
+                  arr.push(data[1]);
                   done(arr);
                 })
                 .catch(function(err) {
