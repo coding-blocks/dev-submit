@@ -4,15 +4,16 @@
 const OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
 const models = require('../../utils/models');
 const db = require('../../utils/db');
-const axios = require('axios')
+const axios = require('axios');
+const secrets = require('./../../secrets.json');
 
 
 module.exports = new OAuth2Strategy({
-        authorizationURL: 'https://account.codingblocks.com/oauth/authorize',
-        tokenURL: 'https://account.codingblocks.com/oauth/token',
-        clientID: '4096593676',
-        clientSecret: '1WHWF8RW1DCk7aF1kAAVPAF1LKdDsGrTl9SyKOt4S8bfBpK9XnBttA0SegE8ptfY',
-        callbackURL: 'http://localhost:4000/users/login/cb/callback'
+        authorizationURL: secrets.AUTHORIZATION_URL,
+        tokenURL: secrets.TOKEN_URL,
+        clientID: secrets.CLIENT_ID,
+        clientSecret: secrets.CLIENT_SECRET,
+        callbackURL: secrets.CALLBACK_URL
     },
     function (accessToken, refreshToken, profile, done) {
         models.AuthToken.findOrCreate(
