@@ -45,6 +45,7 @@ const Batches = sequelize.define('batch', {
   endDate: Sequelize.DATE,
   isActive: Sequelize.BOOLEAN
 });
+//FIXME: Move association to after all models
 Batches.belongsTo(Teachers);
 Teachers.hasMany(Batches);
 
