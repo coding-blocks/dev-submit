@@ -12,10 +12,10 @@ function addTeacher(name, email, userId, done) {
       email: email,
       userId: userId
     })
-    .then(function(data) {
+    .then(function (data) {
       done(data);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -29,11 +29,11 @@ function addStudent(name, roll, email, UserID, done, Batch) {
       email: email,
       userId: UserID
     })
-    .then(function(data) {
+    .then(function (data) {
       if (Batch) enrollStudentInBatch(roll, Batch, done);
       else done(data);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -42,10 +42,10 @@ function addStudent(name, roll, email, UserID, done, Batch) {
 function getTeachers(done) {
   models.Teachers
     .findAll()
-    .then(function(data) {
+    .then(function (data) {
       done(data);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -54,10 +54,10 @@ function getTeachers(done) {
 function getStudents(done) {
   models.Students
     .findAll()
-    .then(function(data) {
+    .then(function (data) {
       done(data);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -65,11 +65,11 @@ function getStudents(done) {
 //function to get teacher with a particular email
 function searchTeacher(id, done) {
   models.Teachers
-    .findOne({ where: { id: id } })
-    .then(function(data) {
+    .findOne({where: {id: id}})
+    .then(function (data) {
       done(data);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -77,11 +77,11 @@ function searchTeacher(id, done) {
 //function to get student with a particular roll
 function searchStudent(id, done) {
   models.Students
-    .findOne({ where: { id: id } })
-    .then(function(data) {
+    .findOne({where: {id: id}})
+    .then(function (data) {
       done(data);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -90,20 +90,20 @@ function searchStudent(id, done) {
 function searchTeachers(searchParameter, searchType, done) {
   if (searchType == 'name') {
     models.Teachers
-      .findAll({ where: { name: searchParameter } })
-      .then(function(data) {
+      .findAll({where: {name: searchParameter}})
+      .then(function (data) {
         done(data);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   } else {
     models.Teachers
-      .findAll({ where: { email: searchParameter } })
-      .then(function(data) {
+      .findAll({where: {email: searchParameter}})
+      .then(function (data) {
         done(data);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   }
@@ -113,38 +113,38 @@ function searchTeachers(searchParameter, searchType, done) {
 function searchStudents(searchParameter, searchType, done) {
   if (searchType == 'name') {
     models.Students
-      .findAll({ where: { name: searchParameter } })
-      .then(function(data) {
+      .findAll({where: {name: searchParameter}})
+      .then(function (data) {
         done(data);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   } else if (searchType == 'id') {
     models.Students
-      .findAll({ where: { id: searchParameter } })
-      .then(function(data) {
+      .findAll({where: {id: searchParameter}})
+      .then(function (data) {
         done(data);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   } else if (searchType == 'roll') {
     models.Students
-      .findAll({ where: { roll: searchParameter } })
-      .then(function(data) {
+      .findAll({where: {roll: searchParameter}})
+      .then(function (data) {
         done(data);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   } else {
     models.Students
-      .findAll({ where: { email: searchParameter } })
-      .then(function(data) {
+      .findAll({where: {email: searchParameter}})
+      .then(function (data) {
         done(data);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   }
@@ -153,37 +153,37 @@ function searchStudents(searchParameter, searchType, done) {
 //function to edit a Teacher
 function editTeacher(id, name, done, emailId, echo) {
   if (emailId) {
-    searchTeacher(id, function(data) {
+    searchTeacher(id, function (data) {
       data
         .update({
           name: name,
           email: emailId
         })
-        .then(function(data) {
+        .then(function (data) {
           if (echo) {
             done(data);
           } else {
             done('Success');
           }
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     });
   } else {
-    searchTeacher(id, function(data) {
+    searchTeacher(id, function (data) {
       data
         .update({
           name: name
         })
-        .then(function(data) {
+        .then(function (data) {
           if (echo) {
             done(data);
           } else {
             done('Success');
           }
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     });
@@ -193,37 +193,37 @@ function editTeacher(id, name, done, emailId, echo) {
 //function to edit a student
 function editStudent(id, name, done, emailId, echo) {
   if (emailId) {
-    searchStudent(id, function(data) {
+    searchStudent(id, function (data) {
       data
         .update({
           name: name,
           email: emailId
         })
-        .then(function(data) {
+        .then(function (data) {
           if (echo) {
             done(data);
           } else {
             done('Success');
           }
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     });
   } else {
-    searchStudent(id, function(data) {
+    searchStudent(id, function (data) {
       data
         .update({
           name: name
         })
-        .then(function(data) {
+        .then(function (data) {
           if (echo) {
             done(data);
           } else {
             done('Success');
           }
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     });
@@ -239,22 +239,22 @@ function deleteTeacher(teacherId, echo, done) {
         id: teacherId
       }
     })
-    .then(function(resData) {
+    .then(function (resData) {
       models.Teachers
         .destroy({
           where: {
             id: teacherId
           }
         })
-        .then(function(data) {
+        .then(function (data) {
           if (echo) done(resData);
-          else done({ success: true });
+          else done({success: true});
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -267,32 +267,32 @@ function deleteStudent(studentId, echo, done) {
         studentId: studentId
       }
     })
-    .then(function() {
+    .then(function () {
       models.StudentBatch
         .destroy({
           where: {
             studentId: studentId
           }
         })
-        .then(function() {
+        .then(function () {
           if (echo) {
             models.Students
-              .findOne({ where: { id: studentId } })
-              .then(function(responseData) {
+              .findOne({where: {id: studentId}})
+              .then(function (responseData) {
                 models.Students
                   .destroy({
                     where: {
                       id: studentId
                     }
                   })
-                  .then(function() {
+                  .then(function () {
                     done(responseData);
                   })
-                  .catch(function(err) {
+                  .catch(function (err) {
                     if (err) throw err;
                   });
               })
-              .catch(function(err) {
+              .catch(function (err) {
                 if (err) throw err;
               });
           } else {
@@ -302,19 +302,19 @@ function deleteStudent(studentId, echo, done) {
                   id: studentId
                 }
               })
-              .then(function() {
+              .then(function () {
                 done('done.!');
               })
-              .catch(function(err) {
+              .catch(function (err) {
                 if (err) throw err;
               });
           }
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -326,13 +326,14 @@ function addAssignment(name, desc, batchId, done) {
       name: name,
       description: desc
     })
-    .then(function(data) {
+    .then(function (data) {
       if (batchId) {
         done(data);
-        addAssignmentToBatch(data.id, batchId, () => {});
+        addAssignmentToBatch(data.id, batchId, () => {
+        });
       } else done(data);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -343,10 +344,10 @@ function getAssignments(options, done) {
     .findAll({
       where: options
     })
-    .then(function(data) {
+    .then(function (data) {
       done(data);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -359,10 +360,10 @@ function searchAssignment(id, done) {
         id: id
       }
     })
-    .then(function(data) {
+    .then(function (data) {
       done(data);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -375,7 +376,7 @@ function findAssignmentsInBatch(batchId, done) {
         batchId: batchId
       }
     })
-    .then(function(data) {
+    .then(function (data) {
       let arr = [];
       if (data.length == 0) return done(arr);
       for (let i = 0; i < data.length; i++) {
@@ -385,16 +386,16 @@ function findAssignmentsInBatch(batchId, done) {
               id: data[i].dataValues.assignmentId
             }
           })
-          .then(function(assnData) {
+          .then(function (assnData) {
             arr.push(assnData);
             if (arr.length == data.length) done(arr);
           })
-          .catch(function(err) {
+          .catch(function (err) {
             if (err) throw err;
           });
       }
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -402,29 +403,29 @@ function findAssignmentsInBatch(batchId, done) {
 //function to edit an assignment
 function editAssignment(id, name, desc, done) {
   if (desc) {
-    searchAssignment(id, function(data) {
+    searchAssignment(id, function (data) {
       data
         .update({
           name: name,
           description: desc
         })
-        .then(function(data) {
+        .then(function (data) {
           done(data);
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     });
   } else {
-    searchAssignment(id, function(data) {
+    searchAssignment(id, function (data) {
       data
         .update({
           name: name
         })
-        .then(function(data) {
+        .then(function (data) {
           done(data);
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     });
@@ -439,43 +440,43 @@ function deleteAssignment(assignmentId, done) {
         assignmentId: assignmentId
       }
     })
-    .then(function() {
+    .then(function () {
       models.BatchAssignments
         .destroy({
           where: {
             assignmentId: assignmentId
           }
         })
-        .then(function() {
+        .then(function () {
           models.Assignments
             .findOne({
               where: {
                 id: assignmentId
               }
             })
-            .then(function(resData) {
+            .then(function (resData) {
               models.Assignments
                 .destroy({
                   where: {
                     id: assignmentId
                   }
                 })
-                .then(function() {
+                .then(function () {
                   done(resData);
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                   if (err) throw err;
                 });
             })
-            .catch(function(err) {
+            .catch(function (err) {
               if (err) throw err;
             });
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -491,10 +492,10 @@ function addBatch(name, teacherId, startDate, endDate, done) {
         endDate: new Date().setMonth(new Date().getMonth() + 3),
         isActive: true
       })
-      .then(function(data) {
+      .then(function (data) {
         done(data);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   } else {
@@ -506,10 +507,10 @@ function addBatch(name, teacherId, startDate, endDate, done) {
         endDate: endDate,
         isActive: true
       })
-      .then(function(data) {
+      .then(function (data) {
         done(data);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   }
@@ -518,11 +519,11 @@ function addBatch(name, teacherId, startDate, endDate, done) {
 //function to get all batches (overloaded for both active and passive)
 function getBatches(options, done) {
   models.Batches
-    .findAll({ where: options })
-    .then(function(data) {
+    .findAll({where: options})
+    .then(function (data) {
       done(data);
     })
-    .then(function(err) {
+    .then(function (err) {
       if (err) throw err;
     });
 }
@@ -535,10 +536,10 @@ function searchBatch(id, done) {
         id: id
       }
     })
-    .then(function(data) {
+    .then(function (data) {
       done(data);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -548,40 +549,40 @@ function searchBatches(searchParameter, searchType, onlyActive, done) {
   if (onlyActive) {
     if (searchType == 'name') {
       models.Batches
-        .findAll({ where: { name: searchParameter, isActive: true } })
-        .then(function(data) {
+        .findAll({where: {name: searchParameter, isActive: true}})
+        .then(function (data) {
           done(data);
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     } else {
       models.Batches
-        .findAll({ where: { teacher: searchParameter, isActive: true } })
-        .then(function(data) {
+        .findAll({where: {teacher: searchParameter, isActive: true}})
+        .then(function (data) {
           done(data);
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     }
   } else {
     if (searchType == 'name') {
       models.Batches
-        .findAll({ where: { name: searchParameter } })
-        .then(function(data) {
+        .findAll({where: {name: searchParameter}})
+        .then(function (data) {
           done(data);
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     } else {
       models.Batches
-        .findAll({ where: { teacher: searchParameter } })
-        .then(function(data) {
+        .findAll({where: {teacher: searchParameter}})
+        .then(function (data) {
           done(data);
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     }
@@ -596,19 +597,19 @@ function endBatch(batchID, done) {
         id: batchID
       }
     })
-    .then(function(row) {
+    .then(function (row) {
       row
         .update({
           isActive: false
         })
-        .then(function(data) {
+        .then(function (data) {
           if (done) done(data);
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -621,7 +622,7 @@ function getAllStudentsInBatch(batchId, done) {
         batchId: batchId
       }
     })
-    .then(function(data) {
+    .then(function (data) {
       var arr = [];
       if (data.length == 0) {
         return done(arr);
@@ -634,7 +635,7 @@ function getAllStudentsInBatch(batchId, done) {
         });
       }
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -649,7 +650,7 @@ function addSubmission(studentId, assnId, URL, done) {
         studentId: studentId
       }
     })
-    .then(function(data) {
+    .then(function (data) {
       if (data.length == 0) {
         return done('not a valid submission');
       }
@@ -664,22 +665,29 @@ function addSubmission(studentId, assnId, URL, done) {
               assignmentId: assnId
             }
           })
-          .then(function(row) {
+          .then(function (row) {
             if (row) {
               flag = true;
               models.Submissions
-                .create({
+                .upsert({
                   studentId: studentId,
                   assignmentId: assnId,
                   status: false,
                   URL: URL
                 })
-                .then(function(data) {
-                  let arr = [];
-                  arr.push(data);
-                  done(arr);
+                .then(function (isCreated) {
+                  models.Submissions.findOne({
+                    where: {
+                      studentId: studentId,
+                      assignmentId: assnId
+                    }
+                  }).then(function (data) {
+                    var arr=[];
+                    arr.push(data);
+                    done(arr);
+                  })
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                   if (err) throw err;
                 });
             } else {
@@ -688,14 +696,14 @@ function addSubmission(studentId, assnId, URL, done) {
               }
             }
           })
-          .catch(function(err) {
+          .catch(function (err) {
             if (err) throw err;
           });
 
         if (flag) break;
       }
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -704,38 +712,38 @@ function addSubmission(studentId, assnId, URL, done) {
 function acceptSubmissionbyId(id, echo, done) {
   if (echo) {
     models.Submissions
-      .findOne({ where: { id: id } })
-      .then(function(row) {
+      .findOne({where: {id: id}})
+      .then(function (row) {
         row
           .update({
             status: true
           })
-          .then(function(data) {
+          .then(function (data) {
             done(data);
           })
-          .catch(function(err) {
+          .catch(function (err) {
             if (err) throw err;
           });
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   } else {
     models.Submissions
-      .findOne({ where: { id: id } })
-      .then(function(row) {
+      .findOne({where: {id: id}})
+      .then(function (row) {
         row
           .update({
             status: true
           })
-          .then(function() {
+          .then(function () {
             done('Success');
           })
-          .catch(function(err) {
+          .catch(function (err) {
             if (err) throw err;
           });
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   }
@@ -751,19 +759,19 @@ function acceptSubmissionWithoutId(studentId, assnId, URL, done) {
         URL: URL
       }
     })
-    .then(function(row) {
+    .then(function (row) {
       row
         .update({
           status: true
         })
-        .then(function() {
+        .then(function () {
           done();
         })
-        .catch(function(err) {
+        .catch(function (err) {
           if (err) throw err;
         });
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -772,20 +780,20 @@ function acceptSubmissionWithoutId(studentId, assnId, URL, done) {
 function getSubmissions(onlyAccepted, done) {
   if (onlyAccepted) {
     models.Submissions
-      .findAll({ where: { status: true } })
-      .then(function(data) {
+      .findAll({where: {status: true}})
+      .then(function (data) {
         done(data);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   } else {
     models.Submissions
       .findAll()
-      .then(function(data) {
+      .then(function (data) {
         done(data);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   }
@@ -794,11 +802,11 @@ function getSubmissions(onlyAccepted, done) {
 //function to search submissions
 function searchSubmissions(options, done) {
   models.Submissions
-    .findAll({ where: options })
-    .then(function(data) {
+    .findAll({where: options})
+    .then(function (data) {
       done(data);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -807,8 +815,8 @@ function searchSubmissions(options, done) {
 //TODO done being called more than once
 function searchByBatch(batchId, onlyAccepted, done) {
   models.BatchAssignments
-    .findAll({ where: { batchId: batchId } })
-    .then(function(data) {
+    .findAll({where: {batchId: batchId}})
+    .then(function (data) {
       let arr = [];
       let i = 0;
       let flag = false;
@@ -830,7 +838,7 @@ function searchByBatch(batchId, onlyAccepted, done) {
         done(arr);
       }
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -840,61 +848,61 @@ function editBatch(id, name, teacher, endDate, done) {
   if (name) {
     if (teacher) {
       if (endDate) {
-        searchBatch(id, function(data) {
+        searchBatch(id, function (data) {
           data
             .update({
               name: name,
               teacher: teacher,
               endDate: endDate
             })
-            .then(function(data) {
+            .then(function (data) {
               done(data);
             })
-            .catch(function(err) {
+            .catch(function (err) {
               if (err) throw err;
             });
         });
       } else {
-        searchBatch(id, function(data) {
+        searchBatch(id, function (data) {
           data
             .update({
               name: name,
               teacher: teacher
             })
-            .then(function(data) {
+            .then(function (data) {
               done(data);
             })
-            .catch(function(err) {
+            .catch(function (err) {
               if (err) throw err;
             });
         });
       }
     } else {
       if (endDate) {
-        searchBatch(id, function(data) {
+        searchBatch(id, function (data) {
           data
             .update({
               name: name,
               endDate: endDate
             })
-            .then(function(data) {
+            .then(function (data) {
               done(data);
             })
-            .catch(function(err) {
+            .catch(function (err) {
               if (err) throw err;
             });
         });
       } else {
-        searchBatch(id, function(data) {
+        searchBatch(id, function (data) {
           console.log(data);
           data
             .update({
               name: name
             })
-            .then(function(data) {
+            .then(function (data) {
               done(data);
             })
-            .catch(function(err) {
+            .catch(function (err) {
               if (err) throw err;
             });
         });
@@ -903,44 +911,44 @@ function editBatch(id, name, teacher, endDate, done) {
   } else {
     if (teacher) {
       if (endDate) {
-        searchBatch(id, function(data) {
+        searchBatch(id, function (data) {
           data
             .update({
               teacher: teacher,
               endDate: endDate
             })
-            .then(function(data) {
+            .then(function (data) {
               done(data);
             })
-            .catch(function(err) {
+            .catch(function (err) {
               if (err) throw err;
             });
         });
       } else {
-        searchBatch(id, function(data) {
+        searchBatch(id, function (data) {
           data
             .update({
               teacher: teacher
             })
-            .then(function(data) {
+            .then(function (data) {
               done(data);
             })
-            .catch(function(err) {
+            .catch(function (err) {
               if (err) throw err;
             });
         });
       }
     } else {
       if (endDate) {
-        searchBatch(id, function(data) {
+        searchBatch(id, function (data) {
           data
             .update({
               endDate: endDate
             })
-            .then(function(data) {
+            .then(function (data) {
               done(data);
             })
-            .catch(function(err) {
+            .catch(function (err) {
               if (err) throw err;
             });
         });
@@ -976,10 +984,10 @@ function enrollStudentInBatch(studentParamType, studentParam, BatchId, done) {
         studentId: data[0].dataValues.id,
         batchId: BatchId
       })
-      .then(function(data) {
+      .then(function (data) {
         done(data);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   });
@@ -992,10 +1000,10 @@ function addAssignmentToBatch(assnID, batchID, done) {
       batchId: batchID,
       assignmentId: assnID
     })
-    .then(function(data) {
+    .then(function (data) {
       done(data);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
@@ -1004,17 +1012,17 @@ function addAssignmentToBatch(assnID, batchID, done) {
 function addUser(done) {
   models.Users
     .create({})
-    .then(function(data) {
+    .then(function (data) {
       console.log(data);
       done(data);
     })
-    .catch(function(err) {
+    .catch(function (err) {
       if (err) throw err;
     });
 }
 
 function addLocalUser(username, password, uid, done) {
-  bcrypt.hash(password, 10, function(err, hash) {
+  bcrypt.hash(password, 10, function (err, hash) {
     password = hash;
     models.UserLocal
       .create({
@@ -1022,16 +1030,16 @@ function addLocalUser(username, password, uid, done) {
         password: password,
         userId: uid
       })
-      .then(function(data) {
+      .then(function (data) {
         done(data);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         if (err) throw err;
       });
   });
 }
 function validateLocalPassword(user, password, PassportDone, done) {
-  bcrypt.compare(password, user.password, function(err, isMatch) {
+  bcrypt.compare(password, user.password, function (err, isMatch) {
     if (err) throw err;
     done(user, isMatch, PassportDone);
   });
