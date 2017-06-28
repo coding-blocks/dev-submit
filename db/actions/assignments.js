@@ -2,12 +2,13 @@
  * Created by abhishekyadav on 28/06/17.
  */
 
-const db = require('../../db');
+const batches = require('./batches');
+const models=require('../models');
 
 
 //function to add a new assignment
 function addAssignment(name, desc, batchId, done) {
-    db.models.Assignments
+    models.Assignments
         .create({
             name: name,
             description: desc
@@ -15,7 +16,7 @@ function addAssignment(name, desc, batchId, done) {
         .then(function (data) {
             if (batchId) {
                 done(data);
-                db.actions.batches.addAssignmentToBatch(data.id, batchId, () => {
+                actions.batches.addAssignmentToBatch(data.id, batchId, () => {
                 });
             } else done(data);
         })
@@ -26,7 +27,7 @@ function addAssignment(name, desc, batchId, done) {
 
 //function to get all assignments
 function getAssignments(options, done) {
-    db.models.Assignments
+    models.Assignments
         .findAll({
             where: options
         })
@@ -40,7 +41,7 @@ function getAssignments(options, done) {
 
 //function to search assignments based on a parameter
 function searchAssignment(id, done) {
-    db.models.Assignments
+    models.Assignments
         .findOne({
             where: {
                 id: id
@@ -56,7 +57,7 @@ function searchAssignment(id, done) {
 
 //function to get all assignments in a batch
 function findAssignmentsInBatch(batchId, done) {
-    db.models.BatchAssignments
+    models.BatchAssignments
         .findAll({
             where: {
                 batchId: batchId
@@ -66,7 +67,7 @@ function findAssignmentsInBatch(batchId, done) {
             let arr = [];
             if (data.length == 0) return done(arr);
             for (let i = 0; i < data.length; i++) {
-                db.models.Assignments
+                models.Assignments
                     .findOne({
                         where: {
                             id: data[i].dataValues.assignmentId
@@ -120,28 +121,28 @@ function editAssignment(id, name, desc, done) {
 
 //function to delete an assignment
 function deleteAssignment(assignmentId, done) {
-    db.models.Submissions
+    models.Submissions
         .destroy({
             where: {
                 assignmentId: assignmentId
             }
         })
         .then(function () {
-            db.models.BatchAssignments
+            models.BatchAssignments
                 .destroy({
                     where: {
                         assignmentId: assignmentId
                     }
                 })
                 .then(function () {
-                    db.models.Assignments
+                    models.Assignments
                         .findOne({
                             where: {
                                 id: assignmentId
                             }
                         })
                         .then(function (resData) {
-                            db.models.Assignments
+                            models.Assignments
                                 .destroy({
                                     where: {
                                         id: assignmentId

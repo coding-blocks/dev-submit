@@ -51,7 +51,7 @@ router.get('/:batchId', function (req, res) {
 
 //tested
 router.get('/:batchId/students', (req, res) => {
-    db.actions.batches.getAllStudentsInBatch(req.params.batchId, data => {
+    db.actions.students.getAllStudentsInBatch(req.params.batchId, data => {
         console.log('done');
         res.send(data);
     });
@@ -94,7 +94,7 @@ router.post('/:batchId/enroll', function (req, res) {
     let retval = [];
 
     for (var i = 0; i < studentArray.length; i++) {
-        db.actions.batches.enrollStudentInBatch(dataType, studentArray[i], batchId, function (data) {
+        db.actions.students.enrollStudentInBatch(dataType, studentArray[i], batchId, function (data) {
             retval.push(data);
             if (retval.length == studentArray.length) res.send(retval);
         });

@@ -59,7 +59,7 @@ router.delete('/:id', function (req, res) {
 
 //tested
 router.post('/:id/addToBatch/:batchId', function (req, res) {
-    db.actions.assignments.addAssignmentToBatch(req.params.id, req.params.batchId, data => {
+    db.actions.batches.addAssignmentToBatch(req.params.id, req.params.batchId, data => {
         res.send(data);
     });
 });

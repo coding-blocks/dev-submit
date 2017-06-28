@@ -76,7 +76,7 @@ function searchTeachers(searchParameter, searchType, done) {
 //function to edit a Teachear
 function editTeacher(id, name, done, emailId, echo) {
     if (emailId) {
-        db.actions.teachers.searchTeacher(id, function (data) {
+        searchTeacher(id, function (data) {
             data
                 .update({
                     name: name,
@@ -94,7 +94,7 @@ function editTeacher(id, name, done, emailId, echo) {
                 });
         });
     } else {
-        db.actions.teachers.searchTeacher(id, function (data) {
+        searchTeacher(id, function (data) {
             data
                 .update({
                     name: name
@@ -148,5 +148,6 @@ module.exports = {
     getTeachers,
     searchTeacher,
     searchTeachers,
-    editTeacher
+    editTeacher,
+    deleteTeacher
 }
