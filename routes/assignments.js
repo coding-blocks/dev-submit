@@ -30,7 +30,7 @@ router.get('/', function (req, res) {
     } else if (batchId) {
         options.id = id;
     }
-    db.getAssignments(options, data => {
+    db.actions.assignments.getAssignments(options, data => {
         res.send(data);
     });
 });

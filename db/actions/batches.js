@@ -2,12 +2,13 @@
  * Created by abhishekyadav on 28/06/17.
  */
 
-const models = require('./models');
+const db = require('../../db');
+
 
 //function to add batch
 function addBatch(name, teacherId, startDate, endDate, done) {
     if (!endDate) {
-        models.Batches
+        db.models.Batches
             .create({
                 name: name,
                 teacherId: teacherId,
@@ -22,7 +23,7 @@ function addBatch(name, teacherId, startDate, endDate, done) {
                 if (err) throw err;
             });
     } else {
-        models.Batches
+        db.models.Batches
             .create({
                 name: name,
                 teacher: teacher,
@@ -41,7 +42,8 @@ function addBatch(name, teacherId, startDate, endDate, done) {
 
 //function to get all batches (overloaded for both active and passive)
 function getBatches(options, done) {
-    models.Batches
+    console.log(db);
+    db.models.Batches
         .findAll({where: options})
         .then(function (data) {
             done(data);
@@ -53,7 +55,7 @@ function getBatches(options, done) {
 
 //function to get a particular batch
 function searchBatch(id, done) {
-    models.Batches
+    db.models.Batches
         .findOne({
             where: {
                 id: id
@@ -71,7 +73,7 @@ function searchBatch(id, done) {
 function searchBatches(searchParameter, searchType, onlyActive, done) {
     if (onlyActive) {
         if (searchType == 'name') {
-            models.Batches
+            db.models.Batches
                 .findAll({where: {name: searchParameter, isActive: true}})
                 .then(function (data) {
                     done(data);
@@ -80,7 +82,7 @@ function searchBatches(searchParameter, searchType, onlyActive, done) {
                     if (err) throw err;
                 });
         } else {
-            models.Batches
+            db.models.Batches
                 .findAll({where: {teacher: searchParameter, isActive: true}})
                 .then(function (data) {
                     done(data);
@@ -91,7 +93,7 @@ function searchBatches(searchParameter, searchType, onlyActive, done) {
         }
     } else {
         if (searchType == 'name') {
-            models.Batches
+            db.models.Batches
                 .findAll({where: {name: searchParameter}})
                 .then(function (data) {
                     done(data);
@@ -100,7 +102,7 @@ function searchBatches(searchParameter, searchType, onlyActive, done) {
                     if (err) throw err;
                 });
         } else {
-            models.Batches
+            db.models.Batches
                 .findAll({where: {teacher: searchParameter}})
                 .then(function (data) {
                     done(data);
@@ -114,7 +116,7 @@ function searchBatches(searchParameter, searchType, onlyActive, done) {
 
 //function to end an active batch
 function endBatch(batchID, done) {
-    models.Batches
+    db.models.Batches
         .findOne({
             where: {
                 id: batchID
@@ -256,7 +258,7 @@ function editBatch(id, name, teacher, endDate, done) {
 //function to delete batch
 //TODO cascade delete not working
 function deleteBatch(id, done) {
-    models.Batches
+    db.models.Batches
         .destroy({
             where: {
                 id: id
@@ -272,8 +274,8 @@ function deleteBatch(id, done) {
 
 //function to handle a new enrollment
 function enrollStudentInBatch(studentParamType, studentParam, BatchId, done) {
-    searchStudents(studentParam, studentParamType, data => {
-        models.StudentBatch
+    db.actions.students.searchStudents(studentParam, studentParamType, data => {
+        db.models.StudentBatch
             .create({
                 studentId: data[0].dataValues.id,
                 batchId: BatchId
@@ -289,7 +291,7 @@ function enrollStudentInBatch(studentParamType, studentParam, BatchId, done) {
 
 //function to add an assignment to a batch
 function addAssignmentToBatch(assnID, batchID, done) {
-    models.BatchAssignments
+    db.models.BatchAssignments
         .create({
             batchId: batchID,
             assignmentId: assnID
@@ -304,7 +306,7 @@ function addAssignmentToBatch(assnID, batchID, done) {
 
 //function to get all students of batch
 function getAllStudentsInBatch(batchId, done) {
-    models.StudentBatch
+    db.models.StudentBatch
         .findAll({
             where: {
                 batchId: batchId
@@ -317,7 +319,7 @@ function getAllStudentsInBatch(batchId, done) {
             }
 
             for (let i = 0; i < data.length; i++) {
-                searchStudent(data[i].dataValues.studentId, studentData => {
+                db.actions.students.searchStudent(data[i].dataValues.studentId, studentData => {
                     arr.push(studentData);
                     if (arr.length == data.length) done(arr);
                 });
