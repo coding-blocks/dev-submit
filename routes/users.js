@@ -7,6 +7,21 @@ const db = require('../utils/db');
 
 const router = express.Router();
 
+//signup
+router.post('/signup',function (req, res) {
+  if(req.body.role == "teacher"){
+    db.addTeacher(req.user.name,req.user.email,req.user.user.id,function (data) {
+      req.user.val = false;
+      req.flash('success_msg', 'you have successfuly completed registration');
+      res.redirect('/');
+    })
+  }
+  else{
+    //add as a student
+  }
+})
+
+
 //register
 router.get('/register', function(req, res) {
   res.render('register');
@@ -100,16 +115,15 @@ router.get('/login', function(req, res) {
 });
 
 //route for redirecting user to Provider's site
-router.get('/login/cb', passport.authenticate('oauth-cb'));
+router.get('/login/cb',passport.authenticate('oauth-cb'));
 
 //route for callback and retrieving token
-router.get(
-  '/login/cb/callback',
-  passport.authenticate('oauth-cb', {
-    successRedirect: '/',
-    failureRedirect: '/api/v1/batches'
-  })
-);
+
+router.get('/login/cb/callback',
+  passport.authenticate('oauth-cb', {failureRedirect: '/api/v1/batches'}),function (req, res) {
+    //success
+    res.redirect('/')
+  });
 
 router.post(
   '/login',
