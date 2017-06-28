@@ -481,12 +481,13 @@ function deleteAssignment(assignmentId, done) {
 }
 
 //function to add batch
-function addBatch(name, teacherId, startDate, endDate, done) {
+function addBatch(code, teacherId, courseId,startDate, endDate, done) {
   if (!endDate) {
     models.Batches
       .create({
-        name: name,
+        code: code,
         teacherId: teacherId,
+          courseId: courseId,
         startDate: new Date(),
         endDate: new Date().setMonth(new Date().getMonth() + 3),
         isActive: true
@@ -500,7 +501,7 @@ function addBatch(name, teacherId, startDate, endDate, done) {
   } else {
     models.Batches
       .create({
-        name: name,
+        code: code,
         teacher: teacher,
         startDate: startDate,
         endDate: endDate,
@@ -518,7 +519,7 @@ function addBatch(name, teacherId, startDate, endDate, done) {
 //function to get all batches (overloaded for both active and passive)
 function getBatches(options, done) {
   models.Batches
-    .findAll({ where: options })
+    .findAll({ where: options ,include: [{model: models.Courses}]})
     .then(function(data) {
       done(data);
     })
@@ -533,7 +534,10 @@ function searchBatch(id, done) {
     .findOne({
       where: {
         id: id
-      }
+      },
+        include: [{
+          models: models.Courses
+        }]
     })
     .then(function(data) {
       done(data);
@@ -546,9 +550,13 @@ function searchBatch(id, done) {
 //function to get batches
 function searchBatches(searchParameter, searchType, onlyActive, done) {
   if (onlyActive) {
-    if (searchType == 'name') {
+    if (searchType == 'code') {
       models.Batches
-        .findAll({ where: { name: searchParameter, isActive: true } })
+        .findAll({ where: { code: searchParameter, isActive: true },
+            include: [{
+                models: models.Courses
+            }]
+        })
         .then(function(data) {
           done(data);
         })
@@ -557,7 +565,10 @@ function searchBatches(searchParameter, searchType, onlyActive, done) {
         });
     } else {
       models.Batches
-        .findAll({ where: { teacher: searchParameter, isActive: true } })
+        .findAll({ where: { teacherId: searchParameter, isActive: true },
+            include: [{
+                models: models.Courses
+            }] })
         .then(function(data) {
           done(data);
         })
@@ -566,9 +577,12 @@ function searchBatches(searchParameter, searchType, onlyActive, done) {
         });
     }
   } else {
-    if (searchType == 'name') {
+    if (searchType == 'code') {
       models.Batches
-        .findAll({ where: { name: searchParameter } })
+        .findAll({ where: { code: searchParameter },
+            include: [{
+                models: models.Courses
+            }] })
         .then(function(data) {
           done(data);
         })
@@ -577,7 +591,10 @@ function searchBatches(searchParameter, searchType, onlyActive, done) {
         });
     } else {
       models.Batches
-        .findAll({ where: { teacher: searchParameter } })
+        .findAll({ where: { teacherId: searchParameter },
+            include: [{
+                models: models.Courses
+            }] })
         .then(function(data) {
           done(data);
         })
@@ -638,8 +655,6 @@ function getAllStudentsInBatch(batchId, done) {
       if (err) throw err;
     });
 }
-
-//TODO  Error: Can't set headers after they are sent.
 
 //add a submission
 function addSubmission(studentId, assnId, URL, done) {
@@ -836,15 +851,15 @@ function searchByBatch(batchId, onlyAccepted, done) {
 }
 
 //function to edit a batch
-function editBatch(id, name, teacher, endDate, done) {
-  if (name) {
+function editBatch(id, code, teacher, endDate, done) {
+  if (code) {
     if (teacher) {
       if (endDate) {
         searchBatch(id, function(data) {
           data
             .update({
-              name: name,
-              teacher: teacher,
+              code: name,
+              teacherId: teacher,
               endDate: endDate
             })
             .then(function(data) {
@@ -858,8 +873,8 @@ function editBatch(id, name, teacher, endDate, done) {
         searchBatch(id, function(data) {
           data
             .update({
-              name: name,
-              teacher: teacher
+              code: code,
+              teacherId: teacher
             })
             .then(function(data) {
               done(data);
@@ -874,7 +889,7 @@ function editBatch(id, name, teacher, endDate, done) {
         searchBatch(id, function(data) {
           data
             .update({
-              name: name,
+              code: code,
               endDate: endDate
             })
             .then(function(data) {
@@ -889,7 +904,7 @@ function editBatch(id, name, teacher, endDate, done) {
           console.log(data);
           data
             .update({
-              name: name
+              code: code
             })
             .then(function(data) {
               done(data);
@@ -906,7 +921,7 @@ function editBatch(id, name, teacher, endDate, done) {
         searchBatch(id, function(data) {
           data
             .update({
-              teacher: teacher,
+              teacherId: teacher,
               endDate: endDate
             })
             .then(function(data) {
@@ -920,7 +935,7 @@ function editBatch(id, name, teacher, endDate, done) {
         searchBatch(id, function(data) {
           data
             .update({
-              teacher: teacher
+              teacherId: teacher
             })
             .then(function(data) {
               done(data);
@@ -1037,6 +1052,83 @@ function validateLocalPassword(user, password, PassportDone, done) {
   });
 }
 
+function addCourse(name,assignments,done){
+        models.Courses
+            .create({
+                name: name
+            })
+            .then(function(resData) {
+                if(assignments.length==0) return done(resData);
+                assignments.forEach(function (assnId) {
+                    addAssignmenttoCourse(resData.id,assnId,()=>{
+                        if(assnId == assignments[assignments.length-1]) done(resData);
+                    });
+                });
+            })
+            .catch(function(err) {
+                if (err) throw err;
+            });
+    }
+function addAssignmenttoCourse(courseId,assnId,done){
+    models.CourseAssignments
+        .create({
+            courseId: courseId,
+            assignmentId: assnId
+        })
+        .then(function(data) {
+            done(data);
+        })
+        .catch(function(err) {
+            if (err) throw err;
+        });
+}
+function getCourses(name,done){
+    if(name) models.Courses.findOne({
+        where : {
+            name : name
+        }
+    }).then(data=>done(data));
+
+    else models.Courses.findAll().then(data=>done(data));
+}
+function getCourse(id,done){
+    models.Courses.findOne({
+        where : {
+            id : id
+        }
+    }).then(data=>done(data)).catch(err=>{
+        if(err) throw err;
+    })
+}
+function editCourse(id,name,done){
+    models.Courses.upsert({
+        id : id,
+        name : name
+    }).then(data=>{
+        models.Courses.findOne({
+            where : {
+                id : id
+            }
+        }).then(resData=>done(resData));
+    })
+        .catch(err=>{
+            if(err) throw err
+        });
+}
+function getCourseAssignments(id,done){
+    models.Courses.find({
+        where : {
+            id : id
+        },
+        include: [{
+            model: models.Assignments
+        }]
+        }).then(data=>done(data))
+        .catch(err=>{
+            if(err) throw err;
+        })
+}
+
 module.exports = {
   addStudent,
   addTeacher,
@@ -1075,5 +1167,11 @@ module.exports = {
   addTeacher,
   addUser,
   addLocalUser,
-  validateLocalPassword
+  validateLocalPassword,
+    addCourse,
+    addAssignmenttoCourse,
+    getCourses,
+    getCourse,
+    editCourse,
+    getCourseAssignments
 };

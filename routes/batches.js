@@ -11,8 +11,9 @@ const router = express.Router();
 //tested
 router.post('/new', function(req, res) {
   db.addBatch(
-    req.body.name,
+    req.body.code,
     req.body.teacherId,
+      req.body.courseId,
     req.body.startdate,
     req.body.enddate,
     function(data) {
@@ -26,11 +27,11 @@ router.get('/', (req, res) => {
   let onlyActive = req.query.active;
   var options = {};
   if (onlyActive) options.isActive = JSON.parse(onlyActive);
-  let name = req.query.name;
-  let teacher = req.query.teacher;
+  let code = req.query.code;
+  let teacher = req.query.teacherId;
 
-  if (name) {
-    options.name = name;
+  if (code) {
+    options.code = code;
   } else if (teacher) {
     options.teacher = teacher;
   }
@@ -61,8 +62,8 @@ router.get('/:batchId/students', (req, res) => {
 router.put('/:batchId', function(req, res) {
   db.editBatch(
     req.params.batchId,
-    req.body.name,
-    req.body.teacher,
+    req.body.code,
+    req.body.teacherId,
     req.body.endDate,
     data => {
       res.send(data);
