@@ -6,18 +6,15 @@ const bp = require('body-parser');
 const router = express.Router();
 
 router.use(bp.json());
-router.use(bp.urlencoded({extended: true}));
+router.use(bp.urlencoded({ extended: true }));
 
-
-router.get('/', function (req, res) {
-    if(!req.isAuthenticated()){
-        req.flash('error_msg','you are not logged in');
-        res.redirect('/users/login')
-    }
-    else{
-        res.render('index');
-    }
+router.get('/', function(req, res) {
+  if (!req.isAuthenticated()) {
+    req.flash('error_msg', 'you are not logged in');
+    res.redirect('/users/login');
+  } else {
+    res.render('index');
+  }
 });
-
 
 module.exports = router;
