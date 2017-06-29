@@ -2,7 +2,11 @@
  * Created by varun on 5/24/17.
  */
 const express = require('express');
+<<<<<<< HEAD:routes/batches.js
 const db = require('../db');
+=======
+const db = require('../../utils/db');
+>>>>>>> upstream/master:routes/api_v1/batches.js
 
 const router = express.Router();
 
