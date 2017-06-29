@@ -5,8 +5,8 @@
 const express = require('express');
 const bitballoon = require('bitballoon');
 const randomstring = require('randomstring');
-const db = require('../utils/db');
-const config = require('../utils/config');
+const db = require('../../utils/db');
+const config = require('../../utils/config');
 
 const router = express.Router();
 const client = bitballoon.createClient({
