@@ -1,0 +1,307 @@
+/**
+ * Created by abhishekyadav on 28/06/17.
+ */
+
+const db = require('../../db');
+const models=require('../models');
+
+
+//function to add batch
+function addBatch(name, teacherId, startDate, endDate, done) {
+    if (!endDate) {
+        db.models.Batches
+            .create({
+                name: name,
+                teacherId: teacherId,
+                startDate: new Date(),
+                endDate: new Date().setMonth(new Date().getMonth() + 3),
+                isActive: true
+            })
+            .then(function (data) {
+                done(data);
+            })
+            .catch(function (err) {
+                if (err) throw err;
+            });
+    } else {
+        db.models.Batches
+            .create({
+                name: name,
+                teacher: teacher,
+                startDate: startDate,
+                endDate: endDate,
+                isActive: true
+            })
+            .then(function (data) {
+                done(data);
+            })
+            .catch(function (err) {
+                if (err) throw err;
+            });
+    }
+}
+
+//function to get all batches (overloaded for both active and passive)
+function getBatches(options, done) {
+    console.log(db);
+    models.Batches
+        .findAll({where: options})
+        .then(function (data) {
+            done(data);
+        })
+        .then(function (err) {
+            if (err) throw err;
+        });
+}
+
+//function to get a particular batch
+function searchBatch(id, done) {
+    db.models.Batches
+        .findOne({
+            where: {
+                id: id
+            }
+        })
+        .then(function (data) {
+            done(data);
+        })
+        .catch(function (err) {
+            if (err) throw err;
+        });
+}
+
+//function to get batches
+function searchBatches(searchParameter, searchType, onlyActive, done) {
+    if (onlyActive) {
+        if (searchType == 'name') {
+            db.models.Batches
+                .findAll({where: {name: searchParameter, isActive: true}})
+                .then(function (data) {
+                    done(data);
+                })
+                .catch(function (err) {
+                    if (err) throw err;
+                });
+        } else {
+            db.models.Batches
+                .findAll({where: {teacher: searchParameter, isActive: true}})
+                .then(function (data) {
+                    done(data);
+                })
+                .catch(function (err) {
+                    if (err) throw err;
+                });
+        }
+    } else {
+        if (searchType == 'name') {
+            db.models.Batches
+                .findAll({where: {name: searchParameter}})
+                .then(function (data) {
+                    done(data);
+                })
+                .catch(function (err) {
+                    if (err) throw err;
+                });
+        } else {
+            db.models.Batches
+                .findAll({where: {teacher: searchParameter}})
+                .then(function (data) {
+                    done(data);
+                })
+                .catch(function (err) {
+                    if (err) throw err;
+                });
+        }
+    }
+}
+
+//function to end an active batch
+function endBatch(batchID, done) {
+    db.models.Batches
+        .findOne({
+            where: {
+                id: batchID
+            }
+        })
+        .then(function (row) {
+            row
+                .update({
+                    isActive: false
+                })
+                .then(function (data) {
+                    if (done) done(data);
+                })
+                .catch(function (err) {
+                    if (err) throw err;
+                });
+        })
+        .catch(function (err) {
+            if (err) throw err;
+        });
+}
+
+//function to edit a batch
+function editBatch(id, name, teacher, endDate, done) {
+    if (name) {
+        if (teacher) {
+            if (endDate) {
+                searchBatch(id, function (data) {
+                    data
+                        .update({
+                            name: name,
+                            teacher: teacher,
+                            endDate: endDate
+                        })
+                        .then(function (data) {
+                            done(data);
+                        })
+                        .catch(function (err) {
+                            if (err) throw err;
+                        });
+                });
+            } else {
+                searchBatch(id, function (data) {
+                    data
+                        .update({
+                            name: name,
+                            teacher: teacher
+                        })
+                        .then(function (data) {
+                            done(data);
+                        })
+                        .catch(function (err) {
+                            if (err) throw err;
+                        });
+                });
+            }
+        } else {
+            if (endDate) {
+                searchBatch(id, function (data) {
+                    data
+                        .update({
+                            name: name,
+                            endDate: endDate
+                        })
+                        .then(function (data) {
+                            done(data);
+                        })
+                        .catch(function (err) {
+                            if (err) throw err;
+                        });
+                });
+            } else {
+                searchBatch(id, function (data) {
+                    console.log(data);
+                    data
+                        .update({
+                            name: name
+                        })
+                        .then(function (data) {
+                            done(data);
+                        })
+                        .catch(function (err) {
+                            if (err) throw err;
+                        });
+                });
+            }
+        }
+    } else {
+        if (teacher) {
+            if (endDate) {
+                searchBatch(id, function (data) {
+                    data
+                        .update({
+                            teacher: teacher,
+                            endDate: endDate
+                        })
+                        .then(function (data) {
+                            done(data);
+                        })
+                        .catch(function (err) {
+                            if (err) throw err;
+                        });
+                });
+            } else {
+                searchBatch(id, function (data) {
+                    data
+                        .update({
+                            teacher: teacher
+                        })
+                        .then(function (data) {
+                            done(data);
+                        })
+                        .catch(function (err) {
+                            if (err) throw err;
+                        });
+                });
+            }
+        } else {
+            if (endDate) {
+                searchBatch(id, function (data) {
+                    data
+                        .update({
+                            endDate: endDate
+                        })
+                        .then(function (data) {
+                            done(data);
+                        })
+                        .catch(function (err) {
+                            if (err) throw err;
+                        });
+                });
+            } else {
+                res.send('bhai chahta kya hai?');
+            }
+        }
+    }
+}
+
+//function to delete batch
+//TODO cascade delete not working
+function deleteBatch(id, done) {
+    db.models.Batches
+        .destroy({
+            where: {
+                id: id
+            }
+        })
+        .then(data => {
+            done(data);
+        })
+        .catch(() => {
+            if (err) throw err;
+        });
+}
+
+
+
+//function to add an assignment to a batch
+function addAssignmentToBatch(assnID, batchID, done) {
+    db.models.BatchAssignments
+        .create({
+            batchId: batchID,
+            assignmentId: assnID
+        })
+        .then(function (data) {
+            done(data);
+        })
+        .catch(function (err) {
+            if (err) throw err;
+        });
+}
+
+
+
+
+module.exports = {
+    addBatch,
+    getBatches,
+    searchBatches,
+    searchBatch,
+    endBatch,
+    editBatch,
+    deleteBatch,
+    addAssignmentToBatch,
+
+
+}
