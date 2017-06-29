@@ -5,8 +5,13 @@
 const express = require('express');
 const bitballoon = require('bitballoon');
 const randomstring = require('randomstring');
+<<<<<<< HEAD:routes/submissions.js
+const db = require('../db');
+const config = require('../utils/config');
+=======
 const db = require('../../utils/db');
 const config = require('../../utils/config');
+>>>>>>> upstream/master:routes/api_v1/submissions.js
 
 const router = express.Router();
 const client = bitballoon.createClient({
@@ -21,7 +26,7 @@ client.authorizeFromCredentials(function(err, access_token) {
 
 router.post('/new', function(req, res) {
   if (req.body.URL) {
-    db.addSubmission(
+    db.actions.submissions.addSubmission(
       req.body.studentId,
       req.body.assignmentId,
       req.body.URL,
@@ -45,7 +50,7 @@ router.post('/new', function(req, res) {
             deploy.waitForReady(function(err, deploy) {
               if (err) return console.log('Error updating site %o', err);
               console.log('Site deployed');
-              db.addSubmission(
+              db.actions.submissions.addSubmission(
                 req.body.studentId,
                 req.body.assignmentId,
                 site.url,
@@ -64,7 +69,7 @@ router.post('/new', function(req, res) {
 router.get('/', function(req, res) {
   var options = {};
   if (req.query.batch) {
-    db.searchByBatch(req.query.batch, req.query.onlyAccepted, data => {
+    db.actions.submissions.searchByBatch(req.query.batch, req.query.onlyAccepted, data => {
       res.send(data);
     });
   } else {
@@ -81,7 +86,7 @@ router.get('/', function(req, res) {
       options.assignmentId = req.query.assignment;
     }
 
-    db.searchSubmissions(options, data => {
+    db.actions.submissions.searchSubmissions(options, data => {
       res.send(data);
     });
   }
@@ -91,13 +96,13 @@ router.get('/', function(req, res) {
 router.get('/:param', function(req, res) {
   var options = {};
   options.id = req.params.param;
-  db.searchSubmissions(options, data => {
+  db.actions.submissions.searchSubmissions(options, data => {
     res.send(data);
   });
 });
 
 router.put('/:param', function(req, res) {
-  db.acceptSubmissionbyId(req.params.param, req.query.echo, data => {
+  db.actions.submissionsacceptSubmissionbyId(req.params.param, req.query.echo, data => {
     res.send(data);
   });
 });

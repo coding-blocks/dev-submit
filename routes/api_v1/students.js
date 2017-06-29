@@ -2,14 +2,18 @@
  * Created by varun on 5/24/17.
  */
 const express = require('express');
+<<<<<<< HEAD:routes/students.js
+const db = require('../db');
+=======
 const db = require('../../utils/db');
+>>>>>>> upstream/master:routes/api_v1/students.js
 
 const router = express.Router();
 
 //done
 router.post('/new', function(req, res) {
-  db.addUser(data => {
-    db.addStudent(
+  db.actions.users.addUser(data => {
+    db.models.addStudent(
       req.body.name,
       req.body.roll,
       req.body.email,
@@ -31,18 +35,18 @@ router.get('/', function(req, res) {
     type = 'roll';
   } else if (name) {
     type = 'name';
-  }
+  }a
 
   if (type == 'all')
-    db.getStudents(data => {
+    db.actions.students.getStudents(data => {
       res.send(data);
     });
   else if (type == 'roll') {
-    db.searchStudents(roll, type, data => {
+    db.actions.students.searchStudents(roll, type, data => {
       res.send(data);
     });
   } else {
-    db.searchStudents(name, type, data => {
+    db.actions.students.searchStudents(name, type, data => {
       res.send(data);
     });
   }
@@ -50,14 +54,14 @@ router.get('/', function(req, res) {
 
 //done
 router.get('/:id', function(req, res) {
-  db.searchStudent(req.params.id, data => {
+  db.actions.students.searchStudent(req.params.id, data => {
     res.send(data);
   });
 });
 
 //done
 router.put('/:id', function(req, res) {
-  db.editStudent(
+  db.actions.students.editStudent(
     req.params.id,
     req.body.name,
     data => {
@@ -70,7 +74,7 @@ router.put('/:id', function(req, res) {
 
 //TODO add hooks to delete user with it
 router.delete('/:id', function(req, res) {
-  db.deleteStudent(req.params.id, req.query.echo, data => {
+  db.actions.students.deleteStudent(req.params.id, req.query.echo, data => {
     res.send(data);
   });
 });
@@ -78,7 +82,7 @@ router.delete('/:id', function(req, res) {
 //done
 router.post('/:id/enroll/:batchId', function(req, res) {
   let echo = req.query.echo;
-  db.enrollStudentInBatch('id', req.params.id, req.params.batchId, data => {
+  db.actions.students.enrollStudentInBatch('id', req.params.id, req.params.batchId, data => {
     if (echo) {
       res.send(data);
     } else {
