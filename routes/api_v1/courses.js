@@ -2,7 +2,7 @@
  * Created by tech4GT on 6/28/17.
  */
 const router = require('express').Router();
-const db = require('../utils/db')
+const db = require('../../utils/db')
 
 router.post('/new', function (req, res) {
     db.addCourse(req.body.name,JSON.parse(req.body.assignments),data=>res.send(data));
