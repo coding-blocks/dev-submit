@@ -106,7 +106,7 @@ function editStudent(id, name, done, emailId, echo) {
                     if (echo) {
                         done(data);
                     } else {
-                        done('Success');
+                        done({"Success" : true});
                     }
                 })
                 .catch(function (err) {
@@ -196,7 +196,7 @@ function deleteStudent(studentId, echo, done) {
 //function to handle a new enrollment
 function enrollStudentInBatch(studentParamType, studentParam, BatchId, done) {
     searchStudents(studentParam, studentParamType, data => {
-        db.models.StudentBatch
+        models.StudentBatch
             .create({
                 studentId: data[0].dataValues.id,
                 batchId: BatchId
@@ -213,7 +213,7 @@ function enrollStudentInBatch(studentParamType, studentParam, BatchId, done) {
 
 //function to get all students of batch
 function getAllStudentsInBatch(batchId, done) {
-    db.models.StudentBatch
+    models.StudentBatch
         .findAll({
             where: {
                 batchId: batchId

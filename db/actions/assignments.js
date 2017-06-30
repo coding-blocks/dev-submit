@@ -16,7 +16,7 @@ function addAssignment(name, desc, batchId, done) {
         .then(function (data) {
             if (batchId) {
                 done(data);
-                actions.batches.addAssignmentToBatch(data.id, batchId, () => {
+                batches.addAssignmentToBatch(data.id, batchId, () => {
                 });
             } else done(data);
         })
