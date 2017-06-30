@@ -2,14 +2,14 @@
  * Created by tech4GT on 6/27/17.
  */
 const express = require('express');
-const db = require('../../utils/db');
+const db = require('../../db');
 
 const router = express.Router();
 
 //done
 router.post('/new', function(req, res) {
-  db.addUser(data => {
-    db.addTeacher(req.body.name, req.body.email, data.dataValues.id, data => {
+  db.actions.users.addUser(data => {
+    db.actions.teachers.addTeacher(req.body.name, req.body.email, data.dataValues.id, data => {
       res.send(data.dataValues);
     });
   });
@@ -23,11 +23,11 @@ router.get('/', function(req, res) {
     : req.query.email ? req.query.email : '';
 
   if (type == 'all')
-    db.getTeachers(data => {
+    db.actions.teachers.getTeachers(data => {
       res.send(data);
     });
   else {
-    db.searchTeachers(param, type, data => {
+    db.actions.teachers.searchTeachers(param, type, data => {
       res.send(data);
     });
   }
@@ -35,14 +35,14 @@ router.get('/', function(req, res) {
 
 //done
 router.get('/:id', function(req, res) {
-  db.searchTeacher(req.params.id, data => {
+  db.actions.teachers.searchTeacher(req.params.id, data => {
     res.send(data);
   });
 });
 
 //done
 router.put('/:id', function(req, res) {
-  db.editTeacher(
+  db.actions.teachers.editTeacher(
     req.params.id,
     req.body.name,
     data => {
@@ -55,7 +55,7 @@ router.put('/:id', function(req, res) {
 
 //TODO add hooks to delete user with it
 router.delete('/:id', function(req, res) {
-  db.deleteTeacher(req.params.id, req.query.echo, data => {
+  db.actions.teachers.deleteTeacher(req.params.id, req.query.echo, data => {
     res.send(data);
   });
 });
