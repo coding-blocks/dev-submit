@@ -88,7 +88,7 @@ router.delete('/:batchId', (req, res) => {
 // TODO Error check
 router.post('/:batchId/enroll', function (req, res) {
     let dataType = req.body.studentAttribute;
-    let studentArray = req.body.students;
+    let studentArray = JSON.parse(req.body.students);
     // if (studentArray) studentArray = JSON.parse(studentArray);
     let batchId = req.params.batchId;
     let retval = [];

@@ -9,7 +9,7 @@ const router = express.Router();
 //done
 router.post('/new', function(req, res) {
   db.actions.users.addUser(data => {
-    db.models.addStudent(
+    db.actions.students.addStudent(
       req.body.name,
       req.body.roll,
       req.body.email,
@@ -25,13 +25,17 @@ router.post('/new', function(req, res) {
 router.get('/', function(req, res) {
   let roll = req.query.roll;
   let name = req.query.name;
+  let email = req.query.email
   let type = 'all';
 
   if (roll) {
     type = 'roll';
   } else if (name) {
     type = 'name';
-  }a
+  }
+  else if(email){
+    type = 'email'
+  }
 
   if (type == 'all')
     db.actions.students.getStudents(data => {
@@ -41,7 +45,11 @@ router.get('/', function(req, res) {
     db.actions.students.searchStudents(roll, type, data => {
       res.send(data);
     });
-  } else {
+  }
+  else if(type=='email'){
+    db.actions.students.searchStudents(email,type,data=>res.send(data))
+  }
+  else {
     db.actions.students.searchStudents(name, type, data => {
       res.send(data);
     });
