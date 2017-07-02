@@ -2,11 +2,7 @@
  * Created by varun on 5/24/17.
  */
 const express = require('express');
-<<<<<<< HEAD:routes/batches.js
-const db = require('../db');
-=======
-const db = require('../../utils/db');
->>>>>>> upstream/master:routes/api_v1/batches.js
+const db = require('../../db');
 
 const router = express.Router();
 
@@ -38,7 +34,6 @@ router.get('/', (req, res) => {
     } else if (teacher) {
         options.teacher = teacher;
     }
-
     db.actions.batches.getBatches(options, data => {
         res.send(data);
     });
@@ -62,6 +57,7 @@ router.get('/:batchId/students', (req, res) => {
 });
 
 //tested
+
 router.put('/:batchId', function (req, res) {
     db.actions.batches.editBatch(
         req.params.batchId,
@@ -92,7 +88,7 @@ router.delete('/:batchId', (req, res) => {
 // TODO Error check
 router.post('/:batchId/enroll', function (req, res) {
     let dataType = req.body.studentAttribute;
-    let studentArray = req.body.students;
+    let studentArray = JSON.parse(req.body.students);
     // if (studentArray) studentArray = JSON.parse(studentArray);
     let batchId = req.params.batchId;
     let retval = [];

@@ -14,10 +14,11 @@ const index = require('./routes/index')
 
 var app = express();
 
+app.use(fileupload())
 app.use(bp.json());
 app.use(bp.urlencoded({extended : true}));
 app.use(cp())
-app.use(fileupload())
+
 
 
 app.engine('hbs', exphbs.express4({

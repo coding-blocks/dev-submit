@@ -3,11 +3,8 @@
  */
 
 const express = require('express');
-<<<<<<< HEAD:routes/assignments.js
-const db = require('../db');
-=======
-const db = require('../../utils/db');
->>>>>>> upstream/master:routes/api_v1/assignments.js
+const db = require('../../db');
+
 const router = express.Router();
 
 //TODO add echo support
