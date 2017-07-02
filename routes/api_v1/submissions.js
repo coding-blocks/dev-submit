@@ -5,13 +5,8 @@
 const express = require('express');
 const bitballoon = require('bitballoon');
 const randomstring = require('randomstring');
-<<<<<<< HEAD:routes/submissions.js
-const db = require('../db');
-const config = require('../utils/config');
-=======
-const db = require('../../utils/db');
+const db = require('../../db');
 const config = require('../../utils/config');
->>>>>>> upstream/master:routes/api_v1/submissions.js
 
 const router = express.Router();
 const client = bitballoon.createClient({

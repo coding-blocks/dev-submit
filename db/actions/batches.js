@@ -2,14 +2,13 @@
  * Created by abhishekyadav on 28/06/17.
  */
 
-const db = require('../../db');
 const models=require('../models');
 
 
 //function to add batch
 function addBatch(name, teacherId, startDate, endDate, done) {
     if (!endDate) {
-        db.models.Batches
+        models.Batches
             .create({
                 name: name,
                 teacherId: teacherId,
@@ -24,7 +23,7 @@ function addBatch(name, teacherId, startDate, endDate, done) {
                 if (err) throw err;
             });
     } else {
-        db.models.Batches
+        models.Batches
             .create({
                 name: name,
                 teacher: teacher,
@@ -43,7 +42,6 @@ function addBatch(name, teacherId, startDate, endDate, done) {
 
 //function to get all batches (overloaded for both active and passive)
 function getBatches(options, done) {
-    console.log(db);
     models.Batches
         .findAll({where: options})
         .then(function (data) {
@@ -56,7 +54,7 @@ function getBatches(options, done) {
 
 //function to get a particular batch
 function searchBatch(id, done) {
-    db.models.Batches
+    models.Batches
         .findOne({
             where: {
                 id: id
@@ -74,7 +72,7 @@ function searchBatch(id, done) {
 function searchBatches(searchParameter, searchType, onlyActive, done) {
     if (onlyActive) {
         if (searchType == 'name') {
-            db.models.Batches
+            models.Batches
                 .findAll({where: {name: searchParameter, isActive: true}})
                 .then(function (data) {
                     done(data);
@@ -83,7 +81,7 @@ function searchBatches(searchParameter, searchType, onlyActive, done) {
                     if (err) throw err;
                 });
         } else {
-            db.models.Batches
+            models.Batches
                 .findAll({where: {teacher: searchParameter, isActive: true}})
                 .then(function (data) {
                     done(data);
@@ -94,7 +92,7 @@ function searchBatches(searchParameter, searchType, onlyActive, done) {
         }
     } else {
         if (searchType == 'name') {
-            db.models.Batches
+            models.Batches
                 .findAll({where: {name: searchParameter}})
                 .then(function (data) {
                     done(data);
@@ -103,7 +101,7 @@ function searchBatches(searchParameter, searchType, onlyActive, done) {
                     if (err) throw err;
                 });
         } else {
-            db.models.Batches
+            models.Batches
                 .findAll({where: {teacher: searchParameter}})
                 .then(function (data) {
                     done(data);
@@ -117,7 +115,7 @@ function searchBatches(searchParameter, searchType, onlyActive, done) {
 
 //function to end an active batch
 function endBatch(batchID, done) {
-    db.models.Batches
+    models.Batches
         .findOne({
             where: {
                 id: batchID
@@ -259,7 +257,7 @@ function editBatch(id, name, teacher, endDate, done) {
 //function to delete batch
 //TODO cascade delete not working
 function deleteBatch(id, done) {
-    db.models.Batches
+    models.Batches
         .destroy({
             where: {
                 id: id
@@ -277,7 +275,7 @@ function deleteBatch(id, done) {
 
 //function to add an assignment to a batch
 function addAssignmentToBatch(assnID, batchID, done) {
-    db.models.BatchAssignments
+    models.BatchAssignments
         .create({
             batchId: batchID,
             assignmentId: assnID
