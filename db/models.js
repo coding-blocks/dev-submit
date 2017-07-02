@@ -101,16 +101,10 @@ Assignments.hasMany(Submissions, {
     hooks: true
 });
 
-BatchAssignments.belongsTo(Batches);
-Batches.hasMany(BatchAssignments, {
-    onDelete: 'cascade',
-    hooks: true
-});
-BatchAssignments.belongsTo(Assignments);
-Assignments.hasMany(BatchAssignments), {
-    onDelete: 'cascade',
-    hooks: true
-};
+
+Batches.hasMany(Assignments, {through: BatchAssignments});
+Assignments.hasMany(Batches, {through: BatchAssignments});
+
 
 StudentBatch.belongsTo(Batches);
 Batches.hasMany(StudentBatch, {
