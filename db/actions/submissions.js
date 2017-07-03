@@ -9,7 +9,7 @@ const models = require('../models');
 //TODO  Error: Can't set headers after they are sent.
 
 //add a submission
-function addSubmission(studentId, BatchAssnId, URL, done) {
+function addSubmission(studentId, batchAssignmentId, URL, done) {
     models.StudentBatch
         .findAll({
             where: {
@@ -23,7 +23,7 @@ function addSubmission(studentId, BatchAssnId, URL, done) {
 
             models.BatchAssignments.findOne({
                 where: {
-                    id: BatchAssnId
+                    id: batchAssignmentId
                 }
             }).then(function (BatchAssignmentData) {
                 if (!BatchAssignmentData) return done("Not Valid BatchAssignmentId")
@@ -35,7 +35,7 @@ function addSubmission(studentId, BatchAssnId, URL, done) {
                         models.Submissions
                             .upsert({
                                 studentId: studentId,
-                                batchAssignmentId: BatchAssnId,
+                                batchAssignmentId: batchAssignmentId,
                                 status: false,
                                 URL: URL
                             })
@@ -98,12 +98,12 @@ function acceptSubmissionbyId(id, echo, done) {
 }
 
 //function to accept a submission without submission id
-function acceptSubmissionWithoutId(studentId, BatchAssnId, URL, done) {
+function acceptSubmissionWithoutId(studentId, batchAssignmentId, URL, done) {
     models.Submissions
         .findOne({
             where: {
                 studentId: studentId,
-                batchAssignmentId: BatchAssnId,
+                batchAssignmentId: batchAssignmentId,
                 URL: URL
             }
         })
