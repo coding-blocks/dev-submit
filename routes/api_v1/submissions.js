@@ -23,7 +23,7 @@ router.post('/new', function(req, res) {
   if (req.body.URL) {
     db.actions.submissions.addSubmission(
       req.body.studentId,
-      req.body.assignmentId,
+      req.body.BatchAssignmentId,
       req.body.URL,
       data => {
         res.send(data);
@@ -47,7 +47,7 @@ router.post('/new', function(req, res) {
               console.log('Site deployed');
               db.actions.submissions.addSubmission(
                 req.body.studentId,
-                req.body.assignmentId,
+                req.body.BatchAssignmentId,
                 site.url,
                 data => {
                   res.send(data);
@@ -72,13 +72,13 @@ router.get('/', function(req, res) {
 
     if (accepted) options.status = JSON.parse(accepted);
 
-    if (req.query.student && req.query.assignment) {
+    if (req.query.student && req.query.BatchAssignment) {
       options.studentId = req.query.student;
-      options.assignmentId = req.query.assignment;
+      options.batch_assignmentId = req.query.BatchAssignment;
     } else if (req.query.student) {
       options.studentId = req.query.student;
-    } else if (req.query.assignment) {
-      options.assignmentId = req.query.assignment;
+    } else if (req.query.BatchAssignment) {
+      options.batch_assignmentId = req.query.BatchAssignment;
     }
 
     db.actions.submissions.searchSubmissions(options, data => {

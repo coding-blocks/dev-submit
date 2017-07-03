@@ -4,8 +4,9 @@
 
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('user', 'db', 'pass', {
+const sequelize = new Sequelize('user', 'db', 'password', {
     dialect: 'postgres',
+    port: 5432,
 
     pool: {
         min: 0,
@@ -60,7 +61,9 @@ const Batches = sequelize.define('batch', {
 const Submissions = sequelize.define('submission', {
     id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
     status: Sequelize.BOOLEAN,
-    URL: Sequelize.STRING
+    URL: Sequelize.STRING,
+    studentId: {type: Sequelize.INTEGER,unique: '1'},
+    batchAssignmentId: {type: Sequelize.INTEGER,unique: '1'}
 });
 
 
@@ -95,8 +98,8 @@ Students.hasMany(Submissions, {
     onDelete: 'cascade',
     hooks: true
 });
-Submissions.belongsTo(Assignments);
-Assignments.hasMany(Submissions, {
+Submissions.belongsTo(BatchAssignments);
+BatchAssignments.hasMany(Submissions, {
     onDelete: 'cascade',
     hooks: true
 });
