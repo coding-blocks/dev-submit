@@ -71,7 +71,7 @@ const Batches = sequelize.define('batch', {
 const Submissions = sequelize.define('submission', {
     id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
     status: Sequelize.BOOLEAN,
-    URL: Sequelize.STRING,
+    url: Sequelize.STRING,
     studentId: {type: Sequelize.INTEGER,unique: '1'},
     batchAssignmentId: {type: Sequelize.INTEGER,unique: '1'}
 });
