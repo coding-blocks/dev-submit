@@ -47,6 +47,16 @@ const Courses = sequelize.define('courses', {
 //table to store course-assignments
 const CourseAssignments = sequelize.define('course_assignments', {});
 
+
+//many to many for batch to assignments
+const BatchAssignments = sequelize.define('batch_assignment', {
+    id : {type: Sequelize.INTEGER,primaryKey: true,autoIncrement: true}
+});
+
+
+//many to many for Students to Batches
+const StudentBatch = sequelize.define('student_batch', {});
+
 //table to store Batches
 const Batches = sequelize.define('batch', {
     id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
@@ -65,15 +75,6 @@ const Submissions = sequelize.define('submission', {
     studentId: {type: Sequelize.INTEGER,unique: '1'},
     batchAssignmentId: {type: Sequelize.INTEGER,unique: '1'}
 });
-
-
-//many to many for batch to assignments
-const BatchAssignments = sequelize.define('batch_assignment', {});
-
-
-//many to many for Students to Batches
-const StudentBatch = sequelize.define('student_batch', {});
-
 
 //Table to store password and username
 const UserLocal = sequelize.define('userlocal', {
@@ -104,27 +105,11 @@ BatchAssignments.hasMany(Submissions, {
     hooks: true
 });
 
-BatchAssignments.belongsTo(Batches);
-Batches.hasMany(BatchAssignments, {
-    onDelete: 'cascade',
-    hooks: true
-});
-BatchAssignments.belongsTo(Assignments);
-Assignments.hasMany(BatchAssignments), {
-    onDelete: 'cascade',
-    hooks: true
-};
+Batches.belongsToMany(Assignments,{through : BatchAssignments});
+Assignments.belongsToMany(Batches,{through: BatchAssignments});
 
-StudentBatch.belongsTo(Batches);
-Batches.hasMany(StudentBatch, {
-    onDelete: 'cascade',
-    hooks: true
-});
-StudentBatch.belongsTo(Students);
-Students.hasMany(StudentBatch, {
-    onDelete: 'cascade',
-    hooks: true
-});
+Students.belongsToMany(Batches,{through: StudentBatch});
+Batches.belongsToMany(Students,{through: StudentBatch});
 
 Courses.belongsToMany(Assignments, {through: CourseAssignments});
 Assignments.belongsToMany(Courses, {through: CourseAssignments});
@@ -152,7 +137,7 @@ Users.hasOne(Teachers);
 UserLocal.belongsTo(Users);
 Users.hasOne(UserLocal);
 
-sequelize.sync();
+sequelize.sync({force: true});
 
 module.exports = {
     Students,
