@@ -8,16 +8,17 @@ const exphbs = require('express-hbs')
 const path = require('path')
 const fileupload = require('express-fileupload')
 const cp = require('cookie-parser')
-const api_v1 = require('./routes/api_v1')
+const api_v1 = require('./routes/api_v1/index')
 const users = require('./routes/users')
 const index = require('./routes/index')
 
 var app = express();
 
+app.use(fileupload())
 app.use(bp.json());
 app.use(bp.urlencoded({extended : true}));
 app.use(cp())
-app.use(fileupload())
+
 
 
 app.engine('hbs', exphbs.express4({

@@ -3,14 +3,14 @@
  */
 const express = require('express');
 const passport = require('../auth/passport');
-const db = require('../utils/db');
+const db = require('../db');
 
 const router = express.Router();
 
 //signup
 router.post('/signup',function (req, res) {
   if(req.body.role == "teacher"){
-    db.addTeacher(req.user.name,req.user.email,req.user.user.id,function (data) {
+    db.actions.teachers.addTeacher(req.user.name,req.user.email,req.user.user.id,function (data) {
       req.user.val = false;
       req.flash('success_msg', 'you have successfuly completed registration');
       res.redirect('/');
@@ -55,16 +55,16 @@ router.post('/register', (req, res) => {
     res.render('register', {
       errors: errors
     });
-  } else {
+  } else {a
     if (User.role == 'Student') {
-      db.addUser(data => {
-        db.addStudent(
+      db.actions.users.addUser(data => {
+        db.actions.students.addStudent(
           User.name,
           User.roll,
           User.email,
           data.dataValues.id,
           responseData => {
-            db.addLocalUser(
+            db.actions.users.addLocalUser(
               User.username,
               User.password,
               data.dataValues.id,
@@ -81,13 +81,13 @@ router.post('/register', (req, res) => {
         );
       });
     } else if (User.role == 'Teacher') {
-      db.addUser(data => {
-        db.addTeacher(
+      db.actions.users.addUser(data => {
+        db.actions.teachers.addTeacher(
           User.name,
           User.email,
           data.dataValues.id,
           responseData => {
-            db.addLocalUser(
+            db.actions.users.addLocalUser(
               User.username,
               User.password,
               data.dataValues.id,
