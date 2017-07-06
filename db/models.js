@@ -18,17 +18,12 @@ const sequelize = new Sequelize('user', 'db', 'password', {
 //Table to store students
 const Students = sequelize.define('student', {
     id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
-    name: Sequelize.STRING,
-    roll: {type: Sequelize.STRING, unique: true},
-    email: {type: Sequelize.STRING, isEmail: true}
+    roll: {type: Sequelize.STRING, unique: true}
 });
 
 //Table to store teachers
-
 const Teachers = sequelize.define('teacher', {
     id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
-    name: Sequelize.STRING,
-    email: {type: Sequelize.STRING, isEmail: true}
 });
 
 //table to store assignments
@@ -80,11 +75,17 @@ const Submissions = sequelize.define('submission', {
 const UserLocal = sequelize.define('userlocal', {
     id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
     username: {type: Sequelize.STRING, unique: true},
-    password: Sequelize.STRING
+    password: Sequelize.STRING,
+    type: Sequelize.STRING
 });
 
+// Table to store common properties of student and teacher
 const Users = sequelize.define('user', {
-    id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true}
+  id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+  name: Sequelize.STRING,
+  roll: {type: Sequelize.STRING, unique: true},
+  email: {type: Sequelize.STRING, isEmail: true},
+  type: Sequelize.STRING
 });
 
 //table to store access tokens
