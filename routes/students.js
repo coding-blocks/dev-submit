@@ -13,6 +13,7 @@ router.post('/new', function(req, res) {
       req.body.name,
       req.body.roll,
       req.body.email,
+      req.body.role,
       data.dataValues.id,
       data => {
         res.send(data.dataValues);

@@ -9,7 +9,7 @@ const router = express.Router();
 //done
 router.post('/new', function(req, res) {
   db.addUser(data => {
-    db.addTeacher(req.body.name, req.body.email, data.dataValues.id, data => {
+    db.addTeacher(req.body.name, req.body.email, data.dataValues.id,req.body.role data => {
       res.send(data.dataValues);
     });
   });
