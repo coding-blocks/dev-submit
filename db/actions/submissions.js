@@ -6,11 +6,10 @@
 const models = require('../models');
 
 
-
 //TODO  Error: Can't set headers after they are sent.
 
 //add a submission
-function addSubmission(studentId, assnId, URL, done) {
+function addSubmission(studentId, batchAssignmentId, URL, done) {
     models.StudentBatch
         .findAll({
             where: {
@@ -22,46 +21,36 @@ function addSubmission(studentId, assnId, URL, done) {
                 return done('not a valid submission');
             }
 
-            let flag = false;
+            models.BatchAssignments.findOne({
+                where: {
+                    id: batchAssignmentId
+                }
+            }).then(function (BatchAssignmentData) {
+                if (!BatchAssignmentData) return done("Not Valid BatchAssignmentId")
 
-            for (let i = 0; i < data.length; i++) {
-                models.BatchAssignments
-                    .findOne({
-                        where: {
-                            batchId: data[i].dataValues.batchId,
-                            assignmentId: assnId
-                        }
-                    })
-                    .then(function (row) {
-                        if (row) {
-                            flag = true;
-                            models.Submissions
-                                .create({
-                                    studentId: studentId,
-                                    assignmentId: assnId,
-                                    status: false,
-                                    URL: URL
-                                })
-                                .then(function (data) {
-                                    let arr = [];
-                                    arr.push(data);
-                                    done(arr);
-                                })
-                                .catch(function (err) {
-                                    if (err) throw err;
-                                });
-                        } else {
-                            if (i == data.length - 1) {
-                                return done('Not a valid submission');
-                            }
-                        }
-                    })
-                    .catch(function (err) {
-                        if (err) throw err;
-                    });
-
-                if (flag) break;
-            }
+                let flag = false;
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].dataValues.batchId == BatchAssignmentData.batchId) {
+                        flag = true;
+                        models.Submissions
+                            .upsert({
+                                studentId: studentId,
+                                batchAssignmentId: batchAssignmentId,
+                                status: false,
+                                URL: URL
+                            })
+                            .then(function (data) {
+                                done(data);
+                            })
+                            .catch(function (err) {
+                                if (err) throw err;
+                            });
+                    }
+                    if(flag) break;
+                }
+            }).catch(function (err) {
+                if(err) throw err;
+            });
         })
         .catch(function (err) {
             if (err) throw err;
@@ -74,8 +63,7 @@ function acceptSubmissionbyId(id, echo, done) {
         models.Submissions
             .findOne({where: {id: id}})
             .then(function (row) {
-                row
-                    .update({
+                row.update({
                         status: true
                     })
                     .then(function (data) {
@@ -110,18 +98,17 @@ function acceptSubmissionbyId(id, echo, done) {
 }
 
 //function to accept a submission without submission id
-function acceptSubmissionWithoutId(studentId, assnId, URL, done) {
+function acceptSubmissionWithoutId(studentId, batchAssignmentId, URL, done) {
     models.Submissions
         .findOne({
             where: {
                 studentId: studentId,
-                assignmentId: assnId,
+                batchAssignmentId: batchAssignmentId,
                 URL: URL
             }
         })
         .then(function (row) {
-            row
-                .update({
+            row.update({
                     status: true
                 })
                 .then(function () {
@@ -149,7 +136,8 @@ function getSubmissions(onlyAccepted, done) {
             });
     } else {
         models.Submissions
-            .findAll()
+            .findAll({})
+
             .then(function (data) {
                 done(data);
             })
@@ -170,37 +158,27 @@ function searchSubmissions(options, done) {
             if (err) throw err;
         });
 }
-
+//TODO this function
 //function to search submissions by batch
-//TODO done being called more than once
-function searchByBatch(batchId, onlyAccepted, done) {
-    models.BatchAssignments
-        .findAll({where: {batchId: batchId}})
-        .then(function (data) {
-            let arr = [];
-            let i = 0;
-            let flag = false;
-            for (i = 0; i < data.length; i++) {
-                let options = {};
-                options.assignmentId = data[i].dataValues.assignmentId;
-                searchSubmissions(
-                    options,
-                    rows => {
-                        for (let j = 0; j < rows.length; j++) {
-                            arr.push(rows[j].dataValues);
-                        }
-                        if (i >= data.length - 1) done(arr);
-                    },
-                    onlyAccepted
-                );
+function searchByBatch(batchId,onlyAccepted,done) {
+    if(!onlyAccepted) onlyAccepted = null;
+    models.Submissions.findAll({
+        where : {
+          status : onlyAccepted
+        },
+        include: [
+            {
+                model: models.BatchAssignments,
+                where : {
+                    batchId : batchId
+                }
             }
-            if (data.length == 0) {
-                done(arr);
-            }
-        })
-        .catch(function (err) {
-            if (err) throw err;
-        });
+        ]
+    }).then(function (data) {
+        done(data);
+    }).catch(function (err) {
+        if(err) throw err;
+    })
 }
 
 module.exports = {

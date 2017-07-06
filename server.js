@@ -8,7 +8,7 @@ const exphbs = require('express-hbs')
 const path = require('path')
 const fileupload = require('express-fileupload')
 const cp = require('cookie-parser')
-const api_v1 = require('./routes/api_v1/index')
+const api_v1 = require('./routes/api_v1')
 const users = require('./routes/users')
 const index = require('./routes/index')
 
