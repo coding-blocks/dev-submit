@@ -10,7 +10,7 @@ const router = express.Router();
 //signup
 router.post('/signup',function (req, res) {
   if(req.body.role == "teacher"){
-    db.actions.teachers.addTeacher(req.user.name,req.user.email,req.user.user.id,req.user.role,function (data) {
+    db.actions.teachers.addTeacher(req.user.name,req.user.email,req.user.user.id,function (data) {
       req.user.val = false;
       req.flash('success_msg', 'you have successfuly completed registration');
       res.redirect('/');
@@ -62,13 +62,11 @@ router.post('/register', (req, res) => {
           User.name,
           User.roll,
           User.email,
-          User.role,
           data.dataValues.id,
           responseData => {
             db.actions.users.addLocalUser(
               User.username,
               User.password,
-              User.role,
               data.dataValues.id,
               () => {
                 console.log(responseData.dataValues);
@@ -87,13 +85,11 @@ router.post('/register', (req, res) => {
         db.actions.teachers.addTeacher(
           User.name,
           User.email,
-          User.role,
           data.dataValues.id,
           responseData => {
             db.actions.users.addLocalUser(
               User.username,
               User.password,
-              User.role,
               data.dataValues.id,
               () => {
                 console.log(responseData.dataValues);
