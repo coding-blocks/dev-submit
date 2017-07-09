@@ -77,7 +77,6 @@ const UserLocal = sequelize.define('userlocal', {
     id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
     username: {type: Sequelize.STRING, unique: true},
     password: Sequelize.STRING
-    type: Sequelize.STRING
 });
 
 // Table to tsore common proerties of students and teachers
@@ -86,7 +85,6 @@ const Users = sequelize.define('user', {
     name: Sequelize.STRING,
     roll: {type: Sequelize.STRING, unique: true},
     email: {type: Sequelize.STRING, isEmail: true},
-    type: Sequelize.STRING
 });
 
 //table to store access tokens
