@@ -55,7 +55,7 @@ router.post('/register', (req, res) => {
     res.render('register', {
       errors: errors
     });
-  } else {a
+  } else {
     if (User.role == 'Student') {
       db.actions.users.addUser(data => {
         db.actions.students.addStudent(

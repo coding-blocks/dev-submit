@@ -5,7 +5,7 @@
 const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize('user', 'db', 'password', {
-    dialect: 'postgres',
+    dialect: 'mysql',
     port: 5432,
 
     pool: {
