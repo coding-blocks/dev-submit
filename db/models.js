@@ -83,7 +83,6 @@ const UserLocal = sequelize.define('userlocal', {
 const Users = sequelize.define('user', {
     id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true}
     name: Sequelize.STRING,
-    roll: {type: Sequelize.STRING, unique: true},
     email: {type: Sequelize.STRING, isEmail: true},
 });
 
