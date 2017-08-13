@@ -5,14 +5,11 @@ const models = require('../models');
 const bcrypt = require('bcrypt');
 
 
-
 //function to add student
-function addStudent(name, roll, email, UserID, done, Batch) {
+function addStudent(roll, UserID, done, Batch) {
     models.Students
         .create({
             roll: roll,
-            name: name,
-            email: email,
             userId: UserID
         })
         .then(function (data) {
@@ -28,7 +25,9 @@ function addStudent(name, roll, email, UserID, done, Batch) {
 //function to get students list
 function getStudents(done) {
     models.Students
-        .findAll()
+        .findAll({
+            include: [models.Users]
+        })
         .then(function (data) {
             done(data);
         })
@@ -41,7 +40,10 @@ function getStudents(done) {
 //function to get student with a particular roll
 function searchStudent(id, done) {
     models.Students
-        .findOne({where: {id: id}})
+        .findOne({
+            where: {id: id},
+            include: [models.Users]
+        })
         .then(function (data) {
             done(data);
         })
@@ -51,11 +53,31 @@ function searchStudent(id, done) {
 }
 
 
+//
+// models.Teachers.findAll({
+//         where: {
+//             '$user.name$': req.body.name
+//         },
+//     },
+//     {
+//         include: [models.Users]
+//     }
+// )
+
+
 //function to search multiple students for a query
 function searchStudents(searchParameter, searchType, done) {
     if (searchType == 'name') {
         models.Students
-            .findAll({where: {name: searchParameter}})
+            .findAll(
+                {
+                    include: [{
+                        model: models.Users,
+                        where: {
+                            name: searchParameter
+                        }
+                    }]
+                })
             .then(function (data) {
                 done(data);
             })
@@ -64,7 +86,7 @@ function searchStudents(searchParameter, searchType, done) {
             });
     } else if (searchType == 'id') {
         models.Students
-            .findAll({where: {id: searchParameter}})
+            .findAll({where: {id: searchParameter}}, {include: [models.Users]})
             .then(function (data) {
                 done(data);
             })
@@ -73,7 +95,7 @@ function searchStudents(searchParameter, searchType, done) {
             });
     } else if (searchType == 'roll') {
         models.Students
-            .findAll({where: {roll: searchParameter}})
+            .findAll({where: {roll: searchParameter}}, {include: [models.Users]})
             .then(function (data) {
                 done(data);
             })
@@ -82,7 +104,14 @@ function searchStudents(searchParameter, searchType, done) {
             });
     } else {
         models.Students
-            .findAll({where: {email: searchParameter}})
+            .findAll({
+                include: [{
+                    model: models.Users,
+                    where: {
+                        email: searchParameter
+                    }
+                }]
+            })
             .then(function (data) {
                 done(data);
             })
@@ -92,50 +121,9 @@ function searchStudents(searchParameter, searchType, done) {
     }
 }
 
-
-//function to edit a student
-function editStudent(id, name, done, emailId, echo) {
-    if (emailId) {
-       searchStudent(id, function (data) {
-            data
-                .update({
-                    name: name,
-                    email: emailId
-                })
-                .then(function (data) {
-                    if (echo) {
-                        done(data);
-                    } else {
-                        done({"Success" : true});
-                    }
-                })
-                .catch(function (err) {
-                    if (err) throw err;
-                });
-        });
-    } else {
-        searchStudent(id, function (data) {
-            data
-                .update({
-                    name: name
-                })
-                .then(function (data) {
-                    if (echo) {
-                        done(data);
-                    } else {
-                        done('Success');
-                    }
-                })
-                .catch(function (err) {
-                    if (err) throw err;
-                });
-        });
-    }
-}
-
-
 //function to delete a student
 function deleteStudent(studentId, echo, done) {
+    //TODO to be discussed if we delete the user along with it or just reset the role
     models.Submissions
         .destroy({
             where: {
@@ -213,6 +201,7 @@ function enrollStudentInBatch(studentParamType, studentParam, BatchId, done) {
 
 //function to get all students of batch
 function getAllStudentsInBatch(batchId, done) {
+
     models.StudentBatch
         .findAll({
             where: {
@@ -242,7 +231,6 @@ module.exports = {
     getStudents,
     searchStudents,
     searchStudent,
-    editStudent,
     deleteStudent,
     enrollStudentInBatch,
     getAllStudentsInBatch

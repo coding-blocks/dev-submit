@@ -7,11 +7,9 @@ const bcrypt = require('bcrypt');
 
 
 //function to add a teacher
-function addTeacher(name, email, userId, done) {
+function addTeacher(userId, done) {
     models.Teachers
         .create({
-            name: name,
-            email: email,
             userId: userId
         })
         .then(function (data) {
@@ -26,7 +24,7 @@ function addTeacher(name, email, userId, done) {
 //function to get teachers list
 function getTeachers(done) {
     models.Teachers
-        .findAll()
+        .findAll({include: [models.Users]})
         .then(function (data) {
             done(data);
         })
@@ -39,7 +37,12 @@ function getTeachers(done) {
 //function to get teacher with a particular email
 function searchTeacher(id, done) {
     models.Teachers
-        .findOne({where: {id: id}})
+        .findOne({
+            where: {id: id},
+            include: [{
+                model: models.Users,
+            }]
+        })
         .then(function (data) {
             done(data);
         })
@@ -53,7 +56,14 @@ function searchTeacher(id, done) {
 function searchTeachers(searchParameter, searchType, done) {
     if (searchType == 'name') {
         models.Teachers
-            .findAll({where: {name: searchParameter}})
+            .findAll({
+                include: [{
+                    model: models.Users,
+                    where: {
+                        name: searchParameter
+                    }
+                }]
+            })
             .then(function (data) {
                 done(data);
             })
@@ -62,7 +72,14 @@ function searchTeachers(searchParameter, searchType, done) {
             });
     } else {
         models.Teachers
-            .findAll({where: {email: searchParameter}})
+            .findAll({
+                include: [{
+                    model: models.Users,
+                    where: {
+                        email: searchParameter
+                    }
+                }]
+            })
             .then(function (data) {
                 done(data);
             })
@@ -71,48 +88,6 @@ function searchTeachers(searchParameter, searchType, done) {
             });
     }
 }
-
-
-//function to edit a Teachear
-function editTeacher(id, name, done, emailId, echo) {
-    if (emailId) {
-        searchTeacher(id, function (data) {
-            data
-                .update({
-                    name: name,
-                    email: emailId
-                })
-                .then(function (data) {
-                    if (echo) {
-                        done(data);
-                    } else {
-                        done({"Success": true});
-                    }
-                })
-                .catch(function (err) {
-                    if (err) throw err;
-                });
-        });
-    } else {
-        searchTeacher(id, function (data) {
-            data
-                .update({
-                    name: name
-                })
-                .then(function (data) {
-                    if (echo) {
-                        done(data);
-                    } else {
-                        done({'Success' : true});
-                    }
-                })
-                .catch(function (err) {
-                    if (err) throw err;
-                });
-        });
-    }
-}
-
 
 //TODO add hook to destroy teacher batches if required
 //function to delete a teacher
@@ -148,6 +123,5 @@ module.exports = {
     getTeachers,
     searchTeacher,
     searchTeachers,
-    editTeacher,
     deleteTeacher
 }
