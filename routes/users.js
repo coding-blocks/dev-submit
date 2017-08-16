@@ -7,6 +7,12 @@ const db = require('../db');
 
 const router = express.Router();
 
+router.get('/me',function (req, res) {
+    db.actions.users.getUser(req.user.id,function (data) {
+        res.send(data)
+    })
+})
+
 //signup
 router.post('/signup',function (req, res) {
   if(req.body.role == "teacher"){
@@ -57,11 +63,9 @@ router.post('/register', (req, res) => {
     });
   } else {
     if (User.role == 'Student') {
-      db.actions.users.addUser(data => {
+      db.actions.users.addUser(User.name,User.email,data => {
         db.actions.students.addStudent(
-          User.name,
-          User.roll,
-          User.email,
+            User.roll,
           data.dataValues.id,
           responseData => {
             db.actions.users.addLocalUser(
@@ -81,10 +85,8 @@ router.post('/register', (req, res) => {
         );
       });
     } else if (User.role == 'Teacher') {
-      db.actions.users.addUser(data => {
+      db.actions.users.addUser(User.name,User.email,data => {
         db.actions.teachers.addTeacher(
-          User.name,
-          User.email,
           data.dataValues.id,
           responseData => {
             db.actions.users.addLocalUser(

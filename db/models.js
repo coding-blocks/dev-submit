@@ -4,8 +4,8 @@
 
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('user', 'db', 'password', {
-    dialect: 'mysql',
+const sequelize = new Sequelize('user', 'db', 'pass', {
+    dialect: 'postgres',
     port: 5432,
 
     pool: {
@@ -81,7 +81,7 @@ const UserLocal = sequelize.define('userlocal', {
 
 // Table to tsore common proerties of students and teachers
 const Users = sequelize.define('user', {
-    id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true}
+    id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
     name: Sequelize.STRING,
     email: {type: Sequelize.STRING, isEmail: true},
 });
@@ -136,7 +136,7 @@ Users.hasOne(Teachers);
 UserLocal.belongsTo(Users);
 Users.hasOne(UserLocal);
 
-sequelize.sync({force: true});
+sequelize.sync();
 
 module.exports = {
     Students,
