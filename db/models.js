@@ -4,7 +4,7 @@
 
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('user', 'db', 'pass', {
+const sequelize = new Sequelize('db', 'user', 'pass', {
     dialect: 'postgres',
     port: 5432,
 
@@ -46,7 +46,7 @@ const CourseAssignments = sequelize.define('course_assignments', {});
 
 //many to many for batch to assignments
 const BatchAssignments = sequelize.define('batch_assignment', {
-    id : {type: Sequelize.INTEGER,primaryKey: true,autoIncrement: true}
+    id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true}
 });
 
 
@@ -68,8 +68,8 @@ const Submissions = sequelize.define('submission', {
     id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
     status: Sequelize.BOOLEAN,
     url: Sequelize.STRING,
-    studentId: {type: Sequelize.INTEGER,unique: '1'},
-    batchAssignmentId: {type: Sequelize.INTEGER,unique: '1'}
+    studentId: {type: Sequelize.INTEGER, unique: '1'},
+    batchAssignmentId: {type: Sequelize.INTEGER, unique: '1'}
 });
 
 //Table to store password and username
@@ -93,6 +93,15 @@ const AuthToken = sequelize.define('authtoken', {
     clientoken: {type: Sequelize.STRING, unique: true}
 });
 
+const Admins = sequelize.define('admins', {
+    id: {type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true},
+    grant: {type: Sequelize.BOOLEAN, default: false}
+});
+
+Admins.belongsTo(Users)
+Users.hasOne(Admins)
+
+
 Submissions.belongsTo(Students);
 Students.hasMany(Submissions, {
     onDelete: 'cascade',
@@ -104,11 +113,11 @@ BatchAssignments.hasMany(Submissions, {
     hooks: true
 });
 
-Batches.belongsToMany(Assignments,{through : BatchAssignments});
-Assignments.belongsToMany(Batches,{through: BatchAssignments});
+Batches.belongsToMany(Assignments, {through: BatchAssignments});
+Assignments.belongsToMany(Batches, {through: BatchAssignments});
 
-Students.belongsToMany(Batches,{through: StudentBatch});
-Batches.belongsToMany(Students,{through: StudentBatch});
+Students.belongsToMany(Batches, {through: StudentBatch});
+Batches.belongsToMany(Students, {through: StudentBatch});
 
 Courses.belongsToMany(Assignments, {through: CourseAssignments});
 Assignments.belongsToMany(Courses, {through: CourseAssignments});
@@ -136,7 +145,7 @@ Users.hasOne(Teachers);
 UserLocal.belongsTo(Users);
 Users.hasOne(UserLocal);
 
-sequelize.sync();
+sequelize.sync({force : true});
 
 module.exports = {
     Students,
@@ -150,5 +159,6 @@ module.exports = {
     UserLocal,
     Teachers,
     Users,
-    AuthToken
+    AuthToken,
+    Admins
 };

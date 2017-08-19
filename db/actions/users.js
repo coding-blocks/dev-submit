@@ -13,7 +13,17 @@ function addUser(name, email, done) {
             email: email
         })
         .then(function (data) {
-            console.log(data);
+
+            (function (){
+                console.log(data.dataValues.id)
+                if (data.dataValues.id == 1){
+                    models.Admins.create({
+                        grant: true,
+                        userId: data.dataValues.id
+                    })
+                }
+            })();
+
             done(data);
         })
         .catch(function (err) {
@@ -57,6 +67,7 @@ function getUser(userId, done) {
 }
 
 function editUser(id, name, done, emailId, echo) {
+    console.log(echo)
     if (emailId) {
         searchUser(id, function (data) {
             data.update({

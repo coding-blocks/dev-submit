@@ -2,16 +2,15 @@
  * Created by abhishekyadav on 09/07/17.
  */
 var OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
-const models=require('../../../db').models;
-const db=require('../../../db');
+const models = require('../../../db').models;
+const db = require('../../../db');
 var randtoken = require('rand-token');
 var http = require('http');
 const axios = require('axios');
 const secrets = require('../../../secrets.json');
 
 
-
-module.exports=new OAuth2Strategy({
+module.exports = new OAuth2Strategy({
         authorizationURL: 'https://account.codingblocks.com/oauth/authorize',
         tokenURL: 'https://account.codingblocks.com/oauth/token',
         clientID: secrets.clientID,
@@ -39,38 +38,59 @@ module.exports=new OAuth2Strategy({
             }).then(function (response) {
                 user[0].dataValues.name = response.data.firstname + ' ' + response.data.lastname
                 user[0].dataValues.email = response.data.email
-                models.Students.findOne({
-                    where : {
-                        userId : user[0].dataValues.user.id
-                    }
-                }).then(function (data) {
-                    if(!data){
-                        models.Teachers.findOne({
-                            where : {
-                                userId : user[0].dataValues.user.id
+                db.actions.users.editUser(user[0].dataValues.id, user[0].dataValues.name, function (updatedData) {
+                    if (updatedData.dataValues.id == 1) {
+                        models.Admins.findOrCreate({
+                            where: {
+                                userId: 1
+                            },
+                            defaults: {
+                                userId: 1,
+                                grant: true
                             }
-                        }).then(function (data) {
-                            if(!data){
-                                console.log('jcscljshcihaslca')
-                                user[0].dataValues.val = true;
-                            }
-                            else{
-                                user[0].dataValues.val = false;
-                                user[0].dataValues.user.dataValues.student = false;
-                            }
-                            done(null, user[0].dataValues);
+
                         })
                     }
-                    else{
-                        user[0].dataValues.val = false;
-                        user[0].dataValues.user.dataValues.student=true
-                        done(null, user[0].dataValues);
-                    }
+                    models.Students.findOne({
+                        where: {
+                            userId: user[0].dataValues.user.id
+                        }
+                    }).then(function (data) {
+                        if (!data) {
+                            models.Teachers.findOne({
+                                where: {
+                                    userId: user[0].dataValues.user.id
+                                }
+                            }).then(function (data) {
+                                user[0].dataValues.dataValues = {
+                                    userId: user[0].dataValues.userId
+                                }
 
-                });
-            }).catch(function (err) {
-                if (err) throw err
+                                if (!data) {
+                                    user[0].dataValues.val = true;
+                                }
+                                else {
+                                    user[0].dataValues.val = false;
+                                    user[0].dataValues.user.dataValues.student = false;
+                                }
+                                done(null, user[0].dataValues);
+                            })
+                        }
+                        else {
+                            user[0].dataValues.dataValues = {
+                                userId: user[0].dataValues.userId
+                            }
+                            user[0].dataValues.val = false;
+                            user[0].dataValues.user.dataValues.student = true
+                            done(null, user[0].dataValues);
+                        }
+
+                    });
+                }, user[0].dataValues.email, true).catch(function (err) {
+                    if (err) throw err
+                })
             })
+
         }).catch(function (err) {
             done(null, false);
         })
