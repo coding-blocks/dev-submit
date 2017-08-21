@@ -29,26 +29,41 @@ module.exports = {
                             userId: req.user.dataValues.userId
                         }
                     }).then(function (stuData) {
-                        if(stuData) {
+                        if (stuData) {
                             req.user.dataValues.role = {name: "student", id: stuData.id}
                             return next();
                         }
-                        else{
+                        else {
                             res.send("please register as student or teacher")
                         }
                     })
                 })
             })
         }
-        else next();
+        else {
+            console.log("Not logged in")
+            next();
+        }
     },
     ensureAdmin: function ensureAdmin(req, res, next) {
-        console.log(req.user.dataValues.role)
         if (req.user.dataValues.role.name == "admin") return next();
         res.send("You are not an admin")
     },
     ensureTeacher: function (req, res, next) {
         if (req.user.dataValues.role.name == "admin" || req.user.dataValues.role.name == "teacher") return next();
         res.send("You are neither an Admin nor a Teacher")
+    },
+    ensureOwnUser(req, res, next) {
+        if(req.user.dataValues.role.name == "admin") return next()
+        if (req.params.id == req.user.dataValues.userId) return next();
+        res.send("You are not authorised to delete this account")
+    },
+    ensureUserLogin: function (req, res, next) {
+        if (!req.user) {
+            res.send("Please login to continue")
+        }
+        else {
+            next()
+        }
     }
 }

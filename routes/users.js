@@ -4,10 +4,11 @@
 const express = require('express');
 const passport = require('../auth/passport');
 const db = require('../db');
+const utils = require('../utils')
 
 const router = express.Router();
 
-router.get('/me',function (req, res) {
+router.get('/me',utils.acl.ensureUserLogin,function (req, res) {
     db.actions.users.getUser(req.user.id,function (data) {
         res.send(data)
     })
@@ -23,8 +24,11 @@ router.post('/signup',function (req, res) {
     })
   }
   else{
-    //add as a student
-  }
+      db.actions.students.addStudent(req.user.name,req.user.email,req.user.user.id,function (data) {
+          req.user.val = false;
+          req.flash('success_msg', 'you have successfuly completed registration');
+          res.redirect('/');
+      })  }
 })
 
 
