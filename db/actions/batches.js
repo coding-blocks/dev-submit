@@ -26,7 +26,7 @@ function addBatch(name, teacherId, startDate, endDate, done) {
         models.Batches
             .create({
                 name: name,
-                teacher: teacher,
+                teacherId: teacherId,
                 startDate: startDate,
                 endDate: endDate,
                 isActive: true

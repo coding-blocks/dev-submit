@@ -4,13 +4,15 @@
 
 const express = require('express');
 const db = require('../../db');
+const utils = require('../../utils')
+
 
 const router = express.Router();
 
 //TODO add echo support
 
 //tested
-router.post('/new', function (req, res) {
+router.post('/new',utils.acl.ensureTeacher, function (req, res) {
     db.actions.assignments.addAssignment(req.body.name, req.body.desc, req.body.batchId, data => {
         let arr = [];
         arr.push(data.dataValues);
@@ -19,7 +21,7 @@ router.post('/new', function (req, res) {
 });
 
 //tested
-router.get('/', function (req, res) {
+router.get('/', utils.acl.ensureTeacher,function (req, res) {
     var options = {};
 
     let type = 'all';
@@ -37,14 +39,14 @@ router.get('/', function (req, res) {
 });
 
 //tested
-router.get('/:id', function (req, res) {
+router.get('/:id', utils.acl.ensureTeacher,function (req, res) {
     db.actions.assignments.searchAssignment(req.params.id, data => {
         res.send(data);
     });
 });
 
 //tested
-router.put('/:id', function (req, res) {
+router.put('/:id',utils.acl.ensureTeacher, function (req, res) {
     console.log(req.body);
     db.actions.assignments.editAssignment(req.params.id, req.body.name, req.body.desc, data => {
         res.send(data);
@@ -52,14 +54,14 @@ router.put('/:id', function (req, res) {
 });
 
 //tested
-router.delete('/:id', function (req, res) {
+router.delete('/:id',utils.acl.ensureAdmin, function (req, res) {
     db.actions.assignments.deleteAssignment(req.params.id, data => {
         res.send(data);
     });
 });
 
 //tested
-router.post('/:id/addToBatch/:batchId', function (req, res) {
+router.post('/:id/addToBatch/:batchId',utils.acl.ensureTeacher, function (req, res) {
     db.actions.batches.addAssignmentToBatch(req.params.id, req.params.batchId, data => {
         res.send(data);
     });

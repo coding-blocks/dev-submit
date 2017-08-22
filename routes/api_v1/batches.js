@@ -3,13 +3,14 @@
  */
 const express = require('express');
 const db = require('../../db');
+const utils = require('../../utils');
 
 const router = express.Router();
 
 //TODO add echo support
 
 //tested
-router.post('/new', function (req, res) {
+router.post('/new',utils.acl.ensureTeacher, function (req, res) {
     db.actions.batches.addBatch(
         req.body.name,
         req.body.teacherId,
@@ -22,7 +23,7 @@ router.post('/new', function (req, res) {
 });
 
 //tested
-router.get('/', (req, res) => {
+router.get('/',utils.acl.ensureAdmin, (req, res) => {
     let onlyActive = req.query.active;
     var options = {};
     if (onlyActive) options.isActive = JSON.parse(onlyActive);
@@ -40,7 +41,7 @@ router.get('/', (req, res) => {
 });
 
 //tested
-router.get('/:batchId', function (req, res) {
+router.get('/:batchId',utils.acl.ensureBatchOfStudent, function (req, res) {
     let options = {};
     options.id = req.params.batchId;
     db.actions.batches.getBatches(options, function (data) {
@@ -49,7 +50,7 @@ router.get('/:batchId', function (req, res) {
 });
 
 //tested
-router.get('/:batchId/students', (req, res) => {
+router.get('/:batchId/students',utils.acl.ensureBatchOfStudent, (req, res) => {
     db.actions.students.getAllStudentsInBatch(req.params.batchId, data => {
         console.log('done');
         res.send(data);
@@ -58,7 +59,7 @@ router.get('/:batchId/students', (req, res) => {
 
 //tested
 
-router.put('/:batchId', function (req, res) {
+router.put('/:batchId',utils.acl.ensureAdmin, function (req, res) {
     db.actions.batches.editBatch(
         req.params.batchId,
         req.body.name,
@@ -71,14 +72,14 @@ router.put('/:batchId', function (req, res) {
 });
 
 //tested
-router.put('/:batchId/end', (req, res) => {
+router.put('/:batchId/end',utils.acl.ensureAdmin, (req, res) => {
     db.actions.batches.endBatch(req.params.batchId, data => {
         res.send(data);
     });
 });
 
 //TODO cascade delete not working
-router.delete('/:batchId', (req, res) => {
+router.delete('/:batchId',utils.acl.ensureAdmin, (req, res) => {
     db.actions.batches.deleteBatch(req.params.batchId, data => {
         if (req.query.echo) res.send(data);
         else res.send('success');
@@ -86,7 +87,8 @@ router.delete('/:batchId', (req, res) => {
 });
 
 // TODO Error check
-router.post('/:batchId/enroll', function (req, res) {
+//Todo if batch not available, handle error
+router.post('/:batchId/enroll',utils.acl.ensureBatchOfTeacher, function (req, res) {
     let dataType = req.body.studentAttribute;
     let studentArray = JSON.parse(req.body.students);
     // if (studentArray) studentArray = JSON.parse(studentArray);

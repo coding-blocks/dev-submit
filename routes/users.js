@@ -126,7 +126,7 @@ router.get('/login/cb',passport.authenticate('oauth-cb'));
 //route for callback and retrieving token
 
 router.get('/login/cb/callback',
-  passport.authenticate('oauth-cb', {failureRedirect: '/api/v1/batches'}),function (req, res) {
+  passport.authenticate('oauth-cb', {failureRedirect: '/users/login'}),function (req, res) {
     //success
     res.redirect('/')
   });

@@ -3,11 +3,13 @@
  */
 const express = require('express');
 const db = require('../../db');
+const utils = require('../../utils');
+
 
 const router = express.Router();
 
 //done
-router.post('/new', function (req, res) {
+router.post('/new',utils.acl.ensureAdmin, function (req, res) {
     db.actions.users.addUser(req.body.name, req.body.email, data => {
         db.actions.teachers.addTeacher(data.dataValues.id, data => {
             res.send(data.dataValues);
@@ -16,7 +18,7 @@ router.post('/new', function (req, res) {
 });
 
 //done
-router.get('/', function (req, res) {
+router.get('/',utils.acl.ensureTeacher, function (req, res) {
     let type = req.query.name ? 'name' : req.query.email ? 'email' : 'all';
     let param = req.query.name
         ? req.query.name
@@ -34,13 +36,13 @@ router.get('/', function (req, res) {
 });
 
 //done
-router.get('/:id', function (req, res) {
+router.get('/:id',utils.acl.ensureTeacherId, function (req, res) {
     db.actions.teachers.searchTeacher(req.params.id, data => {
         res.send(data);
     });
 });
 
-router.delete('/:id', function (req, res) {
+router.delete('/:id',utils.acl.ensureAdmin, function (req, res) {
     db.actions.teachers.deleteTeacher(req.params.id, req.query.echo, data => {
         res.send(data);
     });

@@ -3,11 +3,13 @@
  */
 const express = require('express');
 const db = require('../../db');
+const utils = require('../../utils');
+
 
 const router = express.Router();
 
 //done
-router.post('/new', function (req, res) {
+router.post('/new',utils.acl.ensureTeacher, function (req, res) {
     db.actions.users.addUser(req.body.name, req.body.email, data => {
         db.actions.students.addStudent(
             req.body.roll,
@@ -20,7 +22,7 @@ router.post('/new', function (req, res) {
 });
 
 //done
-router.get('/', function (req, res) {
+router.get('/',utils.acl.ensureTeacher, function (req, res) {
     let roll = req.query.roll;
     let name = req.query.name;
     let email = req.query.email
@@ -55,20 +57,20 @@ router.get('/', function (req, res) {
 });
 
 //done
-router.get('/:id', function (req, res) {
+router.get('/:id',utils.acl.ensureStudentId, function (req, res) {
     db.actions.students.searchStudent(req.params.id, data => {
         res.send(data);
     });
 });
 
-router.delete('/:id', function (req, res) {
+router.delete('/:id',utils.acl.ensureOwnUser, function (req, res) {
     db.actions.students.deleteStudent(req.params.id, req.query.echo, data => {
         res.send(data);
     });
 });
 
 //done
-router.post('/:id/enroll/:batchId', function (req, res) {
+router.post('/:id/enroll/:batchId',utils.acl.ensureTeacher, function (req, res) {
     let echo = req.query.echo;
     db.actions.students.enrollStudentInBatch('id', req.params.id, req.params.batchId, data => {
         if (echo) {

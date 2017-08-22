@@ -86,7 +86,7 @@ function searchStudents(searchParameter, searchType, done) {
             });
     } else if (searchType == 'id') {
         models.Students
-            .findAll({where: {id: searchParameter}}, {include: [models.Users]})
+            .findAll({where: {id: searchParameter}, include: [models.Users]})
             .then(function (data) {
                 done(data);
             })
@@ -95,7 +95,7 @@ function searchStudents(searchParameter, searchType, done) {
             });
     } else if (searchType == 'roll') {
         models.Students
-            .findAll({where: {roll: searchParameter}}, {include: [models.Users]})
+            .findAll({where: {roll: searchParameter}, include: [models.Users]})
             .then(function (data) {
                 done(data);
             })
