@@ -29,6 +29,7 @@
     "express-session": "^1.15.3",
     "express-validator": "^3.2.0",
     "hbs": "^4.0.1",
+    "mocha": "^3.5.0",
     "mysql": "^2.14.1",
     "node-debug": "^0.1.0",
     "passport": "^0.3.2",

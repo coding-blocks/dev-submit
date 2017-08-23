@@ -1,8 +1,7 @@
 const mocha = require('mocha'),
-    chai = require('chai'),
-    chaiHttp = require('chai-http'),
     server = require('../server'),
-    should = chai.should();
+    app = server.app,
+    db = server.db
 
 function importTest(name, path) {
     describe(name, function () {
@@ -10,10 +9,19 @@ function importTest(name, path) {
     });
 }
 
-// before(function (done) {
-//     config.DEV_MODE = true;
-//     db.sync({force: true}).then(() => {
-//         console.log("DB configured for tests")
-//         app.listen(8000, () => done())
-//     })
-// })
+before(function (done) {
+    db.sync({force: true}).then(() => {
+        app.listen(8000, () => done())
+    })
+})
+
+describe("/api/v1", function () {
+    before(function () {
+        console.info("Running API test");
+    });
+    importTest("/", './api/index.js');
+
+    after(function () {
+        console.info("All api tests have run");
+    });
+});
