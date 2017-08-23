@@ -36,7 +36,7 @@ router.get('/',utils.acl.ensureTeacher, function (req, res) {
 });
 
 //done
-router.get('/:id',utils.acl.ensureTeacherId(req.params.id), function (req, res) {
+router.get('/:id',utils.acl.ensureTeacherId('id'), function (req, res) {
     db.actions.teachers.searchTeacher(req.params.id, data => {
         res.send(data);
     });
