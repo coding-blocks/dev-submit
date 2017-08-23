@@ -57,13 +57,13 @@ router.get('/',utils.acl.ensureTeacher, function (req, res) {
 });
 
 //done
-router.get('/:id',utils.acl.ensureStudentId, function (req, res) {
+router.get('/:id',utils.acl.ensureStudentId(req.params.id), function (req, res) {
     db.actions.students.searchStudent(req.params.id, data => {
         res.send(data);
     });
 });
 
-router.delete('/:id',utils.acl.ensureOwnUser, function (req, res) {
+router.delete('/:id',utils.acl.ensureOwnUser(req.params.id), function (req, res) {
     db.actions.students.deleteStudent(req.params.id, req.query.echo, data => {
         res.send(data);
     });

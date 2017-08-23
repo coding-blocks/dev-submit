@@ -41,7 +41,7 @@ router.get('/',utils.acl.ensureAdmin, (req, res) => {
 });
 
 //tested
-router.get('/:batchId',utils.acl.ensureBatchOfStudent, function (req, res) {
+router.get('/:batchId',utils.acl.ensureBatchOfStudent(batchId), function (req, res) {
     let options = {};
     options.id = req.params.batchId;
     db.actions.batches.getBatches(options, function (data) {
@@ -50,7 +50,7 @@ router.get('/:batchId',utils.acl.ensureBatchOfStudent, function (req, res) {
 });
 
 //tested
-router.get('/:batchId/students',utils.acl.ensureBatchOfStudent, (req, res) => {
+router.get('/:batchId/students',utils.acl.ensureBatchOfStudent(req.params.batchId), (req, res) => {
     db.actions.students.getAllStudentsInBatch(req.params.batchId, data => {
         console.log('done');
         res.send(data);
@@ -88,7 +88,7 @@ router.delete('/:batchId',utils.acl.ensureAdmin, (req, res) => {
 
 // TODO Error check
 //Todo if batch not available, handle error
-router.post('/:batchId/enroll',utils.acl.ensureBatchOfTeacher, function (req, res) {
+router.post('/:batchId/enroll',utils.acl.ensureBatchOfTeacher(req.params.batchId), function (req, res) {
     let dataType = req.body.studentAttribute;
     let studentArray = JSON.parse(req.body.students);
     // if (studentArray) studentArray = JSON.parse(studentArray);
