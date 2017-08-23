@@ -34,7 +34,7 @@ module.exports = {
                             return next();
                         }
                         else {
-                            res.send("please register as student or teacher")
+                            res.status(401).send({success: false, error: {message: 'please register as student or teacher'}});
                         }
                     })
                 })
@@ -47,11 +47,13 @@ module.exports = {
     },
     ensureAdmin: function ensureAdmin(req, res, next) {
         if (req.user.dataValues.role.name == "admin") return next();
-        res.send("You are not an admin")
+        res.status(401).send({success: false, error: {message: 'You are not an admin'}});
+
     },
     ensureTeacher: function (req, res, next) {
         if (req.user.dataValues.role.name == "admin" || req.user.dataValues.role.name == "teacher") return next();
-        res.send("You are neither an Admin nor a Teacher")
+        res.status(401).send({success: false, error: {message: 'You are neither an Admin nor a Teacher'}});
+
     },
     ensureStudentId: function (studentId) {
        return function(req,res,next){
@@ -62,7 +64,8 @@ module.exports = {
                     return next();
                 }
             }
-            res.send("You are not authorized!");
+           res.status(401).send({success: false, error: {message: 'You are not authorized!'}});
+
         }
 
     },
@@ -75,19 +78,22 @@ module.exports = {
                 return next();
             }
         }
-        res.send("You are not authorized!");
+            res.status(401).send({success: false, error: {message: 'You are not authorized!'}});
+
 
     }},
     ensureOwnUser:function(id){
        return function(req, res, next) {
             if(req.user.dataValues.role.name == "admin") return next();
             if (req.params[id] == req.user.dataValues.userId) return next();
-            res.send("You are not authorised to delete this account");
+           res.status(401).send({success: false, error: {message: 'You are not authorised to delete this account'}});
+
         }
     },
     ensureUserLogin: function (req, res, next) {
         if (!req.user) {
-            res.send("Please login to continue")
+            res.status(401).send({success: false, error: {message: 'Please login to continue'}});
+
         }
         else {
             next()
@@ -107,8 +113,8 @@ module.exports = {
                         return next();
                     }
                 }
+                res.status(401).send({success: false, error: {message: 'You don\'t have the right to access batches other than yours!'}});
 
-                res.send("You don't have the right to access batches other than yours!")
 
             })
 
@@ -129,7 +135,7 @@ module.exports = {
                     }
                 }).then(function(batch){
                     if(!batch){
-                        res.send("You can have the access of your own batches only")
+                        res.status(401).send({success: false, error: {message: 'You can have the access of your own batches only'}});
                     }
                     else{
                         return next();
@@ -138,7 +144,8 @@ module.exports = {
 
             }
             else{
-                res.send("You are not authorized");
+                res.status(401).send({success: false, error: {message: 'You are not authorized'}});
+
 
             }
 
