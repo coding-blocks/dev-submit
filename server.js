@@ -66,11 +66,7 @@ app.use(function (req, res, next) {
     res.locals.user = req.user || null;
     next();
 });
-app.use(function (req, res, next) {
-    console.log(req.user)
-    next();
-})
-app.use('/api/v1',utils.acl.setRole,utils.acl.ensureAdmin,api_v1)
+app.use('/api/v1',utils.acl.setRole,api_v1)
 app.use('/', express.static(__dirname + '/public_html'), index)
 app.use('/users', users)
 

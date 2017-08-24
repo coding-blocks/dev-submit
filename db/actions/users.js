@@ -14,9 +14,9 @@ function addUser(name, email, done) {
         })
         .then(function (data) {
 
-            (function (){
+            (function () {
                 console.log(data.dataValues.id)
-                if (data.dataValues.id == 1){
+                if (data.dataValues.id == 1) {
                     models.Admins.create({
                         grant: true,
                         userId: data.dataValues.id
@@ -155,16 +155,32 @@ function searchUsers(searchParameter, searchType, done) {
 }
 
 function deleteUser(id, done) {
-    models.Users.destroy({
+    console.log("Now deleting User")
+    models.Students.destroy({
         where: {
-            id: id
+            userId: id
         }
-    }).then(function (data) {
-        done(data)
-    }).catch(function (err) {
-        if (err) throw err;
+    }).then(function () {
+        models.Teachers.destroy({
+            where: {
+                userId: id
+            }
+        }).then(function () {
+            models.Users.destroy({
+                where: {
+                    id: id
+                }
+            }).then(function (data) {
+                done(data)
+            }).catch(function (err) {
+                if (err) throw err;
+            })
+        }).catch(function (err) {
+            if (err) throw err
+        }).catch(function (err) {
+            if (err) throw err
+        })
     })
-
 }
 
 module.exports = {getUsers, addLocalUser, addUser, getUser, searchUser, editUser, searchUsers, deleteUser};
