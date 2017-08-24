@@ -7,7 +7,7 @@ const utils = require('../../utils')
 
 const router = express.Router()
 
-router.get('/',utils.acl.ensureUserLogin,utils.acl.ensureAdmin ,function (req, res) {
+router.get('/',utils.acl.ensureUserLogin,utils.acl.ensureAdmin() ,function (req, res) {
     let name = req.query.name
     let email = req.query.email
     let type = "all"

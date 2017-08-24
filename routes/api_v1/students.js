@@ -9,7 +9,7 @@ const utils = require('../../utils');
 const router = express.Router();
 
 //done
-router.post('/new',utils.acl.ensureTeacher, function (req, res) {
+router.post('/new',utils.acl.ensureTeacher(), function (req, res) {
     db.actions.users.addUser(req.body.name, req.body.email, data => {
         db.actions.students.addStudent(
             req.body.roll,
@@ -22,7 +22,7 @@ router.post('/new',utils.acl.ensureTeacher, function (req, res) {
 });
 
 //done
-router.get('/',utils.acl.ensureTeacher, function (req, res) {
+router.get('/',utils.acl.ensureTeacher(), function (req, res) {
     let roll = req.query.roll;
     let name = req.query.name;
     let email = req.query.email
@@ -70,7 +70,7 @@ router.delete('/:id',utils.acl.ensureOwnUser('id'), function (req, res) {
 });
 
 //done
-router.post('/:id/enroll/:batchId',utils.acl.ensureTeacher, function (req, res) {
+router.post('/:id/enroll/:batchId',utils.acl.ensureTeacher(), function (req, res) {
     let echo = req.query.echo;
     db.actions.students.enrollStudentInBatch('id', req.params.id, req.params.batchId, data => {
         if (echo) {

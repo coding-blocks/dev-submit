@@ -45,15 +45,18 @@ module.exports = {
             next();
         }
     },
-    ensureAdmin: function ensureAdmin(req, res, next) {
+    ensureAdmin: function(){
+        return function (req, res, next) {
         if (req.user.dataValues.role.name == "admin") return next();
         res.status(401).send({success: false, error: {message: 'You are not an admin'}});
 
-    },
-    ensureTeacher: function (req, res, next) {
-        if (req.user.dataValues.role.name == "admin" || req.user.dataValues.role.name == "teacher") return next();
-        res.status(401).send({success: false, error: {message: 'You are neither an Admin nor a Teacher'}});
+    }},
+    ensureTeacher: function(){
+        return function (req, res, next) {
+            if (req.user.dataValues.role.name == "admin" || req.user.dataValues.role.name == "teacher") return next();
+            res.status(401).send({success: false, error: {message: 'You are neither an Admin nor a Teacher'}});
 
+        }
     },
     ensureStudentId: function (studentId) {
        return function(req,res,next){
@@ -105,16 +108,19 @@ module.exports = {
 
             db.models.StudentBatch.findAll({
                 where:{
-                    studentId:req.user.dataValues.role.id
+                    studentId:req.user.dataValues.role.id,
+                    batchId:req.params[batchId]
                 }
-            }).then(function (batches) {
-                for(var entry in batches){
-                    if(batches[entry].dataValues.batchId==req.params[batchId]){
-                        return next();
-                    }
+            }).then(function (data) {
+                if(!data) {
+                    return res.status(401).send({
+                        success: false,
+                        error: {message: 'You don\'t have the right to access batches other than yours!'}
+                    });
                 }
-                res.status(401).send({success: false, error: {message: 'You don\'t have the right to access batches other than yours!'}});
-
+                else{
+                    next();
+                }
 
             })
 
@@ -124,6 +130,7 @@ module.exports = {
         }},
     ensureBatchOfTeacher:function(batchId){
             return function(req,res,next){
+
             if (req.user.dataValues.role.name == "admin") return next();
 
 
@@ -149,6 +156,65 @@ module.exports = {
 
             }
 
+        }
+    },
+    ensureBatchforSubmission:function(batchAssignmentId,studentId){
+        return function(req,res,next){
+            if (req.user.dataValues.role.name == "admin" || req.user.dataValues.role.name == "teacher") return next();
+
+            db.models.BatchAssignments.findOne({
+                where:{
+                    id:req.body[batchAssignmentId]
+                }
+            }).then(function (data) {
+                models.StudentBatch.findOne({
+                    where:{
+                        studentId:req.body[studentId],
+                        batchId:data.dataValues.batchId
+                    }
+                }).then(function(result){
+                    if(!result){
+                       return res.status(401).send({success: false, error: {message: 'You are not authorized to submit this assignment'}});
+
+                    }
+                    else{
+                        next();
+                    }
+                })
+            })
+        }
+    },
+    ensureTeacherAcceptSubmission:function(submissionId){
+        return function(req,res,next){
+            if (req.user.dataValues.role.name == "admin") return next();
+
+            if(req.user.dataValues.role.name == "teacher"){
+                models.Submissions.findOne({
+                    where:{
+                        id:req.params['submissionId']
+                    },
+                    include: [{
+                        model: models.BatchAssignments,include:[{
+                            model:models.Batches,include:[{
+                                model:models.Teachers,where:{
+                                    id:req.user.role.id
+                                }
+                            }]
+                        }]
+                    }]
+                }).then(function (data) {
+                    if(!data){
+                        return res.status(404).send({success: false, error: {message: 'You are not authorized to accept the submission'}});
+                    }
+                    else{
+                        next();
+                    }
+                })
+            }
+
+            else{
+                return res.status(401).send({success: false, error: {message: 'You are not authorized to accept the submissions'}});
+            }
         }
     }
 }

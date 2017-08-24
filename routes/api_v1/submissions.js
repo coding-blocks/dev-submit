@@ -7,6 +7,7 @@ const bitballoon = require('bitballoon');
 const randomstring = require('randomstring');
 const db = require('../../db');
 const config = require('../../utils/config');
+const utils = require('../../utils');
 
 const router = express.Router();
 const client = bitballoon.createClient({
@@ -19,7 +20,7 @@ client.authorizeFromCredentials(function(err, access_token) {
   if (err) return console.log(err);
 });
 
-router.post('/new', function(req, res) {
+router.post('/new',utils.acl.ensureBatchforSubmission('batchAssignmentId','studentId'), function(req, res) {
   if (req.body.URL) {
     db.actions.submissions.addSubmission(
       req.body.studentId,
