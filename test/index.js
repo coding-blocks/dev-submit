@@ -10,7 +10,8 @@ function importTest(name, path) {
 }
 
 before(function (done) {
-    db.sync({force: true}).then(() => {
+    db.sync({force: true,logging:console.log}).then(() => {
+        console.log("listening at 8000");
         app.listen(8000, () => done())
     })
 })
@@ -20,6 +21,7 @@ describe("/api/v1", function () {
         console.info("Running API test");
     });
     importTest("/", './api/index.js');
+    importTest("/users", './users.js');
 
     after(function () {
         console.info("All api tests have run");

@@ -18,7 +18,7 @@ router.get('/', function (req, res) {
 router.get('/:courseId',utils.acl.ensureTeacher(), function (req, res) {
     db.actions.courses.getCourse(req.params.courseId,data=>res.send(data));
 });
-router.put('/:courseId',utils.acl.ensureAdmin, function (req, res) {
+router.put('/:courseId',utils.acl.ensureAdmin(), function (req, res) {
     db.actions.courses.editCourse(req.params.courseId,req.body.name,data=>res.send(data));
 });
 

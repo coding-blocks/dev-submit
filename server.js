@@ -15,6 +15,7 @@ const utils = require('./utils')
 const db=require('./db/models').sequelize;
 
 var app = express();
+var dotenv = require('dotenv').config()
 
 app.use(fileupload())
 app.use(bp.json());

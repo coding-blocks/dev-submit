@@ -91,7 +91,6 @@ router.delete('/:batchId',utils.acl.ensureAdmin(), (req, res) => {
 router.post('/:batchId/enroll',utils.acl.ensureBatchOfTeacher('batchId'), function (req, res) {
     let dataType = req.body.studentAttribute;
     let studentArray = JSON.parse(req.body.students);
-    // if (studentArray) studentArray = JSON.parse(studentArray);
     let batchId = req.params.batchId;
     let retval = [];
 

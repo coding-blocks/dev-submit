@@ -145,7 +145,6 @@ Users.hasOne(Teachers);
 UserLocal.belongsTo(Users);
 Users.hasOne(UserLocal);
 
-sequelize.sync();
 
 module.exports = {
     Students,
