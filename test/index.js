@@ -1,7 +1,7 @@
-const mocha = require('mocha'),
-    server = require('../server'),
-    app = server.app,
-    db = server.db
+const mocha = require('mocha')
+    , server = require('../server')
+    , app = server.app
+    , db = server.db
 
 function importTest(name, path) {
     describe(name, function () {
@@ -20,8 +20,7 @@ describe("/api/v1", function () {
     before(function () {
         console.info("Running API test");
     });
-    importTest("/", './api/index.js');
-    importTest("/users", './users.js');
+    importTest("/courses", './api/courses');
 
     after(function () {
         console.info("All api tests have run");

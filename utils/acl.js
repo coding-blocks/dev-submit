@@ -183,70 +183,70 @@ module.exports = {
 
         }
     },
-    // ensureBatchforSubmission:function(batchAssignmentId,studentId){
-    //     return function(req,res,next){
-    //         if(process.env.NODE_DEBUG!='DEBUG'){
-    //             return next();
-    //         }
-    //         if (req.user.dataValues.role.name == "admin" || req.user.dataValues.role.name == "teacher") return next();
-    //
-    //         db.models.BatchAssignments.findOne({
-    //             where:{
-    //                 id:req.body[batchAssignmentId]
-    //             }
-    //         }).then(function (data) {
-    //             models.StudentBatch.findOne({
-    //                 where:{
-    //                     studentId:req.body[studentId],
-    //                     batchId:data.dataValues.batchId
-    //                 }
-    //             }).then(function(result){
-    //                 if(!result){
-    //                    return res.status(401).send({success: false, error: {message: 'You are not authorized to submit this assignment'}});
-    //
-    //                 }
-    //                 else{
-    //                     next();
-    //                 }
-    //             })
-    //         })
-    //     }
-    // },
-    // ensureTeacherAcceptSubmission:function(submissionId){
-    //     return function(req,res,next){
-    //
-    //         if(process.env.NODE_DEBUG!='DEBUG'){
-    //             return next();
-    //         }
-    //         if (req.user.dataValues.role.name == "admin") return next();
-    //
-    //         if(req.user.dataValues.role.name == "teacher"){
-    //             models.Submissions.findOne({
-    //                 where:{
-    //                     id:req.params['submissionId']
-    //                 },
-    //                 include: [{
-    //                     model: models.BatchAssignments,include:[{
-    //                         model:models.Batches,include:[{
-    //                             model:models.Teachers,where:{
-    //                                 id:req.user.role.id
-    //                             }
-    //                         }]
-    //                     }]
-    //                 }]
-    //             }).then(function (data) {
-    //                 if(!data){
-    //                     return res.status(404).send({success: false, error: {message: 'You are not authorized to '}});
-    //                 }
-    //                 else{
-    //
-    //                 }
-    //             })
-    //         }
-    //
-    //         else{
-    //             return res.status(401).send({success: false, error: {message: 'You are not authorized to accept the submissions'}});
-    //         }
-    //     }
-    // }
+    ensureBatchforSubmission:function(batchAssignmentId,studentId){
+        return function(req,res,next){
+            if(process.env.NODE_DEBUG!='DEBUG'){
+                return next();
+            }
+            if (req.user.dataValues.role.name == "admin" || req.user.dataValues.role.name == "teacher") return next();
+
+            db.models.BatchAssignments.findOne({
+                where:{
+                    id:req.body[batchAssignmentId]
+                }
+            }).then(function (data) {
+                models.StudentBatch.findOne({
+                    where:{
+                        studentId:req.body[studentId],
+                        batchId:data.dataValues.batchId
+                    }
+                }).then(function(result){
+                    if(!result){
+                       return res.status(401).send({success: false, error: {message: 'You are not authorized to submit this assignment'}});
+
+                    }
+                    else{
+                        next();
+                    }
+                })
+            })
+        }
+    },
+    ensureTeacherAcceptSubmission:function(submissionId){
+        return function(req,res,next){
+
+            if(process.env.NODE_DEBUG!='DEBUG'){
+                return next();
+            }
+            if (req.user.dataValues.role.name == "admin") return next();
+
+            if(req.user.dataValues.role.name == "teacher"){
+                models.Submissions.findOne({
+                    where:{
+                        id:req.params['submissionId']
+                    },
+                    include: [{
+                        model: models.BatchAssignments,include:[{
+                            model:models.Batches,include:[{
+                                model:models.Teachers,where:{
+                                    id:req.user.role.id
+                                }
+                            }]
+                        }]
+                    }]
+                }).then(function (data) {
+                    if(!data){
+                        return res.status(404).send({success: false, error: {message: 'You are not authorized to '}});
+                    }
+                    else{
+
+                    }
+                })
+            }
+
+            else{
+                return res.status(401).send({success: false, error: {message: 'You are not authorized to accept the submissions'}});
+            }
+        }
+    }
 }

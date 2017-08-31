@@ -11,15 +11,15 @@ module.exports = {
                 name: name
             })
             .then(function (resData) {
-                if (assignments.length == 0) return done(resData);
+                if (assignments.length == 0) return done(null, resData);
                 assignments.forEach(function (assnId) {
                     addAssignmenttoCourse(resData.id, assnId, () => {
-                        if (assnId == assignments[assignments.length - 1]) done(resData);
+                        if (assnId == assignments[assignments.length - 1]) done(null, resData);
                     });
                 });
             })
             .catch(function (err) {
-                if (err) throw err;
+                done(err);
             });
     },
     addAssignmenttoCourse: function addAssignmenttoCourse(courseId, assnId, done) {
@@ -29,10 +29,10 @@ module.exports = {
                 assignmentId: assnId
             })
             .then(function (data) {
-                done(data);
+                done(null, data);
             })
             .catch(function (err) {
-                if (err) throw err;
+                done(err);
             });
     },
     getCourses: function (name, done) {
@@ -40,32 +40,56 @@ module.exports = {
             where: {
                 name: name
             }
-        }).then(data => done(data));
+        }).then(data => {
+            done(null, data)
+        }).catch(err=> {
+            done(err);
+        });
 
-        else models.Courses.findAll().then(data => done(data));
+
+        else models.Courses.findAll().then(data => {
+            done(null, data)
+        }).catch(err=> {
+            done(err);
+
+        });
     },
     getCourse: function (id, done) {
         models.Courses.findOne({
             where: {
                 id: id
             }
-        }).then(data => done(data)).catch(err => {
-            if (err) throw err;
+        }).then(data => {
+            done(null, data)
+        }).catch(err => {
+            done(err);
         })
     },
     editCourse: function editCourse(id, name, done) {
-        models.Courses.upsert({
-            id: id,
+        models.Courses.update({
             name: name
+        }, {
+            where: {
+                id: id
+            }
         }).then(data => {
-            models.Courses.findOne({
-                where: {
-                    id: id
-                }
-            }).then(resData => done(resData));
+            if (data[0] == 0) {
+                done(null, null)
+            }
+            else {
+                models.Courses.findOne({
+                    where: {
+                        id: id
+                    }
+                }).then(resData => {
+                    done(null, resData)
+                }).catch((err)=> {
+                    done(err)
+                });
+            }
         })
             .catch(err => {
-                if (err) throw err
+                done(err);
             });
     },
 
@@ -77,9 +101,9 @@ module.exports = {
             include: [{
                 model: models.Assignments
             }]
-        }).then(data => done(data))
+        }).then(data => done(null, data))
             .catch(err => {
-                if (err) throw err;
+                done(err);
             });
     }
 }

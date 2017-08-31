@@ -6,7 +6,7 @@ const server=require('./server'),
     db=server.db;
 
 
-db.sync({force: true}).then(() => {
+db.sync({force: false}).then(() => {
     console.log('Database configured')
 
     app.listen(4000, function (req, res, next) {
