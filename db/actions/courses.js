@@ -8,7 +8,7 @@ module.exports = {
     addCourse: function (name, assignments, done) {
         models.Courses
             .create({
-                name: name
+                name: name,
             })
             .then(function (resData) {
                 if (assignments.length == 0) return done(null, resData);

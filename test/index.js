@@ -21,6 +21,8 @@ describe("/api/v1", function () {
         console.info("Running API test");
     });
     importTest("/courses", './api/courses');
+    importTest("/batches", './api/batches');
+
 
     after(function () {
         console.info("All api tests have run");

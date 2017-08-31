@@ -9,6 +9,7 @@ const chai = require('chai')
 chai.use(chaiHttp);
 const api = chai.request("http://localhost:8000/api/v1/courses");
 
+
 it("GET / should fetch error", (done) => {
     api.get("/").end((e, r) => {
         r.statusCode.should.equal(404);
@@ -76,11 +77,11 @@ it("GET /2 should fetch error", (done) => {
 
 it("PUT /1 should update pandora course",(done)=>{
     api.put("/1").send({
-        "name":"pandora2017",
+        "name":"pandora",
     }).end((e,r)=>{
         r.statusCode.should.equal(201);
         r.body.success.should.equal(true);
-        r.body.data.name.should.equal('pandora2017');
+        r.body.data.name.should.equal('pandora');
         done();
 
     })
@@ -90,7 +91,7 @@ it("PUT /2 should fetch error",(done)=>{
     api.put("/2").send({
         "name":"launchpad",
     }).end((e,r)=>{
-        r.statusCode.should.equal(404);
+        r.statusCode.should.equal(400);
         r.body.success.should.equal(false);
         r.body.error.message.should.be.a("string");
 

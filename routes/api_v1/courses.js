@@ -22,11 +22,11 @@ router.post('/new', utils.acl.ensureAdmin(), function (req, res) {
             if (course) {
                 res.status(201).send({success: true, data: course.get()});
             } else {
-                res.status(404).send({
+                res.status(400).send({
                     success: false
-                    , code: "404"
+                    , code: "400"
                     , error: {
-                        message: "There are no courses."
+                        message: "Could not add the course(Incorrect Details)."
                     }
                 })
             }
@@ -109,11 +109,11 @@ router.put('/:courseId', utils.acl.ensureAdmin(), function (req, res) {
             if (course) {
                 res.status(201).send({success: true, data: course.get()});
             } else {
-                res.status(404).send({
+                res.status(400).send({
                     success: false
-                    , code: "404"
+                    , code: "400"
                     , error: {
-                        message: `Could not find the course with course id  ${req.params.courseId} .`
+                        message: `Could not update the course with course id(Incorrect details)  ${req.params.courseId} .`
                     }
                 })
             }
