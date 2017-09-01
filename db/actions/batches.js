@@ -2,40 +2,44 @@
  * Created by abhishekyadav on 28/06/17.
  */
 
-const models=require('../models');
+const models = require('../models');
 
 
 //function to add batch
-function addBatch(name, teacherId, startDate, endDate, done) {
+function addBatch(code, teacherId, startDate, endDate, done) {
     if (!endDate) {
         models.Batches
             .create({
-                name: name,
+                code: code,
                 teacherId: teacherId,
                 startDate: new Date(),
                 endDate: new Date().setMonth(new Date().getMonth() + 3),
                 isActive: true
             })
             .then(function (data) {
-                done(data);
+                done(null, data);
             })
             .catch(function (err) {
-                if (err) throw err;
+                if (err) {
+                    done(err);
+                }
             });
     } else {
         models.Batches
             .create({
-                name: name,
-                teacher: teacher,
+                code: code,
+                teacherId: teacherId,
                 startDate: startDate,
                 endDate: endDate,
                 isActive: true
             })
             .then(function (data) {
-                done(data);
+                done(null, data);
             })
             .catch(function (err) {
-                if (err) throw err;
+                if (err) {
+                    done(err);
+                }
             });
     }
 }
@@ -45,10 +49,10 @@ function getBatches(options, done) {
     models.Batches
         .findAll({where: options})
         .then(function (data) {
-            done(data);
+            done(null, data);
         })
-        .then(function (err) {
-            if (err) throw err;
+        .catch(function (err) {
+            if (err) done(err);
         });
 }
 
@@ -61,53 +65,53 @@ function searchBatch(id, done) {
             }
         })
         .then(function (data) {
-            done(data);
+            done(null, data);
         })
         .catch(function (err) {
-            if (err) throw err;
+            if (err) done(err);
         });
 }
 
 //function to get batches
 function searchBatches(searchParameter, searchType, onlyActive, done) {
     if (onlyActive) {
-        if (searchType == 'name') {
+        if (searchType == 'code') {
             models.Batches
-                .findAll({where: {name: searchParameter, isActive: true}})
+                .findAll({where: {code: searchParameter, isActive: true}})
                 .then(function (data) {
-                    done(data);
+                    done(null, data);
                 })
                 .catch(function (err) {
-                    if (err) throw err;
+                    if (err) done(err);
                 });
         } else {
             models.Batches
                 .findAll({where: {teacher: searchParameter, isActive: true}})
                 .then(function (data) {
-                    done(data);
+                    done(null, data);
                 })
                 .catch(function (err) {
-                    if (err) throw err;
+                    if (err) done(err);
                 });
         }
     } else {
-        if (searchType == 'name') {
+        if (searchType == 'code') {
             models.Batches
-                .findAll({where: {name: searchParameter}})
+                .findAll({where: {code: searchParameter}})
                 .then(function (data) {
-                    done(data);
+                    done(null, data);
                 })
                 .catch(function (err) {
-                    if (err) throw err;
+                    if (err) done(err);
                 });
         } else {
             models.Batches
                 .findAll({where: {teacher: searchParameter}})
                 .then(function (data) {
-                    done(data);
+                    done(null, data);
                 })
                 .catch(function (err) {
-                    if (err) throw err;
+                    if (err) done(err);
                 });
         }
     }
@@ -127,78 +131,100 @@ function endBatch(batchID, done) {
                     isActive: false
                 })
                 .then(function (data) {
-                    if (done) done(data);
+                    if (done) done(null, data);
                 })
                 .catch(function (err) {
-                    if (err) throw err;
+                    if (err) done(err);
                 });
         })
         .catch(function (err) {
-            if (err) throw err;
+            if (err) done(err);
         });
 }
 
 //function to edit a batch
-function editBatch(id, name, teacher, endDate, done) {
-    if (name) {
+function editBatch(id, code, teacher, endDate, done) {
+    if (code) {
         if (teacher) {
             if (endDate) {
-                searchBatch(id, function (data) {
-                    data
-                        .update({
-                            name: name,
-                            teacher: teacher,
+                searchBatch(id, function (err, data) {
+                    if (err) {
+                        return done(err);
+                    }
+                    if (!data) {
+                        return done(null, null);
+                    }
+                    data.update({
+                            code: code,
+                            teacherId: teacher,
                             endDate: endDate
                         })
                         .then(function (data) {
-                            done(data);
+                            done(null,data);
                         })
                         .catch(function (err) {
-                            if (err) throw err;
+                            if (err) done(err);
                         });
                 });
             } else {
-                searchBatch(id, function (data) {
+                searchBatch(id, function (err, data) {
+                    if (err) {
+                        return done(err);
+                    }
+                    if (!data) {
+                        return done(null, null);
+                    }
                     data
                         .update({
-                            name: name,
-                            teacher: teacher
+                            code: code,
+                            teacherId: teacher
                         })
                         .then(function (data) {
-                            done(data);
+                            done(null, data);
                         })
                         .catch(function (err) {
-                            if (err) throw err;
+                            if (err) done(err);
                         });
                 });
             }
         } else {
             if (endDate) {
-                searchBatch(id, function (data) {
+                searchBatch(id, function (err, data) {
+                    if (err) {
+                        return done(err);
+                    }
+                    if (data) {
+                        return done(null, null);
+                    }
                     data
                         .update({
-                            name: name,
+                            code: code,
                             endDate: endDate
                         })
                         .then(function (data) {
-                            done(data);
+                            done(null, data);
                         })
                         .catch(function (err) {
-                            if (err) throw err;
+                            if (err) done(err);
                         });
                 });
             } else {
-                searchBatch(id, function (data) {
-                    console.log(data);
+                searchBatch(id, function (err, data) {
+                    if (err) {
+                        return done(err);
+                    }
+                    if (!data) {
+                        return done(null, null);
+                    }
                     data
                         .update({
-                            name: name
+                            code: code
                         })
                         .then(function (data) {
-                            done(data);
+                            done(null, data);
                         })
                         .catch(function (err) {
-                            if (err) throw err;
+                            if (err) done(err);
                         });
                 });
             }
@@ -206,49 +232,68 @@ function editBatch(id, name, teacher, endDate, done) {
     } else {
         if (teacher) {
             if (endDate) {
-                searchBatch(id, function (data) {
+                searchBatch(id, function (err, data) {
+                    if (err) {
+                        return done(err);
+                    }
+                    if (!data) {
+                        return done(null, null);
+                    }
                     data
                         .update({
-                            teacher: teacher,
+                            teacherId: teacher,
                             endDate: endDate
                         })
                         .then(function (data) {
-                            done(data);
+                            done(null, data);
                         })
                         .catch(function (err) {
-                            if (err) throw err;
+                            if (err) done(err);
                         });
                 });
             } else {
-                searchBatch(id, function (data) {
+                searchBatch(id, function (err, data) {
+                    if (err) {
+                        return done(err);
+                    }
+                    if (!data) {
+                        return done(null, null);
+                    }
                     data
                         .update({
-                            teacher: teacher
+                            teacherId: teacher
                         })
                         .then(function (data) {
-                            done(data);
+                            done(null, data);
                         })
                         .catch(function (err) {
-                            if (err) throw err;
+                            if (err) done(err);
                         });
                 });
             }
         } else {
             if (endDate) {
-                searchBatch(id, function (data) {
-                    data
-                        .update({
+
+                searchBatch(id, function (err, data) {
+                    if (err) {
+                        return done(err);
+                    }
+                    if (!data) {
+                        return done(null, null);
+                    }
+                    data.update({
                             endDate: endDate
                         })
                         .then(function (data) {
-                            done(data);
+                            done(null,data);
+
                         })
                         .catch(function (err) {
-                            if (err) throw err;
+                            if (err) done(err);
                         });
                 });
             } else {
-                res.send('bhai chahta kya hai?');
+                done(null, null)
             }
         }
     }
@@ -264,13 +309,12 @@ function deleteBatch(id, done) {
             }
         })
         .then(data => {
-            done(data);
+            done(null, data);
         })
-        .catch(() => {
-            if (err) throw err;
+        .catch((err) => {
+            if (err) done(err);
         });
 }
-
 
 
 //function to add an assignment to a batch
@@ -281,14 +325,12 @@ function addAssignmentToBatch(assnID, batchID, done) {
             assignmentId: assnID
         })
         .then(function (data) {
-            done(data);
+            done(null, data);
         })
         .catch(function (err) {
-            if (err) throw err;
+            if (err) done(err);
         });
 }
-
-
 
 
 module.exports = {

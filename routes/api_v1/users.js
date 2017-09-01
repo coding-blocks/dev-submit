@@ -7,7 +7,7 @@ const utils = require('../../utils')
 
 const router = express.Router()
 
-router.get('/',utils.acl.ensureUserLogin,utils.acl.ensureAdmin ,function (req, res) {
+router.get('/',utils.acl.ensureUserLogin,utils.acl.ensureAdmin() ,function (req, res) {
     let name = req.query.name
     let email = req.query.email
     let type = "all"
@@ -32,12 +32,12 @@ router.get('/',utils.acl.ensureUserLogin,utils.acl.ensureAdmin ,function (req, r
         });
     }
 })
-router.get('/:id',utils.acl.ensureUserLogin,utils.acl.ensureOwnUser, function (req, res) {
+router.get('/:id',utils.acl.ensureUserLogin,utils.acl.ensureOwnUser('id'), function (req, res) {
     db.actions.users.getUser(req.params.id, (data) => {
         res.send(data)
     })
 })
-router.put('/:id',utils.acl.ensureUserLogin,utils.acl.ensureOwnUser, function (req, res) {
+router.put('/:id',utils.acl.ensureUserLogin,utils.acl.ensureOwnUser('id'), function (req, res) {
     db.actions.users.editUser(req.params.id, req.body.name, (data) => {
         res.send(data)
     }, req.body.email, req.query.echo)
@@ -47,7 +47,7 @@ router.post('/new', function (req, res) {
         res.send(data)
     })
 })
-router.delete('/:id',utils.acl.ensureUserLogin,utils.acl.ensureOwnUser, function (req, res) {
+router.delete('/:id',utils.acl.ensureUserLogin,utils.acl.ensureOwnUser('id'), function (req, res) {
     db.actions.users.deleteUser(req.params.id, (data) => res.send(JSON.stringify(data)))
 })
 

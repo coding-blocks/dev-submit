@@ -14,10 +14,10 @@ router.get('/me',utils.acl.ensureUserLogin,function (req, res) {
     })
 })
 
-//signup
+//TODO ERROR
 router.post('/signup',function (req, res) {
   if(req.body.role == "teacher"){
-    db.actions.teachers.addTeacher(req.user.name,req.user.email,req.user.user.id,function (data) {
+    db.actions.teachers.addTeacher(req.user.id,function (data) {
       req.user.val = false;
       req.flash('success_msg', 'you have successfuly completed registration');
       res.redirect('/');
@@ -77,7 +77,6 @@ router.post('/register', (req, res) => {
               User.password,
               data.dataValues.id,
               () => {
-                console.log(responseData.dataValues);
                 req.flash(
                   'success_msg',
                   'You are registered as Student and can now log in'
@@ -121,12 +120,12 @@ router.get('/login', function(req, res) {
 });
 
 //route for redirecting user to Provider's site
-router.get('/login/cb',passport.authenticate('oauth-cb'));
+router.get('/login/cb',passport.authenticate('oneauth'));
 
 //route for callback and retrieving token
 
 router.get('/login/cb/callback',
-  passport.authenticate('oauth-cb', {failureRedirect: '/api/v1/batches'}),function (req, res) {
+  passport.authenticate('oneauth', {failureRedirect: '/users/login'}),function (req, res) {
     //success
     res.redirect('/')
   });

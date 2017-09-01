@@ -12,8 +12,10 @@ const api_v1 = require('./routes/api_v1')
 const users = require('./routes/users')
 const index = require('./routes/index')
 const utils = require('./utils')
+const db=require('./db/models').sequelize;
 
 var app = express();
+var dotenv = require('dotenv').config()
 
 app.use(fileupload())
 app.use(bp.json());
@@ -60,16 +62,17 @@ app.use(validator({
 
 app.use(flash());
 app.use(function (req, res, next) {
+    //for hbs rendering
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg = req.flash('error_msg');
     res.locals.error = req.flash('error');
     res.locals.user = req.user || null;
     next();
 });
-app.use('/api/v1',utils.acl.setRole,api_v1)
+app.use('/api/v1',utils.acl.setRole,utils.acl.ensureUserLogin,api_v1)
 app.use('/', express.static(__dirname + '/public_html'), index)
 app.use('/users', users)
 
-app.listen(4000, () => {
-    console.log("we are up and running on port 4000")
-});
+
+
+module.exports={app,db};

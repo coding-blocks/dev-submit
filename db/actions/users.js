@@ -15,7 +15,6 @@ function addUser(name, email, done) {
         .then(function (data) {
 
             (function () {
-                console.log(data.dataValues.id)
                 if (data.dataValues.id == 1) {
                     models.Admins.create({
                         grant: true,
