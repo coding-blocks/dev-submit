@@ -3,11 +3,9 @@
  */
 
 const Sequelize = require('sequelize');
+const config = require('../../config');
 
-const sequelize = new Sequelize( 'devsubmitdatabase','root', 'MyNewPass', {
-    dialect: 'mysql',
-    port: 3306,
-
+const sequelize = new Sequelize(config.DATABASE_URL, {
     pool: {
         min: 0,
         max: 5,

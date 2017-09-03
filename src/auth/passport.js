@@ -6,7 +6,7 @@ var oneauthStrategy = require('passport-oneauth')
 const localStrategy = require('./strategies/local/localStrategy');
 const models = require('../db/models');
 const db = require('../db');
-const secrets = require('../secrets.json')
+const secrets = require('../../secrets.json')
 const randtoken = require('rand-token')
 
 

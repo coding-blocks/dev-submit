@@ -1,5 +1,5 @@
 const mocha = require('mocha')
-    , server = require('../server')
+    , server = require('../src/server')
     , app = server.app
     , db = server.db
 
