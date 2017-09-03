@@ -35,6 +35,7 @@ passport.deserializeUser(function (obj, done) {
 passport.use('oneauth', new oneauthStrategy({
         authorizationURL: 'https://account.codingblocks.com/oauth/authorize',
         tokenURL: 'https://account.codingblocks.com/oauth/token',
+        include: ['lms'],
         clientID: secrets.clientID,
         clientSecret: secrets.clientSecret,
         callbackURL: 'http://localhost:4000/users/login/cb/callback'

@@ -44,7 +44,7 @@
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "passport-oauth": "^1.0.0",
-    "passport-oneauth": "^1.0.2",
+    "passport-oneauth": "^1.0.5",
     "path": "^0.12.7",
     "pg": "^6.4.2",
     "postgresql": "0.0.1",
