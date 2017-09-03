@@ -4,7 +4,9 @@
   "description": "Extension of Service for submitting assignments at coding blocks",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "test": "mocha",
+    "cover": "nyc npm run test"
   },
   "repository": {
     "type": "git",
@@ -14,6 +16,12 @@
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/tech4GT/Hacker_Blocks_Advance/issues"
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ]
   },
   "homepage": "https://github.com/tech4GT/Hacker_Blocks_Advance#readme",
   "dependencies": {
@@ -31,7 +39,6 @@
     "express-session": "^1.15.3",
     "express-validator": "^3.2.0",
     "hbs": "^4.0.1",
-    "mocha": "^3.5.0",
     "mysql": "^2.14.1",
     "node-debug": "^0.1.0",
     "passport": "^0.3.2",
@@ -47,6 +54,8 @@
   },
   "devDependencies": {
     "chai": "^3.2.0",
-    "chai-http": "^1.0.0"
+    "chai-http": "^1.0.0",
+    "mocha": "^3.5.0",
+    "nyc": "^11.1.0"
   }
 }
