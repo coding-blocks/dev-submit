@@ -18,6 +18,8 @@ Xcode command line tools(for mac users)
 
 express.js and postgres based stack
 
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/c2aaa704e8b4c2e43b36)
+
 ## Authors
 
 * **Arnav Gupta** - *Initial work* - [championswimmer](https://github.com/championswimmer)
@@ -32,4 +34,3 @@ See also the list of [contributors](https://github.com/your/project/contributors
 * https://www.npmjs.com/package/bcrypt
 * https://expressjs.com/
 * http://docs.sequelizejs.com/
-
