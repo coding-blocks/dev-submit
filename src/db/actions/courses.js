@@ -11,7 +11,7 @@ module.exports = {
                 name: name,
             })
             .then(function (resData) {
-                if (assignments.length == 0) return done(null, resData);
+                if (assignments == null) return done(null, resData);
                 assignments.forEach(function (assnId) {
                     addAssignmenttoCourse(resData.id, assnId, () => {
                         if (assnId == assignments[assignments.length - 1]) done(null, resData);
@@ -107,6 +107,3 @@ module.exports = {
             });
     }
 }
-
-
-
